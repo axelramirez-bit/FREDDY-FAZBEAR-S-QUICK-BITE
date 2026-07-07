@@ -3,22 +3,24 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Categoria.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/EstadoCarrito.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Pago.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/EstadoPedido.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/DetallePedido.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Rol.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Promocion.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Pedido.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Factura.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Usuario.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/MetodoPago.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/CarritoDetalle.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Producto.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Carrito.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/TipoEntrega.java</file>
-            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/EstadoPago.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/PaletaColores.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UIConstants.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilImagenes.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaComponentes.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Categoria.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Usuario.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Promocion.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/CarritoDetalle.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Producto.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilPantalla.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Trabajador/DashboardTrabajador.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/DashboardCliente.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilFuentes.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/DashboardBase.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Components/RoundedPanel.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Registro/Registro.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Login/Login.java</file>
+            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Administrador/DashboardAdministrador.java</file>
         </group>
     </open-files>
 </project-private>

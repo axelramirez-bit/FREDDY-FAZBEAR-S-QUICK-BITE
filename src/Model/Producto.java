@@ -1,41 +1,41 @@
-
 package Model;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Producto {
+
     private int idProducto;
 
-    private Categoria  categoria;
+    private Categoria categoria;
 
     private String nombre;
 
     private String descripcion;
-    
+
     private double precio;
 
     private double precioAnterior;
 
-    private int  stock;
-    
+    private int stock;
+
     private boolean disponible;
-    
+
     private int calorias;
-    
+
     private int tiempoPreparacion;
-    
-    private boolean  destacado;
-    
+
+    private boolean destacado;
+
     private String imagenPrincipal;
 
     private String imagenBanner;
 
     private boolean estado;
-    
+
     private LocalDateTime fechaActualizacion;
-    
-     private Promocion promocion;
+
+    private Promocion promocion;
 
     public Producto() {
     }
@@ -63,7 +63,6 @@ public class Producto {
         return categoria;
     }
 
-
     public int getIdProducto() {
         return idProducto;
     }
@@ -71,10 +70,6 @@ public class Producto {
     public Promocion getPromocion() {
         return promocion;
     }
-
-
-
-
 
     public String getNombre() {
         return nombre;
@@ -136,14 +131,9 @@ public class Producto {
         this.categoria = categoria;
     }
 
-
     public void setPromocion(Promocion promocion) {
         this.promocion = promocion;
     }
-
-
-
-
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -199,75 +189,78 @@ public class Producto {
 
     public boolean tienePromocion() {
 
-    return promocion != null
-            && promocion.estaVigente();
-
-}
-public double getPrecioFinal() {
-
-    if (!tienePromocion()) {
-
-        return precio;
+        return promocion != null
+                && promocion.estaVigente();
 
     }
 
-    double descuento =
-            precio * (promocion.getDescuento() / 100);
+    public double getPrecioFinal() {
 
-    return precio - descuento;
+        if (!tienePromocion()) {
 
-}
-public boolean hayStock(){
+            return precio;
 
-    return stock>0;
+        }
 
-}
-public boolean hayStock(int cantidad){
+        double descuento
+                = precio * (promocion.getDescuento() / 100);
 
-    return stock>=cantidad;
+        return precio - descuento;
 
-}
-public void disminuirStock(int cantidad){
-
-    stock-=cantidad;
-
-}
-public void aumentarStock(int cantidad){
-
-    stock+=cantidad;
-
-}
-public boolean estaDisponible(){
-
-    return disponible && estado;
-
-}
-@Override
-public boolean equals(Object obj) {
-
-    if (this == obj) {
-        return true;
     }
 
-    if (!(obj instanceof Producto)) {
-        return false;
+    public boolean hayStock() {
+
+        return stock > 0;
+
     }
 
-    Producto other = (Producto) obj;
+    public boolean hayStock(int cantidad) {
 
-    return idProducto == other.idProducto;
+        return stock >= cantidad;
 
-}
+    }
 
-@Override
-public int hashCode() {
+    public void disminuirStock(int cantidad) {
 
-    return Objects.hash(idProducto);
+        stock -= cantidad;
 
-}
+    }
 
+    public void aumentarStock(int cantidad) {
 
+        stock += cantidad;
 
- 
-    
+    }
+
+    public boolean estaDisponible() {
+
+        return disponible && estado;
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Producto)) {
+            return false;
+        }
+
+        Producto other = (Producto) obj;
+
+        return idProducto == other.idProducto;
+
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(idProducto);
+
+    }
+
 }
