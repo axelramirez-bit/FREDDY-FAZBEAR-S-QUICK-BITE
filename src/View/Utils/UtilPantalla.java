@@ -85,5 +85,21 @@ public final class UtilPantalla {
 
         ventana.setSize(ancho, alto);
     }
+    public static int escalarAncho(int tamaño) {
 
+    return (int) (tamaño * getAnchoPantalla() / 1920.0);
+
+}
+    public static int escalarAlto(int tamaño) {
+
+    return (int) (tamaño * getAltoPantalla() / 1080.0);
+
+}
+    public static void pantallaCompleta(JFrame ventana) {
+
+    ventana.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+    ventana.setUndecorated(false);
+
+}
 }

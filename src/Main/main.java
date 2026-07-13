@@ -1,22 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+
 package Main;
 
 import Config.Conexion;
+import Config.Configuracion;
 
-/**
- *
- * @author HP
- */
+
 public class main {
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
-               Conexion conexion = Conexion.getInstancia();
+        System.out.println(
+                Configuracion.getUsuario()
+        );
+
+        System.out.println(
+                Configuracion.getPassword()
+        );
+
+        System.out.println(
+                Configuracion.getUrl()
+        );
+        Conexion conexion = Conexion.getInstancia();
 
         if (conexion.estaConectado()) {
 
@@ -25,6 +29,14 @@ public class main {
         }
 
         conexion.cerrarConexion();
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(() -> {
 
+                            Conexion.getInstancia()
+                                    .cerrarConexion();
+
+                        })
+                );
     }
-    }    
+}

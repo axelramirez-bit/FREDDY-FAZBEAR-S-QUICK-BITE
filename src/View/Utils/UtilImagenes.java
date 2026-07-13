@@ -18,7 +18,6 @@ public final class UtilImagenes {
     // ==========================================================
     // CARGAR IMAGEN
     // ==========================================================
-
     /**
      * Carga una imagen desde la carpeta Resources.
      *
@@ -40,7 +39,6 @@ public final class UtilImagenes {
     // ==========================================================
     // CARGAR IMAGEN ESCALADA
     // ==========================================================
-
     /**
      * Carga una imagen escalada.
      *
@@ -67,7 +65,6 @@ public final class UtilImagenes {
     // ==========================================================
     // ICONOS
     // ==========================================================
-
     /**
      * Carga un icono de la carpeta Icon.
      *
@@ -99,7 +96,6 @@ public final class UtilImagenes {
     // ==========================================================
     // PRODUCTOS
     // ==========================================================
-
     /**
      * Carga una imagen de producto.
      *
@@ -133,7 +129,6 @@ public final class UtilImagenes {
     // ==========================================================
     // IMÁGENES GENERALES
     // ==========================================================
-
     /**
      * Carga una imagen de la carpeta Imagenes.
      *
@@ -167,7 +162,6 @@ public final class UtilImagenes {
     // ==========================================================
     // LOGOTIPO
     // ==========================================================
-
     /**
      * Devuelve el logotipo principal del sistema.
      *

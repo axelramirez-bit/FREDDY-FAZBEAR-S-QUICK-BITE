@@ -196,7 +196,7 @@ CREATE TABLE pago(
 
         'Efectivo',
         'Tarjeta',
-        'QR'
+        'TRANSFERENCIA'
 
     ),
 

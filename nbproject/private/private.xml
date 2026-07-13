@@ -3,24 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/PaletaColores.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UIConstants.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilImagenes.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaComponentes.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Categoria.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Usuario.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Promocion.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/CarritoDetalle.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Producto.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilPantalla.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Trabajador/DashboardTrabajador.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/DashboardCliente.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilFuentes.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/DashboardBase.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Components/RoundedPanel.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Registro/Registro.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Login/Login.java</file>
-            <file>file:/C:/Users/HP/Desktop/Pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Administrador/DashboardAdministrador.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaBotones.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaTablas.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaCampos.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaLayouts.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaSeleccion.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaMenus.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/EstilosComponentes.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaEtiquetas.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaDialogos.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaScroll.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Documents/Nueva%20carpeta/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/FabricaPaneles.java</file>
         </group>
     </open-files>
 </project-private>
