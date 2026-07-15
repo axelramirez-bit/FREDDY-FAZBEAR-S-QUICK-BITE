@@ -1,27 +1,26 @@
 package View.Componentes;
 
-import View.Utils.PaletaColores;
-import View.Utils.UIConstants;
+import View.Utils.AdministradorTema;
 import java.awt.*;
 import javax.swing.JPanel;
 
 /**
+ * =============================================================== PANEL
+ * REDONDEADO ---------------------------------------------------------------
  * Panel reutilizable con esquinas redondeadas.
  *
- * Puede utilizarse para:
- * • Tarjetas
- * • Formularios
- * • Header
- * • Sidebar
- * • Contenedores
+ * Utilizado por:
  *
+ * • Tarjetas • Formularios • Sidebar • Header • Contenedores
+ *
+ * Todo el estilo proviene del AdministradorTema.
+ * ===============================================================
  */
 public class PanelRedondeado extends JPanel {
 
     //==========================================================
     // ATRIBUTOS
     //==========================================================
-
     private int radio;
 
     private Color colorFondo;
@@ -33,64 +32,67 @@ public class PanelRedondeado extends JPanel {
     private boolean mostrarBorde;
 
     //==========================================================
-    // CONSTRUCTOR
+    // CONSTRUCTORES
     //==========================================================
-
     public PanelRedondeado() {
 
         this(
-                UIConstants.RADIO_BORDE,
-                PaletaColores.TARJETA
+                AdministradorTema.radioPanel(),
+                AdministradorTema.colorTarjeta()
         );
+
     }
 
     public PanelRedondeado(int radio) {
 
         this(
                 radio,
-                PaletaColores.TARJETA
+                AdministradorTema.colorTarjeta()
         );
+
     }
 
-    public PanelRedondeado(Color colorFondo) {
+    public PanelRedondeado(Color fondo) {
 
         this(
-                UIConstants.RADIO_BORDE,
-                colorFondo
+                AdministradorTema.radioPanel(),
+                fondo
         );
+
     }
 
     public PanelRedondeado(
             int radio,
-            Color colorFondo) {
+            Color fondo) {
 
         this.radio = radio;
-        this.colorFondo = colorFondo;
 
-        colorBorde = PaletaColores.BORDE;
+        this.colorFondo = fondo;
 
-        grosorBorde = 1;
+        this.colorBorde
+                = AdministradorTema.colorBorde();
 
-        mostrarBorde = false;
+        this.grosorBorde = 1;
+
+        this.mostrarBorde = false;
 
         setOpaque(false);
+
     }
 
     //==========================================================
-    // DIBUJAR PANEL
+    // DIBUJADO
     //==========================================================
-
     @Override
     protected void paintComponent(Graphics g) {
 
-        Graphics2D g2 = (Graphics2D) g.create();
+        Graphics2D g2
+                = (Graphics2D) g.create();
 
         g2.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Fondo
         g2.setColor(colorFondo);
 
         g2.fillRoundRect(
@@ -99,15 +101,12 @@ public class PanelRedondeado extends JPanel {
                 getWidth() - 1,
                 getHeight() - 1,
                 radio,
-                radio
-        );
+                radio);
 
-        // Borde
         if (mostrarBorde) {
 
             g2.setStroke(
-                    new BasicStroke(grosorBorde)
-            );
+                    new BasicStroke(grosorBorde));
 
             g2.setColor(colorBorde);
 
@@ -117,19 +116,62 @@ public class PanelRedondeado extends JPanel {
                     getWidth() - 1,
                     getHeight() - 1,
                     radio,
-                    radio
-            );
+                    radio);
+
         }
 
         g2.dispose();
 
         super.paintComponent(g);
+
+    }
+
+    //==========================================================
+    // CONFIGURACIÓN
+    //==========================================================
+    public void mostrarBorde(boolean mostrar) {
+
+        this.mostrarBorde = mostrar;
+
+        repaint();
+
+    }
+
+    public void colorFondo(Color color) {
+
+        this.colorFondo = color;
+
+        repaint();
+
+    }
+
+    public void colorBorde(Color color) {
+
+        this.colorBorde = color;
+
+        repaint();
+
+    }
+
+    public void grosorBorde(int grosor) {
+
+        this.grosorBorde = grosor;
+
+        repaint();
+
+    }
+
+    public void radio(int radio) {
+
+        this.radio = radio;
+
+        repaint();
+
     }
 
     //==========================================================
     // GETTERS
     //==========================================================
-
     public int getRadio() {
         return radio;
     }
@@ -150,43 +192,18 @@ public class PanelRedondeado extends JPanel {
         return mostrarBorde;
     }
 
-    //==========================================================
-    // SETTERS
-    //==========================================================
-
-    public void setRadio(int radio) {
-
-        this.radio = radio;
-
+    public void setColorFondo(Color color) {
+        this.colorFondo = color;
         repaint();
     }
 
-    public void setColorFondo(Color colorFondo) {
-
-        this.colorFondo = colorFondo;
-
+    public void setColorBorde(Color color) {
+        this.colorBorde = color;
         repaint();
     }
 
-    public void setColorBorde(Color colorBorde) {
-
-        this.colorBorde = colorBorde;
-
+    public void setMostrarBorde(boolean mostrar) {
+        this.mostrarBorde = mostrar;
         repaint();
     }
-
-    public void setGrosorBorde(int grosorBorde) {
-
-        this.grosorBorde = grosorBorde;
-
-        repaint();
-    }
-
-    public void setMostrarBorde(boolean mostrarBorde) {
-
-        this.mostrarBorde = mostrarBorde;
-
-        repaint();
-    }
-
 }

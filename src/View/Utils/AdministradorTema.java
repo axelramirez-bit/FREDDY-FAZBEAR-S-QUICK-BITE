@@ -354,6 +354,11 @@ public static int altoTarjetaProducto() {
 public static int altoImagenProducto() {
     return UIConstants.ALTO_IMAGEN_PRODUCTO;
 }
+
+public static int anchoImagenProducto() {
+    return UIConstants.ANCHO_IMAGEN_PRODUCTO ;
+}
+
 // ==========================================================
 // PANELES
 // ==========================================================
@@ -419,7 +424,9 @@ public static int iconoGrande() {
 public static int tamañoLogo() {
     return UIConstants.TAMAÑO_LOGO;
 }
-
+public static int iconoMenu() {
+    return UIConstants.ICONO_MEDIANO;
+}
 public static int espacioIcono() {
     return UIConstants.ESPACIO_ICONO;
 }
@@ -460,5 +467,22 @@ public static int anchoDialogo() {
 
 public static int altoDialogo() {
     return UIConstants.ALTO_DIALOGO;
+}
+
+
+public static int anchoSelectorCantidad() {
+    return 110;
+}
+
+public static int altoSelectorCantidad() {
+    return 38;
+}
+public static int anchoBotonCantidad() {
+    return 28;
+}
+
+public static int altoBotonCantidad() {
+    return 28;
+
 }
 }

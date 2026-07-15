@@ -147,5 +147,27 @@ public final class FabricaCampos {
         return FabricaScroll.crear(area);
 
     }
+    // ==========================================================
+// CAMPO DE TEXTO
+// ==========================================================
 
+/**
+ * Crea un JTextField con el estilo oficial del sistema.
+ *
+ * @return JTextField configurado.
+ */
+public static JTextField crearTexto() {
+
+    JTextField campo = new JTextField();
+
+    EstilosComponentes.aplicarEstiloCampo(campo);
+
+    EstilosComponentes.aplicarTamaño(
+            campo,
+            AdministradorTema.anchoCampo(),
+            AdministradorTema.alturaCampo());
+
+    return campo;
+
+}
 }

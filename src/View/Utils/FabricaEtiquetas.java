@@ -23,7 +23,15 @@ public final class FabricaEtiquetas {
 
     private FabricaEtiquetas() {
     }
+    public static JLabel crearCantidad(String texto){
 
+    JLabel lbl = crearTexto(texto);
+
+    lbl.setHorizontalAlignment(SwingConstants.CENTER);
+
+    return lbl;
+
+}
     // ==========================================================
     // TÍTULO
     // ==========================================================

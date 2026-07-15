@@ -20,8 +20,59 @@ import javax.swing.ImageIcon;
  */
 public final class FabricaIconos {
 
-    private FabricaIconos() {
+
+
+    private FabricaIconos(){}
+
+    public static ImageIcon crear(String nombreIcono, int iconoMediano){
+
+        return UtilImagenes.icono(nombreIcono, iconoMediano);
+
     }
+    public static ImageIcon crear(
+        String nombre,
+        int ancho,
+        int alto) {
+
+    return UtilImagenes.imagen(
+            nombre,
+            ancho,
+            alto);
+
+}
+
+    public static ImageIcon pequeño(String nombre){
+
+        return crear(
+                nombre,
+                AdministradorTema.iconoPequeño());
+
+    }
+
+    public static ImageIcon mediano(String nombre){
+
+        return crear(
+                nombre,
+                AdministradorTema.iconoMediano());
+
+    }
+
+    public static ImageIcon grande(String nombre){
+
+        return crear(
+                nombre,
+                AdministradorTema.iconoGrande());
+
+    }
+
+    public static ImageIcon menu(String nombre){
+
+        return crear(
+                nombre,
+                AdministradorTema.iconoMenu());
+
+    }
+
 
     // ==========================================================
     // MÉTODO GENERAL

@@ -3,7 +3,6 @@ package View.Utils;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
 
@@ -47,11 +46,7 @@ public final class EstilosComponentes {
                 new Cursor(Cursor.HAND_CURSOR));
 
         boton.setBorder(
-                BorderFactory.createEmptyBorder(
-                        UIConstants.PADDING_BOTON_VERTICAL,
-                        UIConstants.PADDING_BOTON_HORIZONTAL,
-                        UIConstants.PADDING_BOTON_VERTICAL,
-                        UIConstants.PADDING_BOTON_HORIZONTAL));
+        FabricaBordes.boton());
 
     }
 
@@ -83,14 +78,7 @@ public final class EstilosComponentes {
                 AdministradorTema.colorTextoBlanco());
 
         campo.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(
-                                AdministradorTema.colorBorde()),
-                        BorderFactory.createEmptyBorder(
-                                UIConstants.PADDING_CAMPO_VERTICAL,
-                                UIConstants.PADDING_CAMPO_HORIZONTAL,
-                                UIConstants.PADDING_CAMPO_VERTICAL,
-                                UIConstants.PADDING_CAMPO_HORIZONTAL)));
+        FabricaBordes.campo());
 
     }
 
@@ -249,8 +237,7 @@ public final class EstilosComponentes {
     public static void aplicarEstiloTarjeta(
             JPanel panel) {
 
-        panel.setBackground(
-                AdministradorTema.colorTarjeta());
+        FabricaFondos.aplicarTarjeta(panel);
 
         panel.setBorder(
                 AdministradorTema.bordeTarjeta());

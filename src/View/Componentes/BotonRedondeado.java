@@ -1,16 +1,12 @@
 package View.Componentes;
 
+import View.Utils.AdministradorTema;
 import View.Utils.PaletaColores;
 import View.Utils.UIConstants;
 import View.Utils.UtilFuentes;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import javax.swing.JButton;
+import java.awt.*;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -58,9 +54,9 @@ public class BotonRedondeado extends JButton {
 
         super(texto);
 
-        radio = UIConstants.RADIO_BOTON;
+        radio = AdministradorTema.radioBoton();
 
-        colorFondo = PaletaColores.SECUNDARIO;
+        colorFondo = AdministradorTema.colorSecundario();
 
         colorHover = PaletaColores.SECUNDARIO_HOVER;
 
@@ -85,7 +81,7 @@ public class BotonRedondeado extends JButton {
 
     private void configurarBoton() {
 
-        setFont(UtilFuentes.medianaNegrita());
+        setFont(AdministradorTema.fuenteMedianaNegrita());
 
         setForeground(colorTexto);
 

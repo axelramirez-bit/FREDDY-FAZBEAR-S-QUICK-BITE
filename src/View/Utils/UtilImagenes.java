@@ -174,5 +174,15 @@ public final class UtilImagenes {
                 UIConstants.TAMAÑO_LOGO,
                 UIConstants.TAMAÑO_LOGO);
     }
+    public static ImageIcon imagenProducto(
+        String nombre,
+        int ancho,
+        int alto) {
 
+    return imagen(
+            "/Resources/Productos/" + nombre,
+            ancho,
+            alto);
+
+}
 }

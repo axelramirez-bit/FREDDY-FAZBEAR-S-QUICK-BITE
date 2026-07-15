@@ -1,20 +1,28 @@
 package View.Componentes;
 
 import View.Utils.*;
+
 import java.awt.*;
+
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+
+import javax.swing.event.DocumentListener;
 
 /**
+ * ===============================================================
+ * FREDDY-FAZBEAR'S QUICK BITE
+ * ---------------------------------------------------------------
  * Barra de búsqueda reutilizable.
  *
- * Incluye:
- * - Icono de búsqueda.
- * - Campo de texto.
- * - Placeholder.
- * - Diseño moderno.
+ * Características:
  *
-
+ * • Panel redondeado.
+ * • Icono configurable.
+ * • Placeholder configurable.
+ * • Campo reutilizable.
+ * • Compatible con DocumentListener.
+ * • Compatible con filtros en tiempo real.
+ * ===============================================================
  */
 public class BarraBusqueda extends PanelRedondeado {
 
@@ -26,27 +34,45 @@ public class BarraBusqueda extends PanelRedondeado {
 
     private JTextField txtBuscar;
 
+    private String placeholder;
+
     //==========================================================
-    // CONSTRUCTOR
+    // CONSTRUCTORES
     //==========================================================
 
     public BarraBusqueda() {
 
-        inicializarComponentes();
+        this("Buscar...");
+
+    }
+
+    public BarraBusqueda(String placeholder) {
+
+        this(placeholder, "icon_buscar");
+
+    }
+
+    public BarraBusqueda(
+            String placeholder,
+            String icono) {
+
+        this.placeholder = placeholder;
+
+        inicializar(icono);
 
     }
 
     //==========================================================
-    // INICIALIZAR
+    // INICIALIZACIÓN
     //==========================================================
 
-    private void inicializarComponentes() {
+    private void inicializar(String icono) {
 
         configurarPanel();
 
-        crearIcono();
+        crearIcono(icono);
 
-        crearCampoTexto();
+        crearCampo();
 
     }
 
@@ -56,21 +82,26 @@ public class BarraBusqueda extends PanelRedondeado {
 
     private void configurarPanel() {
 
-        setLayout(new BorderLayout(10, 0));
+        setLayout(
+                new BorderLayout(
+                        AdministradorTema.espacioPequeño(),
+                        0));
 
-        setColorFondo(Color.WHITE);
+        setColorFondo(
+                AdministradorTema.colorTarjeta());
 
         setMostrarBorde(true);
 
-        setBorder(new EmptyBorder(
-                8,
-                15,
-                8,
-                15));
+        setColorBorde(
+                AdministradorTema.colorBorde());
 
-        setPreferredSize(new Dimension(
-                300,
-                45));
+        setBorder(
+                FabricaBordes.mediano());
+
+        EstilosComponentes.aplicarTamañoPreferido(
+                this,
+                UIConstants.ANCHO_BUSQUEDA,
+                UIConstants.ALTURA_BUSQUEDA);
 
     }
 
@@ -78,13 +109,14 @@ public class BarraBusqueda extends PanelRedondeado {
     // ICONO
     //==========================================================
 
-    private void crearIcono() {
+    private void crearIcono(String nombreIcono) {
 
         lblIcono = new JLabel();
 
-        ImageIcon icono = UtilImagenes.icono(
-                "icon_buscar",
-                UIConstants.ICONO_MEDIANO);
+        ImageIcon icono =
+                FabricaIconos.crear(
+                        nombreIcono,
+                        AdministradorTema.iconoMediano());
 
         lblIcono.setIcon(icono);
 
@@ -96,28 +128,25 @@ public class BarraBusqueda extends PanelRedondeado {
     // CAMPO
     //==========================================================
 
-    private void crearCampoTexto() {
+    private void crearCampo() {
 
-        txtBuscar = new JTextField();
-
-        txtBuscar.setBorder(null);
+        txtBuscar =
+                FabricaCampos.crearTexto();
 
         txtBuscar.setOpaque(false);
 
-        txtBuscar.setForeground(PaletaColores.TEXTO);
+        txtBuscar.setBorder(null);
 
-        txtBuscar.setFont(UtilFuentes.normal());
+        txtBuscar.setText(placeholder);
 
-        txtBuscar.setText("Buscar...");
-
-        txtBuscar.setCaretColor(PaletaColores.PRINCIPAL);
-
-        txtBuscar.addFocusListener(new java.awt.event.FocusAdapter() {
+        txtBuscar.addFocusListener(
+                new java.awt.event.FocusAdapter() {
 
             @Override
-            public void focusGained(java.awt.event.FocusEvent e) {
+            public void focusGained(
+                    java.awt.event.FocusEvent e) {
 
-                if (txtBuscar.getText().equals("Buscar...")) {
+                if (txtBuscar.getText().equals(placeholder)) {
 
                     txtBuscar.setText("");
 
@@ -126,11 +155,12 @@ public class BarraBusqueda extends PanelRedondeado {
             }
 
             @Override
-            public void focusLost(java.awt.event.FocusEvent e) {
+            public void focusLost(
+                    java.awt.event.FocusEvent e) {
 
-                if (txtBuscar.getText().trim().isEmpty()) {
+                if (txtBuscar.getText().isBlank()) {
 
-                    txtBuscar.setText("Buscar...");
+                    txtBuscar.setText(placeholder);
 
                 }
 
@@ -147,47 +177,47 @@ public class BarraBusqueda extends PanelRedondeado {
     //==========================================================
 
     /**
-     * Devuelve el texto escrito por el usuario.
-     *
-     * @return String
+     * Devuelve el texto escrito.
      */
     public String getTexto() {
 
-        if (txtBuscar.getText().equals("Buscar...")) {
+        if (txtBuscar.getText().equals(placeholder)) {
 
             return "";
 
         }
 
-        return txtBuscar.getText();
+        return txtBuscar.getText().trim();
 
     }
 
     /**
      * Devuelve el JTextField.
-     *
-     * Permite agregar DocumentListener o KeyListener.
      */
-    public JTextField getCampoTexto() {
+    public JTextField getCampo() {
 
         return txtBuscar;
 
     }
 
     //==========================================================
-    // SETTERS
+    // DOCUMENT LISTENER
     //==========================================================
 
     /**
-     * Cambia el texto del placeholder.
-     *
-     * @param texto Placeholder
+     * Agrega un DocumentListener.
      */
-    public void setPlaceholder(String texto) {
+    public void agregarListener(
+            DocumentListener listener) {
 
-        txtBuscar.setText(texto);
+        txtBuscar.getDocument()
+                .addDocumentListener(listener);
 
     }
+
+    //==========================================================
+    // UTILIDADES
+    //==========================================================
 
     /**
      * Limpia la búsqueda.
@@ -195,6 +225,29 @@ public class BarraBusqueda extends PanelRedondeado {
     public void limpiar() {
 
         txtBuscar.setText("");
+
+    }
+
+    /**
+     * Cambia el placeholder.
+     */
+    public void setPlaceholder(String texto) {
+
+        placeholder = texto;
+
+        txtBuscar.setText(texto);
+
+    }
+
+    /**
+     * Cambia el icono.
+     */
+    public void setIcono(String nombreIcono) {
+
+        lblIcono.setIcon(
+                FabricaIconos.crear(
+                        nombreIcono,
+                        AdministradorTema.iconoMediano()));
 
     }
 
