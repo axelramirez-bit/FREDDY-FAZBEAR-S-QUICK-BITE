@@ -1,14 +1,18 @@
 package DAO.Interfaz;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+import Model.Producto;
+import java.util.List;
 
-/**
- *
- * @author Computacion
- */
-public class IProductoDAO {
-    
+public interface IProductoDAO {
+
+    boolean insertar(Producto producto);
+
+    boolean actualizar(Producto producto);
+
+    boolean eliminar(int id);
+
+    Producto buscarPorId(int id);
+
+    List<Producto> listar();
+
 }

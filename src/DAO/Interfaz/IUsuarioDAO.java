@@ -1,13 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IUsuarioDAO {
-    
+import Model.Usuario;
+import java.util.List;
+
+public interface IUsuarioDAO {
+
+    boolean insertar(Usuario usuario);
+
+    boolean actualizar(Usuario usuario);
+
+    boolean eliminar(int id);
+
+    Usuario buscarPorId(int id);
+
+    Usuario iniciarSesion(String correo, String contraseña);
+
+    List<Usuario> listar();
 }

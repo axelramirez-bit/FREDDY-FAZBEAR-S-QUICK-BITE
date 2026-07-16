@@ -1,13 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IPedidoDAO {
-    
+import Model.Pedido;
+import java.util.List;
+
+public interface IPedidoDAO {
+
+    boolean insertar(Pedido pedido);
+
+    boolean actualizar(Pedido pedido);
+
+    boolean eliminar(int id);
+
+    Pedido buscarPorId(int id);
+
+    List<Pedido> listar();
+
 }

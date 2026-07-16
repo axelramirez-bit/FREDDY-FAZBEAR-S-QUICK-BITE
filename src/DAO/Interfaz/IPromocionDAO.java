@@ -1,13 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IPromocionDAO {
-    
+import Model.Promocion;
+import java.util.List;
+
+public interface IPromocionDAO {
+
+    boolean insertar(Promocion promocion);
+
+    boolean actualizar(Promocion promocion);
+
+    boolean eliminar(int id);
+
+    Promocion buscarPorId(int id);
+
+    List<Promocion> listar();
+
 }
