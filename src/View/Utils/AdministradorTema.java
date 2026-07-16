@@ -485,4 +485,15 @@ public static int altoBotonCantidad() {
     return 28;
 
 }
+public static int anchoMenuLateral() {
+
+    return 260;
+
+}
+
+public static int altoBotonMenu() {
+
+    return 50;
+
+}
 }
