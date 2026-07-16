@@ -1,13 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author HP
- */
-public class ICarritoDetalleDAO {
+import java.util.List;
+import Model.CarritoDetalle;
+
+public interface ICarritoDetalleDAO {
+    
+    boolean agregarProducto(CarritoDetalle detalle);
+
+    boolean actualizarCantidad(int idDetalle, int cantidad);
+
+    boolean eliminarProducto(int idDetalle);
+
+    List<CarritoDetalle> listarPorCarrito(int idCarrito);
     
 }

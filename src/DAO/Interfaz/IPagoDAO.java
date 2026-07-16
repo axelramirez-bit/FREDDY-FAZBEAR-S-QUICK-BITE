@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IPagoDAO {
-    
+import java.util.List;
+import Model.Pago;
+import Model.EstadoPago;
+
+public interface IPagoDAO {
+
+    boolean guardar(Pago pago);
+
+    Pago buscarPorId(int idPago);
+
+    Pago buscarPorPedido(int idPedido);
+
+    List<Pago> listar();
+
+    List<Pago> listarPorEstado(EstadoPago estado);
+
+    boolean actualizarEstado(int idPago, EstadoPago estado);
+
 }

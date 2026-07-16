@@ -1,13 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class ICategoriaDAO {
-    
+import Model.Categoria;
+import java.util.List;
+
+public interface ICategoriaDAO {
+
+    boolean guardar(Categoria categoria);
+
+    boolean actualizar(Categoria categoria);
+
+    boolean cambiarEstado(int idCategoria, boolean estado);
+
+    Categoria buscarPorId(int idCategoria);
+
+    List<Categoria> listar();
+
+    List<Categoria> listarActivas();
+
 }
