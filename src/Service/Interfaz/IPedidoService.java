@@ -8,6 +8,6 @@ package Service.Interfaz;
  *
  * @author Computacion
  */
-public class UsuarioService {
+public class IPedidoService {
     
 }
