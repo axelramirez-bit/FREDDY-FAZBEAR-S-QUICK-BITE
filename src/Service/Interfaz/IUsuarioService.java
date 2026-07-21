@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Service.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IUsuarioService {
-    
+import Model.Usuario;
+
+import java.util.List;
+
+public interface IUsuarioService {
+
+    boolean registrarUsuario(Usuario usuario);
+
+    boolean actualizarUsuario(Usuario usuario);
+
+    boolean eliminarUsuario(int idUsuario);
+
+    Usuario obtenerUsuarioPorId(int idUsuario);
+
+    List<Usuario> listarUsuarios();
+
+    Usuario iniciarSesion(String correo, String password);
+
 }

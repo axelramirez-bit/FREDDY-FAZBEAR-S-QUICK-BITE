@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Service.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IPromocionService {
-    
+import Model.Promocion;
+
+import java.util.List;
+
+public interface IPromocionService {
+
+    boolean registrarPromocion(Promocion promocion);
+
+    boolean actualizarPromocion(Promocion promocion);
+
+    boolean eliminarPromocion(int idPromocion);
+
+    Promocion obtenerPromocionPorId(int idPromocion);
+
+    List<Promocion> listarPromociones();
+
+    List<Promocion> listarPromocionesActivas();
+
 }

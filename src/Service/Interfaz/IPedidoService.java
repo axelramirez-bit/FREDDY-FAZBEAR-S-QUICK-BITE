@@ -1,13 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Service.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IPedidoService {
-    
+import Model.Pedido;
+
+import java.util.List;
+
+public interface IPedidoService {
+
+    boolean registrarPedido(Pedido pedido);
+
+    boolean actualizarPedido(Pedido pedido);
+
+    boolean eliminarPedido(int idPedido);
+
+    Pedido obtenerPedidoPorId(int idPedido);
+
+    List<Pedido> listarPedidos();
+
 }

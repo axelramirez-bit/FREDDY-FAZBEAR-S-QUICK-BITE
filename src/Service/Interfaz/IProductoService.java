@@ -1,13 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Service.Interfaz;
 
-/**
- *
- * @author Computacion
- */
-public class IProductoService {
-    
+import Model.Producto;
+
+import java.util.List;
+
+public interface IProductoService {
+
+    boolean registrarProducto(Producto producto);
+
+    boolean actualizarProducto(Producto producto);
+
+    boolean eliminarProducto(int idProducto);
+
+    Producto obtenerProductoPorId(int idProducto);
+
+    List<Producto> listarProductos();
+
+    List<Producto> listarProductosDisponibles();
+
+    boolean actualizarStock(int idProducto, int cantidad);
+
 }
