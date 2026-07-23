@@ -1,9 +1,9 @@
-package DAO.Interfaz;
+package Service.Interfaz;
 
 import Model.Factura;
 import java.util.List;
 
-public interface IFacturaDAO {
+public interface IFacturaService {
 
     boolean guardar(Factura factura);
 

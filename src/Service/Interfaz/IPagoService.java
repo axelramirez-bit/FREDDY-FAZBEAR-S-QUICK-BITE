@@ -1,11 +1,11 @@
-package DAO.Interfaz;
+package Service.Interfaz;
 
 import java.util.List;
 import Model.Pago;
 import Model.EstadoPago;
 
-public interface IPagoDAO {
-
+public interface IPagoService {
+    
     boolean guardar(Pago pago);
 
     Pago buscarPorId(int idPago);

@@ -17,8 +17,13 @@ public class DetallePedido {
     private double subtotal;
 
 
-    public DetallePedido(Pedido aThis, Producto producto1, int cantidad1) {
-    }
+    public DetallePedido(Pedido pedido, Producto producto, int cantidad) {
+    this.pedido = pedido;
+    this.producto = producto;
+    this.cantidad = cantidad;
+    this.precio = producto.getPrecio();
+    calcularSubtotal();
+}
 
     public DetallePedido(int idDetalle, Pedido pedido, Producto producto, int cantidad, double precio, double subtotal) {
         this.idDetalle = idDetalle;

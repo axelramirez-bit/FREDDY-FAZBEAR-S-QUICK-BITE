@@ -1,10 +1,10 @@
-package DAO.Interfaz;
+package Service.Interfaz;
 
 import Model.Categoria;
 import java.util.List;
 
-public interface ICategoriaDAO {
-
+public interface ICategoriaService {
+    
     boolean guardar(Categoria categoria);
 
     boolean actualizar(Categoria categoria);
@@ -16,5 +16,5 @@ public interface ICategoriaDAO {
     List<Categoria> listar();
 
     List<Categoria> listarActivas();
-
+    
 }
