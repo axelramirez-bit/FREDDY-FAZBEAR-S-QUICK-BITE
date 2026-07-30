@@ -1,6 +1,7 @@
 
 package Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ public class Pago {
     
     private MetodoPago metodoPago;
 
-    private double monto;
+    private BigDecimal monto;
 
     private LocalDateTime fechaPago;
     
@@ -22,7 +23,7 @@ public class Pago {
     public Pago() {
     }
 
-    public Pago(int idPago, Pedido pedido, MetodoPago metodoPago, double monto, LocalDateTime fechaPago, EstadoPago estado, String referencia) {
+    public Pago(int idPago, Pedido pedido, MetodoPago metodoPago, BigDecimal monto, LocalDateTime fechaPago, EstadoPago estado, String referencia) {
         this.idPago = idPago;
         this.pedido = pedido;
         this.metodoPago = metodoPago;
@@ -31,6 +32,7 @@ public class Pago {
         this.estado = estado;
         this.referencia = referencia;
     }
+
 
 
 
@@ -49,7 +51,7 @@ public class Pago {
         return metodoPago;
     }
 
-    public double getMonto() {
+    public BigDecimal getMonto() {
         return monto;
     }
 
@@ -79,7 +81,7 @@ public class Pago {
         this.metodoPago = metodoPago;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(BigDecimal monto) {
         this.monto = monto;
     }
 

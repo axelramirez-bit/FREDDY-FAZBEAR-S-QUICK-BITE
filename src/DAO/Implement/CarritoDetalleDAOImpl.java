@@ -136,7 +136,7 @@ public class CarritoDetalleDAOImpl implements ICarritoDetalleDAO {
         producto.setCategoria(categoria);
         producto.setNombre(rs.getString("producto_nombre"));
         producto.setDescripcion(rs.getString("producto_descripcion"));
-        producto.setPrecio(rs.getDouble("precio"));
+        producto.setPrecio(rs.getBigDecimal("precio"));
         producto.setStock(rs.getInt("stock"));
         producto.setDisponible(rs.getBoolean("disponible"));
         producto.setImagenPrincipal(rs.getString("imagen"));

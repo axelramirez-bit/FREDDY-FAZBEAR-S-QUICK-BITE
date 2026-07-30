@@ -11,7 +11,10 @@ import javax.swing.ImageIcon;
  *
  */
 public final class UtilImagenes {
-
+private static final String RUTA_ICONOS = "/Resources/Iconos/";
+private static final String RUTA_IMAGENES = "/Resources/Imagenes/";
+private static final String RUTA_PRODUCTOS = "/Resources/Productos/";
+private static final String EXTENSION = ".png";
     private UtilImagenes() {
     }
 
@@ -62,36 +65,32 @@ public final class UtilImagenes {
         return new ImageIcon(imagen);
     }
 
-    // ==========================================================
-    // ICONOS
-    // ==========================================================
-    /**
-     * Carga un icono de la carpeta Icon.
-     *
-     * @param nombre Nombre del icono.
-     * @return ImageIcon
-     */
-    public static ImageIcon icono(String nombre) {
+public static ImageIcon icono(String nombre) {
 
-        return cargarImagen("/Icon/" + nombre + ".png");
-    }
+    return cargarImagen(
+            RUTA_ICONOS + nombre + EXTENSION);
+}
 
-    /**
-     * Carga un icono escalado.
-     *
-     * @param nombre Nombre del icono.
-     * @param tamaño Tamaño del icono.
-     * @return ImageIcon
-     */
-    public static ImageIcon icono(
-            String nombre,
-            int tamaño) {
+public static ImageIcon icono(
+        String nombre,
+        int tamaño) {
 
-        return cargarImagen(
-                "/Icon/" + nombre + ".png",
-                tamaño,
-                tamaño);
-    }
+    return cargarImagen(
+            RUTA_ICONOS + nombre + EXTENSION,
+            tamaño,
+            tamaño);
+}
+
+public static ImageIcon icono(
+        String nombre,
+        int ancho,
+        int alto) {
+
+    return cargarImagen(
+            RUTA_ICONOS + nombre + EXTENSION,
+            ancho,
+            alto);
+}
 
     // ==========================================================
     // PRODUCTOS
@@ -102,29 +101,22 @@ public final class UtilImagenes {
      * @param nombre Nombre de la imagen.
      * @return ImageIcon
      */
-    public static ImageIcon producto(String nombre) {
+public static ImageIcon producto(String nombre) {
 
-        return cargarImagen("/Productos/" + nombre + ".png");
-    }
+    return cargarImagen(
+            RUTA_PRODUCTOS + nombre + EXTENSION);
+}
 
-    /**
-     * Carga una imagen de producto escalada.
-     *
-     * @param nombre Nombre del producto.
-     * @param ancho Ancho.
-     * @param alto Alto.
-     * @return ImageIcon
-     */
-    public static ImageIcon producto(
-            String nombre,
-            int ancho,
-            int alto) {
+public static ImageIcon producto(
+        String nombre,
+        int ancho,
+        int alto) {
 
-        return cargarImagen(
-                "/Productos/" + nombre + ".png",
-                ancho,
-                alto);
-    }
+    return cargarImagen(
+            RUTA_PRODUCTOS + nombre + EXTENSION,
+            ancho,
+            alto);
+}
 
     // ==========================================================
     // IMÁGENES GENERALES
@@ -135,29 +127,22 @@ public final class UtilImagenes {
      * @param nombre Nombre de la imagen.
      * @return ImageIcon
      */
-    public static ImageIcon imagen(String nombre) {
+public static ImageIcon imagen(String nombre) {
 
-        return cargarImagen("/Imagenes/" + nombre + ".png");
-    }
+    return cargarImagen(
+            RUTA_IMAGENES + nombre + EXTENSION);
+}
 
-    /**
-     * Carga una imagen escalada de la carpeta Imagenes.
-     *
-     * @param nombre Nombre de la imagen.
-     * @param ancho Ancho.
-     * @param alto Alto.
-     * @return ImageIcon
-     */
-    public static ImageIcon imagen(
-            String nombre,
-            int ancho,
-            int alto) {
+public static ImageIcon imagen(
+        String nombre,
+        int ancho,
+        int alto) {
 
-        return cargarImagen(
-                "/Imagenes/" + nombre + ".png",
-                ancho,
-                alto);
-    }
+    return cargarImagen(
+            RUTA_IMAGENES + nombre + EXTENSION,
+            ancho,
+            alto);
+}
 
     // ==========================================================
     // LOGOTIPO
@@ -174,15 +159,13 @@ public final class UtilImagenes {
                 UIConstants.TAMAÑO_LOGO,
                 UIConstants.TAMAÑO_LOGO);
     }
+
     public static ImageIcon imagenProducto(
         String nombre,
         int ancho,
         int alto) {
 
-    return imagen(
-            "/Resources/Productos/" + nombre,
-            ancho,
-            alto);
+    return producto(nombre, ancho, alto);
 
 }
 }

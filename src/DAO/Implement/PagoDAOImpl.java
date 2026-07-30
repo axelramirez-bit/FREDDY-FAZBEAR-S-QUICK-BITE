@@ -30,7 +30,7 @@ public class PagoDAOImpl implements IPagoDAO {
 
             ps.setInt(1, pago.getPedido().getIdPedido());
             ps.setString(2, metodoPagoToDb(pago.getMetodoPago()));
-            ps.setDouble(3, pago.getMonto());
+            ps.setBigDecimal(3, pago.getMonto());
 
             if (pago.getFechaPago() != null) {
                 ps.setTimestamp(4, Timestamp.valueOf(pago.getFechaPago()));
@@ -192,7 +192,7 @@ public class PagoDAOImpl implements IPagoDAO {
         pago.setIdPago(rs.getInt("id_pago"));
         pago.setPedido(pedido);
         pago.setMetodoPago(metodoPagoDesdeDb(rs.getString("metodo_pago")));
-        pago.setMonto(rs.getDouble("monto"));
+        pago.setMonto(rs.getBigDecimal("monto"));
 
         Timestamp fechaPago = rs.getTimestamp("fecha_pago");
         pago.setFechaPago(fechaPago != null ? fechaPago.toLocalDateTime() : null);

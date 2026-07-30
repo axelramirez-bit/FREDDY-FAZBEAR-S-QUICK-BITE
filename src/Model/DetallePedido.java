@@ -1,5 +1,6 @@
 package Model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class DetallePedido {
@@ -12,10 +13,10 @@ public class DetallePedido {
 
     private int cantidad;
 
-    private double precio;
+    private BigDecimal precio;
 
-    private double subtotal;
-
+    private BigDecimal subtotal;
+    
 
     public DetallePedido(Pedido pedido, Producto producto, int cantidad) {
     this.pedido = pedido;
@@ -25,23 +26,19 @@ public class DetallePedido {
     calcularSubtotal();
 }
 
-    public DetallePedido(int idDetalle, Pedido pedido, Producto producto, int cantidad, double precio, double subtotal) {
+
+
+    public DetallePedido(int idDetalle, Pedido pedido, Producto producto, int cantidad, BigDecimal precio, BigDecimal subtotal) {
         this.idDetalle = idDetalle;
         this.pedido = pedido;
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
-        this.subtotal = subtotal;
         calcularSubtotal();
     }
-
-
-
-
-
     private void calcularSubtotal(){
 
-        subtotal = cantidad * precio;
+        subtotal = precio.multiply(BigDecimal.valueOf(cantidad));
 
     }
 
@@ -51,17 +48,21 @@ public class DetallePedido {
 
         calcularSubtotal();
 
-        pedido.recalcularTotales();
+        if (pedido != null) {
+    pedido.recalcularTotales();
+}
 
     }
 
-    public void setPrecio(double precio){
+    public void setPrecio(BigDecimal precio){
 
         this.precio = precio;
 
         calcularSubtotal();
 
-        pedido.recalcularTotales();
+        if (pedido != null) {
+    pedido.recalcularTotales();
+}
 
     }
 
@@ -69,17 +70,19 @@ public class DetallePedido {
         this.idDetalle = idDetalle;
     }
 
-    public void setIdProducto(Producto producto) {
-        this.producto = producto;
-    }
 
-    public void setSubtotal(double subtotal) {
+
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
 
-    
-    //------------------------------------------------
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
 
     public Pedido getPedido() {
         return pedido;
@@ -92,23 +95,19 @@ public class DetallePedido {
     public Producto getProducto() {
         return producto;
     }
-
   
-    public double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
-
- 
-
 
     public int getIdDetalle() {
         return idDetalle;
     }
-    public double getSubtotal(){
 
-    return cantidad * precio;
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
 
-}
  @Override
 public boolean equals(Object obj) {
 

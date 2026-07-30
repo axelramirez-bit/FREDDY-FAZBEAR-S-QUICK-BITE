@@ -4,6 +4,7 @@ import DAO.Implement.PromocionDAOImpl;
 import DAO.Interfaz.IPromocionDAO;
 import Model.Promocion;
 import Service.Interfaz.IPromocionService;
+import java.math.BigDecimal;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -94,7 +95,6 @@ public class PromocionServiceImpl implements IPromocionService {
     }
 
     // ---------- Métodos auxiliares de negocio ----------
-
     private boolean validarPromocion(Promocion promocion) {
 
         if (promocion == null) {
@@ -105,8 +105,12 @@ public class PromocionServiceImpl implements IPromocionService {
             return false;
         }
 
-        if (promocion.getDescuento() < 0 || promocion.getDescuento() > 100) {
+        if (promocion.getDescuento() == null
+                || promocion.getDescuento().compareTo(BigDecimal.ZERO) < 0
+                || promocion.getDescuento().compareTo(new BigDecimal("100")) > 0) {
+
             return false;
+
         }
 
         if (promocion.getFechaInicio() == null || promocion.getFechaFin() == null) {

@@ -4,6 +4,7 @@ import DAO.Implement.ProductoDAOImpl;
 import DAO.Interfaz.IProductoDAO;
 import Model.Producto;
 import Service.Interfaz.IProductoService;
+import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,7 +118,6 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     // ---------- Métodos auxiliares de negocio ----------
-
     private boolean validarProducto(Producto producto) {
 
         if (producto == null) {
@@ -132,7 +132,8 @@ public class ProductoServiceImpl implements IProductoService {
             return false;
         }
 
-        if (producto.getPrecio() < 0) {
+        if (producto.getPrecio() == null
+                || producto.getPrecio().compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
 

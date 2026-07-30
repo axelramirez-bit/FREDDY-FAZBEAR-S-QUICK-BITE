@@ -221,5 +221,17 @@ public final class CacheImagenes {
         CACHE.clear();
 
     }
+    /**
+ * Devuelve un icono del menú lateral.
+ *
+ * @param nombre Nombre del icono.
+ * @return Icono.
+ */
+public static ImageIcon obtenerIconoMenu(String nombre) {
 
+    return obtenerIcono(
+            nombre,
+            AdministradorTema.iconoMenu());
+
+}
 }

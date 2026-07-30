@@ -4,6 +4,7 @@ import DAO.Implement.FacturaDAOImpl;
 import DAO.Interfaz.IFacturaDAO;
 import Model.Factura;
 import Service.Interfaz.IFacturaService;
+import java.math.BigDecimal;
 
 import java.util.List;
 
@@ -31,14 +32,15 @@ public class FacturaServiceImpl implements IFacturaService {
             return false;
         }
 
-        if (factura.getSubtotal() < 0) {
+        if (factura.getSubtotal() == null
+                || factura.getSubtotal().compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
 
-        if (factura.getTotal() < 0) {
+        if (factura.getTotal() == null
+                || factura.getTotal().compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
-
         return facturaDAO.guardar(factura);
     }
 

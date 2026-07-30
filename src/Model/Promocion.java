@@ -1,8 +1,8 @@
 
 package Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -13,7 +13,7 @@ public class Promocion {
     
     private String descripcion;
 
-    private double descuento;
+    private BigDecimal descuento;
 
     private LocalDate  fechaInicio;
     
@@ -24,7 +24,7 @@ public class Promocion {
     public Promocion() {
     }
 
-    public Promocion(int idPromocion, String nombre, String descripcion, double descuento, LocalDate fechaInicio, LocalDate fechaFin, boolean estado) {
+    public Promocion(int idPromocion, String nombre, String descripcion, BigDecimal descuento, LocalDate fechaInicio, LocalDate fechaFin, boolean estado) {
         this.idPromocion = idPromocion;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -33,6 +33,8 @@ public class Promocion {
         this.fechaFin = fechaFin;
         this.estado = estado;
     }
+
+
 
 
 
@@ -50,9 +52,10 @@ public class Promocion {
         return descripcion;
     }
 
-    public double getDescuento() {
+    public BigDecimal getDescuento() {
         return descuento;
     }
+
 
     public LocalDate getFechaInicio() {
         return fechaInicio;
@@ -80,9 +83,11 @@ public class Promocion {
         this.descripcion = descripcion;
     }
 
-    public void setDescuento(double descuento) {
+    public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
     }
+
+
 
     public void setFechaInicio(LocalDate fechaInicio) {
         this.fechaInicio = fechaInicio;

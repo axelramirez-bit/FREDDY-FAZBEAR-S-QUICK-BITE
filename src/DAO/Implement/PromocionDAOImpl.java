@@ -26,7 +26,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
             ps.setString(1, promocion.getNombre());
             ps.setString(2, promocion.getDescripcion());
-            ps.setDouble(3, promocion.getDescuento());
+            ps.setBigDecimal(3, promocion.getDescuento());
             ps.setDate(4, Date.valueOf(promocion.getFechaInicio()));
             ps.setDate(5, Date.valueOf(promocion.getFechaFin()));
             ps.setBoolean(6, promocion.isEstado());
@@ -59,7 +59,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
             ps.setString(1, promocion.getNombre());
             ps.setString(2, promocion.getDescripcion());
-            ps.setDouble(3, promocion.getDescuento());
+            ps.setBigDecimal(3, promocion.getDescuento());
             ps.setDate(4, Date.valueOf(promocion.getFechaInicio()));
             ps.setDate(5, Date.valueOf(promocion.getFechaFin()));
             ps.setBoolean(6, promocion.isEstado());
@@ -116,7 +116,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
                 promocion.setIdPromocion(rs.getInt("id_promocion"));
                 promocion.setNombre(rs.getString("nombre"));
                 promocion.setDescripcion(rs.getString("descripcion"));
-                promocion.setDescuento(rs.getDouble("descuento"));
+                promocion.setDescuento(rs.getBigDecimal("descuento"));
                 promocion.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
                 promocion.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
                 promocion.setEstado(rs.getBoolean("estado"));
@@ -153,7 +153,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
                 promocion.setIdPromocion(rs.getInt("id_promocion"));
                 promocion.setNombre(rs.getString("nombre"));
                 promocion.setDescripcion(rs.getString("descripcion"));
-                promocion.setDescuento(rs.getDouble("descuento"));
+                promocion.setDescuento(rs.getBigDecimal("descuento"));
                 promocion.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
                 promocion.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
                 promocion.setEstado(rs.getBoolean("estado"));

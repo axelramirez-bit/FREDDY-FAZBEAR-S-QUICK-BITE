@@ -2,6 +2,7 @@
 package Model;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,13 +102,13 @@ public void vaciarCarrito() {
     detalles.clear();
 
 }
-public double calcularTotal() {
+public BigDecimal calcularTotal() {
 
-    double total = 0;
+    BigDecimal total = BigDecimal.ZERO;
 
     for (CarritoDetalle detalle : detalles) {
 
-        total += detalle.getSubtotal();
+        total = total.add(detalle.getSubtotal());
 
     }
 

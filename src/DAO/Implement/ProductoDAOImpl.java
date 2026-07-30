@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoDAOImpl implements IProductoDAO {
-
+    
     @Override
     public boolean insertar(Producto producto) {
 
@@ -37,7 +37,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
             ps.setString(3, producto.getNombre());
             ps.setString(4, producto.getDescripcion());
-            ps.setDouble(5, producto.getPrecio());
+            ps.setBigDecimal(5, producto.getPrecio());
             ps.setInt(6, producto.getStock());
             ps.setBoolean(7, producto.isDisponible());
             ps.setBoolean(8, producto.isEstado());
@@ -80,7 +80,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
             ps.setString(3, producto.getNombre());
             ps.setString(4, producto.getDescripcion());
-            ps.setDouble(5, producto.getPrecio());
+            ps.setBigDecimal(5, producto.getPrecio());
             ps.setInt(6, producto.getStock());
             ps.setBoolean(7, producto.isDisponible());
             ps.setBoolean(8, producto.isEstado());
@@ -150,7 +150,7 @@ public class ProductoDAOImpl implements IProductoDAO {
                 producto.setIdProducto(rs.getInt("id_producto"));
                 producto.setNombre(rs.getString("nombre"));
                 producto.setDescripcion(rs.getString("descripcion"));
-                producto.setPrecio(rs.getDouble("precio"));
+                producto.setPrecio(rs.getBigDecimal("precio"));
                 producto.setStock(rs.getInt("stock"));
                 producto.setDisponible(rs.getBoolean("disponible"));
                 producto.setEstado(rs.getBoolean("estado"));
@@ -200,7 +200,7 @@ public class ProductoDAOImpl implements IProductoDAO {
                 producto.setIdProducto(rs.getInt("id_producto"));
                 producto.setNombre(rs.getString("nombre"));
                 producto.setDescripcion(rs.getString("descripcion"));
-                producto.setPrecio(rs.getDouble("precio"));
+                producto.setPrecio(rs.getBigDecimal("precio"));
                 producto.setStock(rs.getInt("stock"));
                 producto.setDisponible(rs.getBoolean("disponible"));
                 producto.setEstado(rs.getBoolean("estado"));

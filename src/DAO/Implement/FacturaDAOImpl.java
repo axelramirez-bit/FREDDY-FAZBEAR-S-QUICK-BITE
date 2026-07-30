@@ -5,6 +5,7 @@ import DAO.Interfaz.IFacturaDAO;
 import Model.Factura;
 import Model.Pedido;
 import Model.Usuario;
+import java.math.BigDecimal;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +18,8 @@ import java.util.List;
 
 public class FacturaDAOImpl implements IFacturaDAO {
 
-    private static final double PORCENTAJE_IVA = 0.12;
+    private static final BigDecimal IVA =
+        new BigDecimal("0.12");
 
     @Override
     public boolean guardar(Factura factura) {
@@ -26,7 +28,8 @@ public class FacturaDAOImpl implements IFacturaDAO {
                 + "nombre_cliente, direccion, subtotal, descuento, iva, total) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        double iva = factura.getSubtotal() * PORCENTAJE_IVA;
+        BigDecimal iva =
+        factura.getSubtotal().multiply(IVA);
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,10 +41,10 @@ public class FacturaDAOImpl implements IFacturaDAO {
             ps.setNull(4, java.sql.Types.VARCHAR); // nit: no existe en el modelo
             ps.setString(5, factura.getCliente() != null ? factura.getCliente().getNombreCompleto() : null);
             ps.setString(6, factura.getDireccion());
-            ps.setDouble(7, factura.getSubtotal());
-            ps.setDouble(8, factura.getDescuento());
-            ps.setDouble(9, iva);
-            ps.setDouble(10, factura.getTotal());
+            ps.setBigDecimal(7, factura.getSubtotal());
+            ps.setBigDecimal(8, factura.getDescuento());
+            ps.setBigDecimal(9, iva);
+            ps.setBigDecimal(10, factura.getTotal());
 
             boolean creada = ps.executeUpdate() > 0;
 
@@ -206,9 +209,9 @@ public class FacturaDAOImpl implements IFacturaDAO {
         factura.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
         factura.setCliente(cliente);
         factura.setDireccion(rs.getString("direccion"));
-        factura.setSubtotal(rs.getDouble("subtotal"));
-        factura.setDescuento(rs.getDouble("descuento"));
-        factura.setTotal(rs.getDouble("total"));
+        factura.setSubtotal(rs.getBigDecimal("subtotal"));
+        factura.setDescuento(rs.getBigDecimal("descuento"));
+        factura.setTotal(rs.getBigDecimal("total"));
         // f.iva se calcula al vuelo desde subtotal; no se expone porque
         // el modelo Factura no tiene ese campo.
 

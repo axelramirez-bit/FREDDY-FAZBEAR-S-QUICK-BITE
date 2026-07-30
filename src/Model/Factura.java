@@ -1,6 +1,7 @@
 
 package Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.time.format.DateTimeFormatter;
@@ -18,16 +19,18 @@ public class Factura {
     
     private String direccion;
     
-    private double subtotal;
+    private BigDecimal subtotal;
 
-    private double descuento;
+    private BigDecimal descuento;
     
-    private double total;
+    private BigDecimal total;
+    private BigDecimal iva;
+    private int  nit;
 
     public Factura() {
     }
 
-    public Factura(int idFactura, Pedido pedido, String numeroFactura, LocalDateTime fecha, Usuario cliente, String direccion, double subtotal, double descuento, double total) {
+    public Factura(int idFactura, Pedido pedido, String numeroFactura, LocalDateTime fecha, Usuario cliente, String direccion, BigDecimal subtotal, BigDecimal descuento, BigDecimal total, BigDecimal iva, int nit) {
         this.idFactura = idFactura;
         this.pedido = pedido;
         this.numeroFactura = numeroFactura;
@@ -37,7 +40,11 @@ public class Factura {
         this.subtotal = subtotal;
         this.descuento = descuento;
         this.total = total;
+        this.iva = iva;
+        this.nit = nit;
     }
+
+
 
     public Usuario getCliente() {
         return cliente;
@@ -69,17 +76,26 @@ public class Factura {
         return direccion;
     }
 
-    public double getSubtotal() {
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
 
-    public double getDescuento() {
+    public BigDecimal getDescuento() {
         return descuento;
     }
 
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
+
+    public BigDecimal getIva() {
+        return iva;
+    }
+
+    public int getNit() {
+        return nit;
+    }
+
 
     public void setIdFactura(int idFactura) {
         this.idFactura = idFactura;
@@ -109,17 +125,27 @@ public class Factura {
         this.direccion = direccion;
     }
 
-    public void setSubtotal(double subtotal) {
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 
-    public void setDescuento(double descuento) {
+    public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
+
+    public void setIva(BigDecimal iva) {
+        this.iva = iva;
+    }
+
+    public void setNit(int nit) {
+        this.nit = nit;
+    }
+
+
 public String generarNumeroFactura() {
 
     return "FAC-" + String.format("%06d", idFactura);

@@ -1,5 +1,6 @@
 package Model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -13,9 +14,9 @@ public class Producto {
 
     private String descripcion;
 
-    private double precio;
+    private BigDecimal precio;
 
-    private double precioAnterior;
+    private BigDecimal precioAnterior;
 
     private int stock;
 
@@ -40,7 +41,7 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(int idProducto, Categoria categoria, String nombre, String descripcion, double precio, double precioAnterior, int stock, boolean disponible, int calorias, int tiempoPreparacion, boolean destacado, String imagenPrincipal, String imagenBanner, boolean estado, LocalDateTime fechaActualizacion, Promocion promocion) {
+    public Producto(int idProducto, Categoria categoria, String nombre, String descripcion, BigDecimal precio, BigDecimal precioAnterior, int stock, boolean disponible, int calorias, int tiempoPreparacion, boolean destacado, String imagenPrincipal, String imagenBanner, boolean estado, LocalDateTime fechaActualizacion, Promocion promocion) {
         this.idProducto = idProducto;
         this.categoria = categoria;
         this.nombre = nombre;
@@ -59,6 +60,7 @@ public class Producto {
         this.promocion = promocion;
     }
 
+ 
     public Categoria getCategoria() {
         return categoria;
     }
@@ -79,13 +81,21 @@ public class Producto {
         return descripcion;
     }
 
-    public double getPrecio() {
+
+
+    public BigDecimal getPrecioAnterior() {
+        return precioAnterior;
+    }
+
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public double getPrecioAnterior() {
-        return precioAnterior;
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
     }
+
+
 
     public int getStock() {
         return stock;
@@ -143,13 +153,12 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
 
-    public void setPrecioAnterior(double precioAnterior) {
+    public void setPrecioAnterior(BigDecimal precioAnterior) {
         this.precioAnterior = precioAnterior;
     }
+
+
 
     public void setStock(int stock) {
         this.stock = stock;
@@ -194,20 +203,12 @@ public class Producto {
 
     }
 
-    public double getPrecioFinal() {
-
-        if (!tienePromocion()) {
-
-            return precio;
-
-        }
-
-        double descuento
-                = precio * (promocion.getDescuento() / 100);
-
-        return precio - descuento;
-
-    }
+public BigDecimal getPrecioFinal() {
+    if (promocion == null) return precio;
+    BigDecimal descuento = precio.multiply(promocion.getDescuento())
+                                  .divide(BigDecimal.valueOf(100));
+    return precio.subtract(descuento);
+}
 
     public boolean hayStock() {
 
@@ -261,6 +262,11 @@ public class Producto {
 
         return Objects.hash(idProducto);
 
+    }
+
+    @Override
+    public String toString() {
+        return "Producto{" + "idProducto=" + idProducto + ", categoria=" + categoria + ", nombre=" + nombre + ", descripcion=" + descripcion + ", precio=" + precio + ", precioAnterior=" + precioAnterior + ", stock=" + stock + ", disponible=" + disponible + ", calorias=" + calorias + ", tiempoPreparacion=" + tiempoPreparacion + ", destacado=" + destacado + ", imagenPrincipal=" + imagenPrincipal + ", imagenBanner=" + imagenBanner + ", estado=" + estado + ", fechaActualizacion=" + fechaActualizacion + ", promocion=" + promocion + '}';
     }
 
 }

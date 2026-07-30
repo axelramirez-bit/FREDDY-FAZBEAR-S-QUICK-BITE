@@ -1,5 +1,6 @@
 
 package Model;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -21,11 +22,11 @@ public class Pedido {
     
     private LocalDateTime horaEstimada;
 
-    private double subtotal;
+    private BigDecimal subtotal;
     
-    private double descuento;
+    private BigDecimal descuento;
     
-    private double total;
+    private BigDecimal total;
     
 
  // Composición
@@ -66,21 +67,16 @@ public class Pedido {
         return Collections.unmodifiableList(detalles);
     }
 
-    //------------------------------------------------
-public Pedido(Usuario usuario, TipoEntrega tipoEntrega) {
-
-    this.usuario = usuario;
-    this.tipoEntrega = tipoEntrega;
-    this.estado = EstadoPedido.PENDIENTE;
+    public Pedido(Usuario usuario, TipoEntrega tipoEntrega, List<DetallePedido> detalles) {
+        this.usuario = usuario;
+        this.tipoEntrega = tipoEntrega;
+        this.detalles = detalles;
+            this.estado = EstadoPedido.PENDIENTE;
     this.fecha = LocalDateTime.now();
-    this.detalles = new ArrayList<>();
-    this.subtotal = 0;
-    this.descuento = 0;
-    this.total = 0;
 
-}
+    }
 
-    public Pedido(int idPedido, String numeroOrden, Usuario usuario, LocalDateTime fecha, TipoEntrega tipoEntrega, EstadoPedido estado, LocalDateTime horaEstimada, double subtotal, double descuento, double total, List<DetallePedido> detalles) {
+    public Pedido(int idPedido, String numeroOrden, Usuario usuario, LocalDateTime fecha, TipoEntrega tipoEntrega, EstadoPedido estado, LocalDateTime horaEstimada, BigDecimal subtotal, BigDecimal descuento, BigDecimal total, List<DetallePedido> detalles) {
         this.idPedido = idPedido;
         this.numeroOrden = numeroOrden;
         this.usuario = usuario;
@@ -93,6 +89,9 @@ public Pedido(Usuario usuario, TipoEntrega tipoEntrega) {
         this.total = total;
         this.detalles = detalles;
     }
+
+
+
 
 
 
@@ -129,17 +128,23 @@ public Pedido(Usuario usuario, TipoEntrega tipoEntrega) {
         return horaEstimada;
     }
 
-    public double getSubtotal() {
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
 
-    public double getDescuento() {
+    public BigDecimal getDescuento() {
         return descuento;
     }
 
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
+
+
 
 
     public void setIdPedido(int idPedido) {
@@ -154,14 +159,18 @@ public Pedido(Usuario usuario, TipoEntrega tipoEntrega) {
         this.usuario = idUsuario;
     }
 
-    public void setSubtotal(double subtotal) {
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 
-    public void setTotal(double total) {
+ 
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
-
 
 
 
@@ -181,7 +190,7 @@ public Pedido(Usuario usuario, TipoEntrega tipoEntrega) {
         this.horaEstimada = horaEstimada;
     }
 
-public void setDescuento(double descuento){
+public void setDescuento(BigDecimal descuento){
 
     this.descuento = descuento;
 
@@ -231,18 +240,16 @@ public void eliminarDetalle(DetallePedido detalle){
 
 }
 
-public void recalcularTotales(){
-
-    subtotal = 0;
-
-    for(DetallePedido detalle : detalles){
-
-        subtotal += detalle.getSubtotal();
-
+public void recalcularTotales() {
+    subtotal = BigDecimal.ZERO;
+    for (DetallePedido detalle : detalles) {
+        if (detalle.getSubtotal() != null) {
+            subtotal = subtotal.add(detalle.getSubtotal());
+        }
     }
-
-    total = subtotal - descuento;
-
+    
+    BigDecimal desc = (descuento != null) ? descuento : BigDecimal.ZERO;
+    total = subtotal.subtract(desc);
 }
 
 public boolean estaEntregado() {

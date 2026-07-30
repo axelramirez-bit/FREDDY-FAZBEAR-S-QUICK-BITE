@@ -5,6 +5,7 @@ import DAO.Interfaz.IPagoDAO;
 import Model.EstadoPago;
 import Model.Pago;
 import Service.Interfaz.IPagoService;
+import java.math.BigDecimal;
 
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class PagoServiceImpl implements IPagoService {
             return false;
         }
 
-        if (pago.getMonto() <= 0) {
+        if (pago.getMonto() == null
+                || pago.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             return false;
         }
-
         return pagoDAO.guardar(pago);
     }
 

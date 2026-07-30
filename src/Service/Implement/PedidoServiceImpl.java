@@ -5,6 +5,7 @@ import DAO.Interfaz.IPedidoDAO;
 import Model.EstadoPedido;
 import Model.Pedido;
 import Service.Interfaz.IPedidoService;
+import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,7 +100,6 @@ public class PedidoServiceImpl implements IPedidoService {
     }
 
     // ---------- Métodos auxiliares de negocio ----------
-
     private boolean validarPedido(Pedido pedido) {
 
         if (pedido == null) {
@@ -114,11 +114,17 @@ public class PedidoServiceImpl implements IPedidoService {
             return false;
         }
 
-        if (pedido.getSubtotal() < 0 || pedido.getDescuento() < 0) {
+        if (pedido.getSubtotal() == null
+                || pedido.getSubtotal().compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
 
-        if (pedido.getDescuento() > pedido.getSubtotal()) {
+        if (pedido.getDescuento() == null
+                || pedido.getDescuento().compareTo(BigDecimal.ZERO) < 0) {
+            return false;
+        }
+
+        if (pedido.getDescuento().compareTo(pedido.getSubtotal()) > 0) {
             return false;
         }
 
@@ -127,8 +133,16 @@ public class PedidoServiceImpl implements IPedidoService {
     }
 
     private void calcularTotal(Pedido pedido) {
-        double total = pedido.getSubtotal() - pedido.getDescuento();
-        pedido.setTotal(Math.max(total, 0));
+
+        BigDecimal total = pedido.getSubtotal()
+                .subtract(pedido.getDescuento());
+
+        if (total.compareTo(BigDecimal.ZERO) < 0) {
+            total = BigDecimal.ZERO;
+        }
+
+        pedido.setTotal(total);
+
     }
 
     private String generarNumeroOrden() {

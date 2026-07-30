@@ -1,6 +1,7 @@
 
 package Model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 
@@ -79,20 +80,24 @@ public class CarritoDetalle {
         this.observaciones = observaciones;
     }
 
-public double getSubtotal(){
+public BigDecimal getSubtotal() {
 
-    return producto.getPrecio()*cantidad;
+    if (producto == null || producto.getPrecio() == null) {
+        return BigDecimal.ZERO;
+    }
 
+    return producto.getPrecio()
+            .multiply(BigDecimal.valueOf(cantidad));
 }
 public void aumentarCantidad(int cantidad){
 
+    if(cantidad>0){
     this.cantidad += cantidad;
-
+}
 }
 public void disminuirCantidad(int cantidad){
 
-    this.cantidad -= cantidad;
-
+this.cantidad = Math.max(1, this.cantidad-cantidad);
 }
 @Override
 public boolean equals(Object obj) {

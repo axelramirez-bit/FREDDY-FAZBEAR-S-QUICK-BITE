@@ -33,9 +33,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
             ps.setString(4, pedido.getTipoEntrega().name());
             ps.setString(5, pedido.getEstado().name());
-            ps.setDouble(6, pedido.getSubtotal());
-            ps.setDouble(7, pedido.getDescuento());
-            ps.setDouble(8, pedido.getTotal());
+            ps.setBigDecimal(6, pedido.getSubtotal());
+            ps.setBigDecimal(7, pedido.getDescuento());
+            ps.setBigDecimal(8, pedido.getTotal());
 
             return ps.executeUpdate() > 0;
 
@@ -70,9 +70,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
             ps.setString(4, pedido.getTipoEntrega().name());
             ps.setString(5, pedido.getEstado().name());
-            ps.setDouble(6, pedido.getSubtotal());
-            ps.setDouble(7, pedido.getDescuento());
-            ps.setDouble(8, pedido.getTotal());
+            ps.setBigDecimal(6, pedido.getSubtotal());
+            ps.setBigDecimal(7, pedido.getDescuento());
+            ps.setBigDecimal(8, pedido.getTotal());
             ps.setInt(9, pedido.getIdPedido());
 
             return ps.executeUpdate() > 0;
@@ -136,9 +136,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
                 pedido.setEstado(
                         EstadoPedido.valueOf(rs.getString("estado").toUpperCase())
                 );
-                pedido.setSubtotal(rs.getDouble("subtotal"));
-                pedido.setDescuento(rs.getDouble("descuento"));
-                pedido.setTotal(rs.getDouble("total"));
+                pedido.setSubtotal(rs.getBigDecimal("subtotal"));
+                pedido.setDescuento(rs.getBigDecimal("descuento"));
+                pedido.setTotal(rs.getBigDecimal("total"));
 
                 return pedido;
 
@@ -182,9 +182,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
                 pedido.setEstado(
                         EstadoPedido.valueOf(rs.getString("estado").toUpperCase())
                 );
-                pedido.setSubtotal(rs.getDouble("subtotal"));
-                pedido.setDescuento(rs.getDouble("descuento"));
-                pedido.setTotal(rs.getDouble("total"));
+                pedido.setSubtotal(rs.getBigDecimal("subtotal"));
+                pedido.setDescuento(rs.getBigDecimal("descuento"));
+                pedido.setTotal(rs.getBigDecimal("total"));
 
                 lista.add(pedido);
 

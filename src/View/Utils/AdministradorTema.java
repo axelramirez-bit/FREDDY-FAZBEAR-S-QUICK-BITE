@@ -496,4 +496,44 @@ public static int altoBotonMenu() {
     return 50;
 
 }
+/**
+ * Radio utilizado por los elementos del menú lateral.
+ *
+ * @return Radio de las esquinas.
+ */
+public static int radioMenu() {
+
+    return 16;
+
+}
+//==========================================================
+// MENÚ LATERAL
+//==========================================================
+
+public static int paddingHorizontalMenu() {
+    return 18;
+}
+
+public static int paddingVerticalMenu() {
+    return 12;
+}
+
+public static Color colorHoverMenu() {
+    return colorPrincipal().brighter();
+}
+
+public static Color colorMenuSeleccionado() {
+    return colorPrincipal();
+}
+
+public static Color colorMenuNormal() {
+    return colorFondo();
+}
+/**
+ * Fuente pequeña en negrita.
+ *
+ * @return Font.
+ */
+
+
 }
