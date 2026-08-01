@@ -41,7 +41,7 @@ public final class AdministradorNotificaciones {
         JOptionPane.showMessageDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.INFORMATION_MESSAGE
         );
 
@@ -58,7 +58,7 @@ public final class AdministradorNotificaciones {
         JOptionPane.showMessageDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.INFORMATION_MESSAGE
         );
 
@@ -75,7 +75,7 @@ public final class AdministradorNotificaciones {
         JOptionPane.showMessageDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.WARNING_MESSAGE
         );
 
@@ -92,7 +92,7 @@ public final class AdministradorNotificaciones {
         JOptionPane.showMessageDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.ERROR_MESSAGE
         );
 
@@ -109,7 +109,7 @@ public final class AdministradorNotificaciones {
         return JOptionPane.showConfirmDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
         ) == JOptionPane.YES_OPTION;
@@ -158,7 +158,7 @@ public final class AdministradorNotificaciones {
         return JOptionPane.showOptionDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,

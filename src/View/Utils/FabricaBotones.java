@@ -79,7 +79,7 @@ public final class FabricaBotones {
 
         EstilosComponentes.aplicarTamañoPreferido(
                 boton,
-                AdministradorTema.anchoMenu()
+                AdministradorTema.anchoMenuLateral()
                         - AdministradorTema.margenMenu(),
                 AdministradorTema.alturaBotonMenu());
 

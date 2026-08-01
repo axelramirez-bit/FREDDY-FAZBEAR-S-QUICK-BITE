@@ -111,7 +111,7 @@ public class BarraLateral extends JPanel {
                 new Dimension(AdministradorTema.anchoMenuLateral(), 0)
         );
 
-        setBackground(AdministradorTema.colorPrincipal());
+        setBackground(AdministradorTema.colorFondo());
     }
 
     // ==========================================================
@@ -151,13 +151,13 @@ public class BarraLateral extends JPanel {
         lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblEslogan = new JLabel(
-                "<html><center>Diversión y sabor "
-                + "en cada bocado</center></html>"
+                "<html><center>DIVERSIÓN Y SABOR "
+                + "EN CADA BOCADO</center></html>"
         );
 
-        lblEslogan.setForeground(AdministradorTema.colorTextoBlanco());
+        lblEslogan.setForeground(AdministradorTema.colorTexto());
 
-        lblEslogan.setFont(AdministradorTema.fuentePequeña());
+        lblEslogan.setFont(AdministradorTema.fuenteLogoEslogan());
 
         lblEslogan.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -232,24 +232,24 @@ public class BarraLateral extends JPanel {
         );
 
         ItemMenu itemConfiguracion = new ItemMenu(
-        "Configuración",
-        IdVistaEspecial.CONFIGURACION,
-        "icon_configuracion"
-);
+                "Configuración",
+                IdVistaEspecial.CONFIGURACION,
+                "icon_configuracion"
+        );
 
-itemConfiguracion.setItemMenuListener(
-        item -> listener.onConfiguracion()
-);
+        itemConfiguracion.setItemMenuListener(
+                it -> listener.onConfiguracion()
+        );
 
-       ItemMenu itemCerrarSesion = new ItemMenu(
-        "Cerrar sesión",
-        IdVistaEspecial.CERRAR_SESION,
-        "icon_cerrar_sesion"
-);
+        ItemMenu itemCerrarSesion = new ItemMenu(
+                "Cerrar sesión",
+                IdVistaEspecial.CERRAR_SESION,
+                "icon_cerrar_sesion"
+        );
 
-itemCerrarSesion.setItemMenuListener(
-        item -> listener.onCerrarSesion()
-);
+        itemCerrarSesion.setItemMenuListener(
+                it -> listener.onCerrarSesion()
+        );
 
         panel.add(itemConfiguracion);
 

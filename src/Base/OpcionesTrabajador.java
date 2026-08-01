@@ -5,14 +5,16 @@ package Base;
  * FREDDY-FAZBEAR'S QUICK BITE
  * ---------------------------------------------------------------
  * Opciones de menú del rol Trabajador.
+ *
+ * Nombres de icono verificados contra Resources/Iconos real.
  * ===============================================================
  */
 public enum OpcionesTrabajador implements OpcionMenu {
 
     INICIO("Inicio", "icon_inicio", "INICIO_TRABAJADOR"),
-    PENDIENTES("Pedidos pendientes", "icon_pendientes", "PEDIDOS_PENDIENTES"),
-    EN_PREPARACION("En preparación", "icon_preparacion", "EN_PREPARACION"),
-    LISTOS("Pedidos listos", "icon_listos", "PEDIDOS_LISTOS"),
+    PENDIENTES("Pedidos pendientes", "icon_pedidos", "PEDIDOS_PENDIENTES"),
+    EN_PREPARACION("En preparación", "icon_enpreparacion", "EN_PREPARACION"),
+    LISTOS("Pedidos listos", "icon_pedidoslistos", "PEDIDOS_LISTOS"),
     HISTORIAL("Historial", "icon_historial", "HISTORIAL_TRABAJADOR");
 
     private final String texto;

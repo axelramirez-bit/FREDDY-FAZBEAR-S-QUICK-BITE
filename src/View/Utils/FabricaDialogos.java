@@ -36,7 +36,7 @@ public final class FabricaDialogos {
         JOptionPane.showMessageDialog(
                 padre,
                 mensaje,
-                AdministradorTema.NOMBRE_APLICACION,
+                UIConstants.NOMBRE_APLICACION,
                 JOptionPane.INFORMATION_MESSAGE);
 
     }

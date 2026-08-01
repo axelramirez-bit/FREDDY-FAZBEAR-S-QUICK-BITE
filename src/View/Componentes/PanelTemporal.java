@@ -12,7 +12,7 @@ import javax.swing.*;
  * Muestra únicamente un título centrado.
  * ===============================================================
  */
-public class PanelTemporal extends FondoPanel {
+public class PanelTemporal extends PanelFondo {
 
     private JLabel lblTitulo;
 

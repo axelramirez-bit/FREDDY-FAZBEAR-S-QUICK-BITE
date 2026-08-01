@@ -1,5 +1,5 @@
-package View.Panels.Cliente;
 
+package View.Administrador.Panels;
 import View.Componentes.PanelTemporal;
 
 public class PanelPromociones extends PanelTemporal{
@@ -9,5 +9,4 @@ public class PanelPromociones extends PanelTemporal{
         super("PROMOCIONES");
 
     }
-
 }

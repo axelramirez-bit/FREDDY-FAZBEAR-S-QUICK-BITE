@@ -2,7 +2,6 @@ package Base;
 
 import View.Componentes.ItemMenu;
 import View.Utils.AdministradorTema;
-import View.Utils.UtilImagenes;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -81,14 +80,14 @@ public final class MenuBuilder {
             Consumer<String> alSeleccionar) {
 
         ItemMenu item = new ItemMenu(
-        opcion.getTexto(),
-        opcion.getIdVista(),
-        opcion.getNombreIcono()
-);
+                opcion.getTexto(),
+                opcion.getIdVista(),
+                opcion.getNombreIcono()
+        );
 
-item.setItemMenuListener(
-        menu -> alSeleccionar.accept(menu.getPanelDestino())
-);
+        item.setItemMenuListener(
+                it -> alSeleccionar.accept(it.getPanelDestino())
+        );
 
         return item;
     }

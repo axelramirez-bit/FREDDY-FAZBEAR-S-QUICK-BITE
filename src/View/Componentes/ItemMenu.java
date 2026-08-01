@@ -202,7 +202,7 @@ public class ItemMenu extends JPanel {
 
         setPreferredSize(
                 new Dimension(
-                        AdministradorTema.anchoMenu()
+                        AdministradorTema.anchoMenuLateral()
                         - AdministradorTema.margenMenu(),
                         AdministradorTema.altoBotonMenu()));
 

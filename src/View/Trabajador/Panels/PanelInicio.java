@@ -1,4 +1,4 @@
-package View.Panels.Cliente;
+package View.Trabajador.Panels;
 
 import View.Componentes.PanelTemporal;
 
