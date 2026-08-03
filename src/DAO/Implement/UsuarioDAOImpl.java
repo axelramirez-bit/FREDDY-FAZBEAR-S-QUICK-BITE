@@ -237,5 +237,51 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
         return null;
 
     }
+    
+    @Override
+    public Usuario buscarPorCorreo(String correo) {
 
+        // JOIN con rol: además del id_rol, se necesita el NOMBRE del
+        // rol (Administrador/Trabajador/Cliente) para saber a cuál
+        // Dashboard redirigir después del login.
+        String sql = "SELECT u.*, r.nombre AS nombre_rol "
+                + "FROM usuario u "
+                + "JOIN rol r ON r.id_rol = u.id_rol "
+                + "WHERE u.correo=?";
+
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, correo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    Usuario usuario = new Usuario();
+
+                    Rol rol = new Rol();
+                    rol.setIdRol(rs.getInt("id_rol"));
+                    rol.setNombre(rs.getString("nombre_rol"));
+
+                    usuario.setIdUsuario(rs.getInt("id_usuario"));
+                    usuario.setRol(rol);
+                    usuario.setNombre(rs.getString("nombre"));
+                    usuario.setApellido(rs.getString("apellido"));
+                    usuario.setCorreo(rs.getString("correo"));
+                    usuario.setTelefono(rs.getString("telefono"));
+
+                    // Aquí SÍ se trae el hash guardado — la verificación
+                    // pasa en el Service, no aquí.
+                    usuario.setPassword(rs.getString("password"));
+
+                    return usuario;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

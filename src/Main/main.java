@@ -3,12 +3,16 @@ package Main;
 
 import Config.Conexion;
 import Config.Configuracion;
+import View.Cliente.DashboardCliente;
+import View.Utils.AdministradorTema;
 
 
 public class main {
 
 
     public static void main(String[] args) {
+        AdministradorTema.inicializar();
+        new DashboardCliente().setVisible(true);
         System.out.println(
                 Configuracion.getUsuario()
         );

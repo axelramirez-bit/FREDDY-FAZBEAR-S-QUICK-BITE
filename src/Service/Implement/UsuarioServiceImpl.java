@@ -27,16 +27,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
         this.usuarioDAO = usuarioDAO;
     }
 
-    @Override
-    public boolean registrarUsuario(Usuario usuario) {
-
-        if (!validarUsuario(usuario)) {
-            return false;
-        }
-
-        return usuarioDAO.insertar(usuario);
-
-    }
 
     @Override
     public boolean actualizarUsuario(Usuario usuario) {
@@ -86,16 +76,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return usuarioDAO.listar();
     }
 
-    @Override
-    public Usuario iniciarSesion(String correo, String password) {
-
-        if (correo == null || correo.isBlank() || password == null || password.isBlank()) {
-            return null;
-        }
-
-        return usuarioDAO.iniciarSesion(correo.trim(), password);
-
-    }
 
     // ---------- Métodos auxiliares de negocio ----------
 
@@ -136,5 +116,45 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private boolean esMayorDeEdadMinima(LocalDate fechaNacimiento) {
         return Period.between(fechaNacimiento, LocalDate.now()).getYears() >= EDAD_MINIMA;
     }
+    
+    @Override
+    public boolean registrarUsuario(Usuario usuario) {
 
+        if (!validarUsuario(usuario)) {
+            return false;
+        }
+
+        // FIX: antes se guardaba la contraseña tal cual la escribió el
+        // usuario. Ahora se guarda el hash de BCrypt.
+        usuario.setPassword(
+                Utils.Encriptador.hashPassword(usuario.getPassword())
+        );
+
+        return usuarioDAO.insertar(usuario);
+    }
+
+    @Override
+    public Usuario iniciarSesion(String correo, String password) {
+
+        if (correo == null || correo.isBlank()
+                || password == null || password.isBlank()) {
+            return null;
+        }
+
+        // FIX: antes se comparaba correo+password en la misma consulta
+        // SQL en texto plano. Ahora se busca solo por correo, y la
+        // contraseña se verifica en Java contra el hash guardado.
+        Usuario usuario = usuarioDAO.buscarPorCorreo(correo.trim());
+
+        if (usuario == null) {
+            return null; // no existe ese correo
+        }
+
+        boolean coincide = Utils.Encriptador.verificarPassword(
+                password,
+                usuario.getPassword()
+        );
+
+        return coincide ? usuario : null;
+    }
 }

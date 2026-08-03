@@ -40,26 +40,6 @@ public class Pedido {
 
 }
 
-    //------------------------------------------------
-    // Composición
-    //------------------------------------------------
-
-    public DetallePedido agregarDetalle(Producto idProducto,
-                                        int cantidad,
-                                        double precio,
-                                        String observaciones){
-
-        DetallePedido detalle = new DetallePedido(
-                this,
-                idProducto,
-                cantidad);
-
-        detalles.add(detalle);
-
-        recalcularTotales();
-
-        return detalle;
-    }
 
    
 

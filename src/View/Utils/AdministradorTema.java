@@ -4,35 +4,50 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
-
+import Config.Configuracion;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import javax.swing.UIManager;
+ 
+ 
+// ---- agregar como primer método público de la clase ----
+ 
+/**
+ * Aplica FlatLaf como base visual de todo Swing, y lo afina para
+ * que combine con la paleta pirata (PaletaColores) en vez de
+ * quedar con los colores por defecto de FlatLaf.
+ *
+ * Debe llamarse UNA sola vez, al inicio de Main, antes de crear
+ * cualquier ventana:
+ *
+ *     AdministradorTema.inicializar();
+ *     new Bienvenida().setVisible(true);
+ */
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Administrador del tema visual de la aplicación.
+ * --------------------------------------------------------------- Administrador
+ * del tema visual de la aplicación.
  *
  * Esta clase centraliza el acceso a:
  *
- * - Colores          (delegando en PaletaColores)
- * - Fuentes          (delegando en UtilFuentes)
- * - Bordes
- * - Espaciados, radios, tamaños de icono, medidas principales
- *   (delegando en UIConstants)
+ * - Colores (delegando en PaletaColores) - Fuentes (delegando en UtilFuentes) -
+ * Bordes - Espaciados, radios, tamaños de icono, medidas principales (delegando
+ * en UIConstants)
  *
- * No almacena información propia — es la única puerta de entrada
- * que las vistas deben usar. Ninguna vista debe importar
- * PaletaColores, UIConstants o UtilFuentes directamente; siempre
- * a través de AdministradorTema.
+ * No almacena información propia — es la única puerta de entrada que las vistas
+ * deben usar. Ninguna vista debe importar PaletaColores, UIConstants o
+ * UtilFuentes directamente; siempre a través de AdministradorTema.
  *
- * PREPARADA PARA TEMA OSCURO: todos los colores pasan por
- * PaletaColores.*, nunca por un `new Color(...)` suelto aquí. El
- * día que se implemente un modo oscuro, solo hay que hacer que
- * PaletaColores devuelva un set de colores distinto según el modo
- * activo — esta clase y las vistas que la usan no cambian.
+ * PREPARADA PARA TEMA OSCURO: todos los colores pasan por PaletaColores.*,
+ * nunca por un `new Color(...)` suelto aquí. El día que se implemente un modo
+ * oscuro, solo hay que hacer que PaletaColores devuelva un set de colores
+ * distinto según el modo activo — esta clase y las vistas que la usan no
+ * cambian.
  *
- * PREPARADA PARA BADGES: ver la sección "EXTENSIÓN — BADGES" al
- * final. No se implementaron todavía porque ItemMenu no los
- * soporta aún, pero el tamaño/color que usarían ya está aquí.
+ * PREPARADA PARA BADGES: ver la sección "EXTENSIÓN — BADGES" al final. No se
+ * implementaron todavía porque ItemMenu no los soporta aún, pero el
+ * tamaño/color que usarían ya está aquí.
  * ===============================================================
  */
 public final class AdministradorTema {
@@ -270,11 +285,10 @@ public final class AdministradorTema {
     // MENÚ LATERAL (SIDEBAR)
     // ==========================================================
     /**
-     * Ancho del sidebar. Ya NO es un número fijo (antes 260px
-     * hardcodeado aquí) — ahora es un porcentaje del ancho de
-     * pantalla (UIConstants.ANCHO_MENU), así se ve proporcional
-     * en cualquier resolución, incluyendo pantallas táctiles de
-     * kiosco más grandes o más pequeñas que un monitor normal.
+     * Ancho del sidebar. Ya NO es un número fijo (antes 260px hardcodeado aquí)
+     * — ahora es un porcentaje del ancho de pantalla (UIConstants.ANCHO_MENU),
+     * así se ve proporcional en cualquier resolución, incluyendo pantallas
+     * táctiles de kiosco más grandes o más pequeñas que un monitor normal.
      */
     public static int anchoMenuLateral() {
         return UIConstants.ANCHO_MENU;
@@ -574,5 +588,42 @@ public final class AdministradorTema {
     public static Color colorTextoBadge() {
         return PaletaColores.TEXTO_BLANCO;
     }
-    
+
+    public static void inicializar() {
+
+        // Un solo color controla selección, foco, enlaces y sliders
+        // en todo lo que FlatLaf administra (JComboBox, JCheckBox,
+        // JTabbedPane, scrollbars, etc.) — verificado en
+        // FlatLightLaf.properties: "@accentColor = ...".
+        UIManager.put("@accentColor", aHex(colorPrincipal()));
+
+        // Esquinas: mismas medidas que ya usan tus PanelRedondeado,
+        // para que un JButton de FabricaBotones y un JComboBox sin
+        // tocar se vean con la misma "redondez".
+        UIManager.put("Button.arc", UIConstants.RADIO_BOTON);
+        UIManager.put("Component.arc", UIConstants.RADIO_BOTON);
+        UIManager.put("TextComponent.arc", UIConstants.RADIO_BOTON);
+        UIManager.put("ScrollBar.thumbArc", 999); // 999 = totalmente redondo
+
+        // Foco: FlatLaf por defecto dibuja un halo de color alrededor
+        // del componente enfocado; con el borde ya definido en
+        // EstilosComponentes alcanza, así que lo apagamos para que no
+        // se dupliquen dos indicadores de foco distintos.
+        UIManager.put("Component.focusWidth", 0);
+
+        boolean temaOscuro = "dark".equalsIgnoreCase(Configuracion.getTema());
+
+        boolean aplicado = temaOscuro ? FlatDarkLaf.setup() : FlatLightLaf.setup();
+
+        if (!aplicado) {
+            System.err.println("No se pudo aplicar FlatLaf, se usará el Look & Feel por defecto.");
+        }
+    }
+
+    /**
+     * Convierte un Color de Java a "RRGGBB", formato que espera @accentColor.
+     */
+    private static String aHex(java.awt.Color color) {
+        return String.format("%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+    }
 }

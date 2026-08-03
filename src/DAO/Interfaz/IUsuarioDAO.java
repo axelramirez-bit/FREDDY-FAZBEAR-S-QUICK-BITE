@@ -16,4 +16,8 @@ public interface IUsuarioDAO {
     Usuario iniciarSesion(String correo, String contraseña);
 
     List<Usuario> listar();
+
+    Usuario buscarPorCorreo(String correo);
+
+
 }
