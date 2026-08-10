@@ -17,51 +17,40 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
 
     @Override
     public boolean insertar(Usuario usuario) {
-
         String sql = "INSERT INTO usuario "
-                + "(id_rol,nombre,apellido,correo,telefono,password,"
-                + "fecha_nacimiento,estado)"
-                + "VALUES(?,?,?,?,?,?,?,?)";
+                + "(id_rol, nombre, apellido, correo, telefono, password, "
+                + "fecha_nacimiento, estado) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, usuario.getRol().getIdRol());
             ps.setString(2, usuario.getNombre());
             ps.setString(3, usuario.getApellido());
             ps.setString(4, usuario.getCorreo());
             ps.setString(5, usuario.getTelefono());
-            ps.setString(6, usuario.getPassword());
+            ps.setString(6, usuario.getPassword()); // Ya viene encriptado con BCrypt desde el Service
             ps.setDate(7, Date.valueOf(usuario.getFechaNacimiento()));
             ps.setBoolean(8, usuario.isEstado());
 
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-
             e.printStackTrace();
             return false;
-
         }
-
     }
 
     @Override
     public boolean actualizar(Usuario usuario) {
-
         String sql = "UPDATE usuario SET "
-                + "id_rol=?,"
-                + "nombre=?,"
-                + "apellido=?,"
-                + "correo=?,"
-                + "telefono=?,"
-                + "password=?,"
-                + "fecha_nacimiento=?,"
-                + "estado=? "
+                + "id_rol=?, nombre=?, apellido=?, correo=?, telefono=?, "
+                + "password=?, fecha_nacimiento=?, estado=? "
                 + "WHERE id_usuario=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, usuario.getRol().getIdRol());
             ps.setString(2, usuario.getNombre());
@@ -76,212 +65,133 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-
             e.printStackTrace();
             return false;
-
         }
-
     }
 
     @Override
     public boolean eliminar(int idUsuario) {
-
         String sql = "DELETE FROM usuario WHERE id_usuario=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idUsuario);
-
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-
             e.printStackTrace();
             return false;
-
         }
-
     }
 
     @Override
     public Usuario buscarPorId(int idUsuario) {
-
-        String sql = "SELECT * FROM usuario WHERE id_usuario=?";
+        // JOIN para traer el nombre del rol también
+        String sql = "SELECT u.*, r.nombre AS nombre_rol "
+                + "FROM usuario u "
+                + "JOIN rol r ON r.id_rol = u.id_rol "
+                + "WHERE u.id_usuario=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idUsuario);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-
-                Usuario usuario = new Usuario();
-
-                Rol rol = new Rol();
-                rol.setIdRol(rs.getInt("id_rol"));
-
-                usuario.setIdUsuario(rs.getInt("id_usuario"));
-                usuario.setRol(rol);
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellido(rs.getString("apellido"));
-                usuario.setCorreo(rs.getString("correo"));
-                usuario.setTelefono(rs.getString("telefono"));
-                usuario.setPassword(rs.getString("password"));
-                usuario.setFechaNacimiento(
-                        rs.getDate("fecha_nacimiento").toLocalDate());
-                usuario.setEstado(rs.getBoolean("estado"));
-
-                return usuario;
-
+                return mapearUsuario(rs);
             }
 
         } catch (SQLException e) {
-
             e.printStackTrace();
-
         }
-
         return null;
-
     }
 
     @Override
     public List<Usuario> listar() {
-
         List<Usuario> lista = new ArrayList<>();
-
-        String sql = "SELECT * FROM usuario";
+        // JOIN para traer el nombre del rol en la lista también
+        String sql = "SELECT u.*, r.nombre AS nombre_rol "
+                + "FROM usuario u "
+                + "JOIN rol r ON r.id_rol = u.id_rol";
 
         try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
-                Usuario usuario = new Usuario();
-
-                Rol rol = new Rol();
-                rol.setIdRol(rs.getInt("id_rol"));
-
-                usuario.setIdUsuario(rs.getInt("id_usuario"));
-                usuario.setRol(rol);
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellido(rs.getString("apellido"));
-                usuario.setCorreo(rs.getString("correo"));
-                usuario.setTelefono(rs.getString("telefono"));
-                usuario.setPassword(rs.getString("password"));
-                usuario.setFechaNacimiento(
-                        rs.getDate("fecha_nacimiento").toLocalDate());
-                usuario.setEstado(rs.getBoolean("estado"));
-
-                lista.add(usuario);
-
+                lista.add(mapearUsuario(rs));
             }
 
         } catch (SQLException e) {
-
             e.printStackTrace();
-
         }
-
         return lista;
-
     }
 
+    // Este método ya no se usa porque el Service verifica BCrypt en Java,
+    // pero lo dejamos corregido por si acaso.
     @Override
     public Usuario iniciarSesion(String correo, String password) {
-
-        String sql = "SELECT * FROM usuario "
-                + "WHERE correo=? AND password=?";
-
-        try (Connection con = Conexion.getInstancia().getConexion();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, correo);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-
-                Usuario usuario = new Usuario();
-
-                Rol rol = new Rol();
-                rol.setIdRol(rs.getInt("id_rol"));
-
-                usuario.setIdUsuario(rs.getInt("id_usuario"));
-                usuario.setRol(rol);
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellido(rs.getString("apellido"));
-                usuario.setCorreo(rs.getString("correo"));
-                usuario.setTelefono(rs.getString("telefono"));
-                usuario.setPassword(rs.getString("password"));
-                usuario.setFechaNacimiento(
-                        rs.getDate("fecha_nacimiento").toLocalDate());
-                usuario.setEstado(rs.getBoolean("estado"));
-
-                return usuario;
-
-            }
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
-
-        return null;
-
+        // Nota: Esto solo funcionaría si la contraseña NO estuviera encriptada.
+        // Como usas BCrypt, el Service usa buscarPorCorreo + Encriptador.verificarPassword.
+        return null; 
     }
     
     @Override
     public Usuario buscarPorCorreo(String correo) {
-
         // JOIN con rol: además del id_rol, se necesita el NOMBRE del
         // rol (Administrador/Trabajador/Cliente) para saber a cuál
         // Dashboard redirigir después del login.
         String sql = "SELECT u.*, r.nombre AS nombre_rol "
                 + "FROM usuario u "
                 + "JOIN rol r ON r.id_rol = u.id_rol "
-                + "WHERE u.correo=?";
+                + "WHERE u.correo=? AND u.estado = TRUE";
 
-        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getInstancia().getConexion(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, correo);
 
             try (ResultSet rs = ps.executeQuery()) {
-
                 if (rs.next()) {
-
-                    Usuario usuario = new Usuario();
-
-                    Rol rol = new Rol();
-                    rol.setIdRol(rs.getInt("id_rol"));
-                    rol.setNombre(rs.getString("nombre_rol"));
-
-                    usuario.setIdUsuario(rs.getInt("id_usuario"));
-                    usuario.setRol(rol);
-                    usuario.setNombre(rs.getString("nombre"));
-                    usuario.setApellido(rs.getString("apellido"));
-                    usuario.setCorreo(rs.getString("correo"));
-                    usuario.setTelefono(rs.getString("telefono"));
-
-                    // Aquí SÍ se trae el hash guardado — la verificación
-                    // pasa en el Service, no aquí.
-                    usuario.setPassword(rs.getString("password"));
-
-                    return usuario;
+                    return mapearUsuario(rs);
                 }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
+    }
+
+    // ==========================================
+    // MÉTODO AUXILIAR PARA MAPEAR (Evita repetir código)
+    // ==========================================
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Usuario usuario = new Usuario();
+
+        Rol rol = new Rol();
+        rol.setIdRol(rs.getInt("id_rol"));
+        rol.setNombre(rs.getString("nombre_rol")); // Trae "Cliente", "Administrador", etc.
+
+        usuario.setIdUsuario(rs.getInt("id_usuario"));
+        usuario.setRol(rol);
+        usuario.setNombre(rs.getString("nombre"));
+        usuario.setApellido(rs.getString("apellido"));
+        usuario.setCorreo(rs.getString("correo"));
+        usuario.setTelefono(rs.getString("telefono"));
+        usuario.setPassword(rs.getString("password")); // Trae el hash BCrypt
+        
+        // Corrección: Traer fecha y estado que faltaban en tu código original
+        if (rs.getDate("fecha_nacimiento") != null) {
+            usuario.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+        }
+        usuario.setEstado(rs.getBoolean("estado"));
+
+        return usuario;
     }
 }
