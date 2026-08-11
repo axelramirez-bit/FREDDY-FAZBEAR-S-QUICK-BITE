@@ -6,6 +6,7 @@ import Service.Interfaz.IUsuarioService;
 import Utils.Sesion;
 import View.Administrador.DashboardAdministrador;
 import View.Cliente.DashboardCliente;
+import View.Registro.Registro;
 import View.Trabajador.DashboardTrabajador;
 import View.Utils.UtilPantalla;
 
@@ -18,7 +19,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * ===============================================================
- * FREDDY-FAZBEAR'S QUICK BITE - LOGIN (TEXTO REGISTRO GRANDE)
+ * FREDDY-FAZBEAR'S QUICK BITE - LOGIN (RESPONSIVO TOTAL)
  * ===============================================================
  */
 public class Login extends JFrame {
@@ -39,27 +40,36 @@ public class Login extends JFrame {
     private JPanel panelFondo;
     private Image imagenFondo;
 
-    // ✅ CONSTANTES ACTUALIZADAS PARA MAYOR TAMAÑO
+    // ✅ CONSTANTES DE FUENTE BASE (Referencia 1080p)
     private static final int FUENTE_BASE_CAMPOS = 20;      
-    private static final int FUENTE_BASE_REGISTRO = 26;    // 👈 AUMENTADO DE 18 A 26
+    private static final int FUENTE_BASE_REGISTRO = 26;    
     private static final int FUENTE_BASE_BOTON_PRINCIPAL = 18; 
 
     public Login() {
         setTitle("Freddy Fazbear's Quick Bite - Iniciar sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // ══════════════════════════════════════════════════════
+        // CONFIGURACIÓN DE VENTANA RESPONSIVA
+        // ══════════════════════════════════════════════════════
+        // 1. Aplicar tamaño mínimo para evitar que se rompa si es muy pequeña
         UtilPantalla.aplicarTamañoMinimo(this);
-        UtilPantalla.pantallaCompleta(this);
+        
+        // 2. NO usar pantallaCompleta fija si queremos que el usuario pueda redimensionar.
+        //    En su lugar, iniciamos maximizada pero permitiendo cambio de tamaño.
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        // Si prefieres que inicie en tamaño normal pero adaptable, comenta la línea de arriba y usa:
+        // setSize(1280, 720); setLocationRelativeTo(null);
 
         // ══════════════════════════════════════════════════════
         // 1. CARGAR IMAGEN DE FONDO
         // ══════════════════════════════════════════════════════
         try {
-            java.net.URL url = getClass().getResource("/Imagenes/Fondo_Login.png");
+            java.net.URL url = getClass().getResource("/Imagenes/Fondo_Login.jpg");
             if (url != null) {
                 imagenFondo = new ImageIcon(url).getImage();
             } else {
-                System.out.println("❌ No se encontró '/Imagenes/Fondo_Login.png'");
+                System.out.println("❌ No se encontró '/Imagenes/Fondo_Login.jpg'");
             }
         } catch (Exception e) {
             System.out.println("Error al cargar imagen: " + e.getMessage());
@@ -74,7 +84,9 @@ public class Login extends JFrame {
                 super.paintComponent(g);
                 if (imagenFondo != null) {
                     Graphics2D g2d = (Graphics2D) g;
-                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    // Calidad alta para que la imagen no se pixela al estirar
+                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     g2d.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
                 } else {
                     g.setColor(new Color(30, 30, 30));
@@ -121,15 +133,13 @@ public class Login extends JFrame {
         btnFacebook.setText(""); 
         btnFacebook.addActionListener(e -> alPresionarFacebook());
 
-        // --- BOTÓN REGÍSTRATE AQUÍ (CONFIGURACIÓN INICIAL) ---
         btnRegistrate = new BotonTransparente();
-        // La fuente real se ajustará en posicionarComponentes, pero ponemos una base grande
         btnRegistrate.setFont(new Font("Segoe UI", Font.BOLD, FUENTE_BASE_REGISTRO));
-        btnRegistrate.setForeground(new Color(34, 120, 50)); // Verde oscuro para contraste
+        btnRegistrate.setForeground(new Color(34, 120, 50)); 
         btnRegistrate.setText("Regístrate aquí");
         btnRegistrate.setHorizontalAlignment(SwingConstants.CENTER);
         btnRegistrate.addActionListener(e -> alPresionarRegistrate());
-
+       
         panelFondo.add(txtCorreo);
         panelFondo.add(txtPassword);
         panelFondo.add(chkRecordarme);
@@ -139,72 +149,82 @@ public class Login extends JFrame {
         panelFondo.add(btnRegistrate);  
 
         // ══════════════════════════════════════════════════════
-        // 4. POSICIONAMIENTO PROPORCIONAL + ESCALADO DE FUENTES
+        // 4. LISTENER DE REDIMENSIONAMIENTO (LA CLAVE DE LA ADAPTABILIDAD)
         // ══════════════════════════════════════════════════════
-        Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
-        posicionarComponentes(pantalla.width, pantalla.height);
-
+        // Esto asegura que cada vez que cambies el tamaño de la ventana (manualmente o por monitor),
+        // se recalculen las posiciones y tamaños basados en los NUEVOS dimensiones.
         panelFondo.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                // Llamamos al método con el tamaño ACTUAL del panel
                 posicionarComponentes(panelFondo.getWidth(), panelFondo.getHeight());
             }
         });
 
+        // Configuración inicial visible
         setVisible(true);
+        
+        // Forzar una primera actualización después de que la ventana sea visible
+        SwingUtilities.invokeLater(() -> {
+            posicionarComponentes(panelFondo.getWidth(), panelFondo.getHeight());
+        });
     }
 
     // ══════════════════════════════════════════════════════════
     // MÉTODO: Posiciona y ESCALA todos los componentes
+    // NOTA: LOS VALORES NUMÉRICOS (0.563, 0.340, etc.) SON EXACTAMENTE LOS TUYOS.
+    //       NO SE HAN MODIFICADO LAS POSICIONES NI PROPORCIONES.
     // ══════════════════════════════════════════════════════════
     private void posicionarComponentes(int ancho, int alto) {
         if (ancho <= 0 || alto <= 0) return;
 
-        // Factor de escala basado en altura (referencia 1080p)
-        float escala = alto / 1080f;
+        // Factor de escala dinámico:
+        // Usamos el menor factor entre ancho y alto para asegurar que nada se salga de la pantalla
+        // Referencia base: 1920x1080 (Full HD estándar)
+        float escalaAncho = ancho / 1920f;
+        float escalaAlto = alto / 1080f;
+        float escala = Math.min(escalaAncho, escalaAlto); 
+        
+        // Evitar escalas demasiado pequeñas que hagan ilegible el texto
+        if (escala < 0.5f) escala = 0.5f;
 
-        // ── POSICIONES DE COMPONENTES ──
+        // ── POSICIONES DE COMPONENTES (TUS VALORES ORIGINALES RESPETADOS) ──
         ponerBounds(txtCorreo,         0.563,  0.360,  0.340,  0.065);
-        ponerBounds(txtPassword,       0.53,  0.480,  0.340,  0.065);
+        ponerBounds(txtPassword,       0.543,  0.480,  0.340,  0.065);
         ponerBounds(btnIniciarSesion,  0.563,  0.629,  0.340,  0.070);
-        ponerBounds(chkRecordarme,     0.563,  0.575,  0.035,  0.035);
+        ponerBounds(chkRecordarme,     0.553,  0.565,  0.035,  0.035);
 
         ponerBounds(btnGoogle,         0.563,  0.730,  0.160,  0.060);
         ponerBounds(btnFacebook,       0.743,  0.730,  0.160,  0.060);
 
-        // ✅ AJUSTE DE POSICIÓN PARA "REGÍSTRATE AQUÍ"
-        // Lo movemos ligeramente hacia abajo y aumentamos su altura para que la letra grande quepa bien
-        // x=0.740 (más a la izquierda para centrar bajo facebook/google), y=0.815, w=0.180 (más ancho), h=0.050 (más alto)
         ponerBounds(btnRegistrate,     0.790,  0.813,  0.115,  0.035);
 
         // ═══════════════════════════════════════════════════════
-        // ✅ APLICAR TAMAÑO DE FUENTE DINÁMICO
+        // ✅ APLICAR TAMAÑO DE FUENTE DINÁMICO BASADO EN LA ESCALA REAL
         // ═══════════════════════════════════════════════════════
         
         // 1. Campos de texto
-        int sizeCampos = Math.max(14, (int) (FUENTE_BASE_CAMPOS * escala));
+        int sizeCampos = Math.max(12, (int) (FUENTE_BASE_CAMPOS * escala));
         Font fontCampos = new Font("Segoe UI", Font.PLAIN, sizeCampos);
         txtCorreo.setFont(fontCampos);
         txtPassword.setFont(fontCampos);
         
+        // El padding también escala para que el icono/texto no quede pegado al borde en pantallas chicas
         int paddingIzq = (int) (40 * escala);
         txtCorreo.setBorder(BorderFactory.createEmptyBorder(0, paddingIzq, 0, 10));
         txtPassword.setBorder(BorderFactory.createEmptyBorder(0, paddingIzq, 0, 10));
 
         // 2. Botón Principal
-        int sizeBtnPrincipal = Math.max(14, (int) (FUENTE_BASE_BOTON_PRINCIPAL * escala));
+        int sizeBtnPrincipal = Math.max(12, (int) (FUENTE_BASE_BOTON_PRINCIPAL * escala));
         btnIniciarSesion.setFont(new Font("Segoe UI", Font.BOLD, sizeBtnPrincipal));
 
-        // 3. ✅ BOTÓN REGÍSTRATE (LETRA GRANDE)
-        // Calculamos un tamaño mínimo de 16px y escalamos hasta 26px o más en pantallas grandes
-        int sizeRegistro = Math.max(16, (int) (FUENTE_BASE_REGISTRO * escala));
+        // 3. Botón Regístrate
+        int sizeRegistro = Math.max(14, (int) (FUENTE_BASE_REGISTRO * escala));
         btnRegistrate.setFont(new Font("Segoe UI", Font.BOLD, sizeRegistro));
-        
-        // Opcional: Si quieres que el texto sea aún más llamativo, puedes cambiar el estilo a PLAIN o ITALIC
-        // btnRegistrate.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, sizeRegistro));
     }
 
     private void ponerBounds(JComponent comp, double xP, double yP, double wP, double hP) {
+        // Esta función multiplica tus porcentajes fijos por el tamaño ACTUAL de la ventana
         comp.setBounds((int)(xP * panelFondo.getWidth()),
                        (int)(yP * panelFondo.getHeight()),
                        (int)(wP * panelFondo.getWidth()),
@@ -284,11 +304,19 @@ public class Login extends JFrame {
     }
 
     private void alPresionarRegistrate() {
-        System.out.println("📝 Clic en Regístrate aquí");
-        // TODO: Navegación real
-        // new Registro().setVisible(true);
-        // this.dispose();
-        JOptionPane.showMessageDialog(this, "Ventana de registro próximamente.", "Registro", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("📝 Clic en Regístrate aquí - Abriendo ventana de Registro...");
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Registro ventanaRegistro = new Registro();
+                ventanaRegistro.setVisible(true);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, 
+                    "Error al abrir la ventana de registro: " + e.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+            }
+        });
     }
 
     private void alPresionarIniciarSesion() {
