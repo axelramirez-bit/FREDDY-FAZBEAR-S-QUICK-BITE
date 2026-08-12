@@ -83,6 +83,10 @@ public class Registro extends JFrame {
 
         // 🔧 Restringir el campo de teléfono para que solo acepte dígitos numéricos
         aplicarSoloNumeros(txtTelefono, 8); // 8 = longitud máxima permitida, ajústalo a tu necesidad
+
+        // 🔧 Dar formato automático dd/MM/aaaa mientras se escribe la fecha
+        aplicarFormatoFecha(txtFecha);
+        txtFecha.setToolTipText("dd/mm/aaaa");
         
         txtPassword = crearPasswordFieldTransparente();
         txtConfirmPassword = crearPasswordFieldTransparente();
@@ -170,6 +174,14 @@ public class Registro extends JFrame {
             
             if (!pass1.equals(pass2)) {
                 JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 🔧 Validar que la fecha sea real y tenga el formato dd/MM/aaaa completo
+            if (!esFechaValida(fecha)) {
+                JOptionPane.showMessageDialog(this,
+                        "La fecha de nacimiento no es válida.\nUsa el formato dd/mm/aaaa (ej. 12/05/2026).",
+                        "Fecha inválida", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -338,6 +350,61 @@ public class Registro extends JFrame {
                 super.replace(fb, offset, length, filtrado, attrs);
             }
         });
+    }
+
+    // 🔧 NUEVO: Aplica formato automático "dd/MM/aaaa" mientras el usuario escribe.
+    // Solo permite dígitos y va insertando las barras "/" automáticamente en
+    // las posiciones 2 y 5 (después del día y del mes). Máximo 8 dígitos.
+    private void aplicarFormatoFecha(JTextField campo) {
+        ((PlainDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+
+            private String formatear(String soloDigitos) {
+                if (soloDigitos.length() > 8) {
+                    soloDigitos = soloDigitos.substring(0, 8); // ddMMaaaa
+                }
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < soloDigitos.length(); i++) {
+                    if (i == 2 || i == 4) sb.append('/');
+                    sb.append(soloDigitos.charAt(i));
+                }
+                return sb.toString();
+            }
+
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                replace(fb, offset, 0, string, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                String actual = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String textoNuevo = actual.substring(0, offset) + (text == null ? "" : text) + actual.substring(offset + length);
+                String soloDigitos = textoNuevo.replaceAll("[^0-9]", "");
+                super.replace(fb, 0, fb.getDocument().getLength(), formatear(soloDigitos), attrs);
+            }
+
+            @Override
+            public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+                String actual = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String textoNuevo = actual.substring(0, offset) + actual.substring(offset + length);
+                String soloDigitos = textoNuevo.replaceAll("[^0-9]", "");
+                super.replace(fb, 0, fb.getDocument().getLength(), formatear(soloDigitos), null);
+            }
+        });
+    }
+
+    // 🔧 NUEVO: Valida que el texto tenga el formato dd/MM/aaaa y sea una
+    // fecha real (rechaza cosas como 31/02/2026 o 12/13/2026).
+    private boolean esFechaValida(String fecha) {
+        if (fecha == null || fecha.length() != 10) return false;
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        formato.setLenient(false); // Sin esto, Java "corrige" fechas inválidas en lugar de rechazarlas
+        try {
+            formato.parse(fecha);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
     private JComboBox<String> crearComboBoxTransparente() {
