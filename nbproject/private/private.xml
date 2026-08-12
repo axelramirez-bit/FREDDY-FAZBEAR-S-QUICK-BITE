@@ -3,13 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/DAO/Implement/UsuarioDAOImpl.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/Service/Implement/UsuarioServiceImpl.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/Main/main.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/Config/Conexion.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Login/Login.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/Config/Configuracion.java</file>
-            <file>file:/C:/Users/SAÚL%20--%20COMPUTACIPÓN/OneDrive/Documentos/FNF/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Registro/Registro.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/PanelCrudBase.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/PanelListaPedidos.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/PanelProductos.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Registro/Registro.java</file>
         </group>
     </open-files>
 </project-private>

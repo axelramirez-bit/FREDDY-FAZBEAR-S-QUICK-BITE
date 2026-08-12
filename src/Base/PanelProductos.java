@@ -1,0 +1,233 @@
+
+package Base;
+
+
+import Model.Carrito;
+import Model.CarritoDetalle;
+import Model.Categoria;
+import Model.Producto;
+import Service.Implement.CarritoDetalleServiceImpl;
+import Service.Implement.CarritoServiceImpl;
+import Service.Implement.ProductoServiceImpl;
+import Service.Interfaz.ICarritoDetalleService;
+import Service.Interfaz.ICarritoService;
+import Service.Interfaz.IProductoService;
+import Utils.Sesion;
+import View.Componentes.PanelFondo;
+import View.Componentes.TarjetaProducto;
+import View.Utils.UIConstants;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.FlowLayout;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+/**
+ * ===============================================================
+ * FREDDY-FAZBEAR'S QUICK BITE
+ * ---------------------------------------------------------------
+ * Panel genérico de catálogo: pinta un grid de TarjetaProducto a
+ * partir de una lista de Producto filtrada.
+ *
+ * ES UNA SOLA CLASE para todas las categorías del Cliente
+ * (Desayunos, Almuerzos, Postres, McCafé, Bebidas, Antojos,
+ * Cajita Feliz) y también para Combos y Promociones. Las clases
+ * que hoy existen como placeholder (PanelDesayunos, PanelBebidas,
+ * etc.) dejan de tener contenido propio: solo instancian esta
+ * clase con el filtro correcto.
+ *
+ * Ejemplo de uso dentro de PanelDesayunos:
+ *
+ *     public class PanelDesayunos extends PanelProductos {
+ *         public PanelDesayunos() {
+ *             super(producto -> producto.getCategoria() != null
+ *                     && "Desayunos".equalsIgnoreCase(
+ *                             producto.getCategoria().getNombre()));
+ *         }
+ *     }
+ *
+ * Ejemplo para Combos (filtra por nombre de categoría "Combos"):
+ *
+ *     public class PanelCombos extends PanelProductos {
+ *         public PanelCombos() {
+ *             super(producto -> producto.getCategoria() != null
+ *                     && "Combos".equalsIgnoreCase(
+ *                             producto.getCategoria().getNombre()));
+ *         }
+ *     }
+ *
+ * Ejemplo para Promociones (no depende de categoría, sino de si
+ * el producto tiene promoción activa):
+ *
+ *     public class PanelPromociones extends PanelProductos {
+ *         public PanelPromociones() {
+ *             super(Producto::tienePromocion);
+ *         }
+ *     }
+ *
+ * Constructor alterno recibiendo directamente una Categoria (para
+ * cuando el equipo agregue categorías dinámicas desde
+ * Administrador y ya no haga falta escribir el nombre a mano):
+ *
+ *     new PanelProductos(categoriaSeleccionada);
+ *
+ * AVISO: IProductoService todavía no tiene listarPorCategoria().
+ * Este panel filtra en memoria sobre listarProductosDisponibles()
+ * mientras esa consulta no exista en Service/DAO. Cuando se
+ * agregue, cambiar cargarProductos() para usarla directamente y
+ * evitar traer todo el catálogo cada vez.
+ * ===============================================================
+ */
+public class PanelProductos extends PanelFondo {
+
+    private final IProductoService productoService;
+
+    private final ICarritoService carritoService;
+
+    private final ICarritoDetalleService carritoDetalleService;
+
+    private final Predicate<Producto> filtro;
+
+    private JPanel panelGrid;
+
+    public PanelProductos(Predicate<Producto> filtro) {
+
+        super();
+
+        this.productoService = new ProductoServiceImpl();
+        this.carritoService = new CarritoServiceImpl();
+        this.carritoDetalleService = new CarritoDetalleServiceImpl();
+        this.filtro = filtro;
+
+        configurarPanel();
+
+        cargarProductos();
+    }
+
+    public PanelProductos(Categoria categoria) {
+
+        this(producto -> producto.getCategoria() != null
+                && categoria != null
+                && producto.getCategoria().getIdCategoria() == categoria.getIdCategoria());
+    }
+
+    // ==========================================================
+    // ESTRUCTURA
+    // ==========================================================
+
+    private void configurarPanel() {
+
+        setOpaque(false);
+
+        setLayout(new FlowLayout(
+                FlowLayout.LEFT,
+                UIConstants.ESPACIO_ENTRE_TARJETAS,
+                UIConstants.ESPACIO_ENTRE_TARJETAS
+        ));
+
+        this.panelGrid = this;
+    }
+
+    // ==========================================================
+    // CARGA DE PRODUCTOS
+    // ==========================================================
+
+    /**
+     * Vuelve a traer los productos disponibles y repinta el grid.
+     * Público para que Administrador pueda llamarlo desde otro
+     * panel si necesita refrescar el catálogo del Cliente tras
+     * un cambio (por ejemplo, al agregar un producto nuevo).
+     */
+    public void cargarProductos() {
+
+        List<Producto> productos = productoService
+                .listarProductosDisponibles()
+                .stream()
+                .filter(filtro)
+                .collect(Collectors.toList());
+
+        panelGrid.removeAll();
+
+        for (Producto producto : productos) {
+
+            TarjetaProducto tarjeta = new TarjetaProducto(producto);
+
+            tarjeta.setAgregarCarritoListener(this::alAgregarAlCarrito);
+
+            panelGrid.add(tarjeta);
+        }
+
+        panelGrid.revalidate();
+        panelGrid.repaint();
+    }
+
+    // ==========================================================
+    // CARRITO
+    // ==========================================================
+
+    private void alAgregarAlCarrito(Producto producto, int cantidad) {
+
+        if (Sesion.getInstancia().getUsuario() == null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Debes iniciar sesión para agregar productos al carrito.",
+                    "Sesión requerida",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        int idUsuario = Sesion.getInstancia().getUsuario().getIdUsuario();
+
+        Carrito carrito = carritoService.buscarPorUsuario(idUsuario);
+
+        if (carrito == null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se encontró un carrito activo para tu usuario.",
+                    "Carrito no disponible",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            return;
+        }
+
+        CarritoDetalle detalle = new CarritoDetalle(
+                0,
+                carrito,
+                producto,
+                cantidad,
+                null
+        );
+
+        boolean agregado = carritoDetalleService.agregarProducto(detalle);
+
+        if (!agregado) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo agregar el producto al carrito.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            return;
+        }
+
+        SwingUtilities.invokeLater(() ->
+                JOptionPane.showMessageDialog(
+                        this,
+                        producto.getNombre() + " se agregó al carrito.",
+                        "Producto agregado",
+                        JOptionPane.INFORMATION_MESSAGE
+                )
+        );
+    }
+
+}
