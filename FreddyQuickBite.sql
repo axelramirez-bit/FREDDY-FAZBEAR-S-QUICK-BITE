@@ -361,3 +361,81 @@ CREATE INDEX idx_pedido_estado
 ON pedido(estado);
 CREATE INDEX idx_producto_stock
 ON producto(stock);
+
+DELIMITER //
+
+CREATE PROCEDURE sp_insertar_producto(
+    IN p_id_categoria   INT,
+    IN p_nombre         VARCHAR(100),
+    IN p_descripcion    TEXT,
+    IN p_precio         DECIMAL(10,2),
+    IN p_stock          INT,
+    IN p_imagen         VARCHAR(255)
+)
+BEGIN
+
+    INSERT INTO producto
+        (id_categoria, id_promocion, nombre, descripcion, precio, stock, disponible, imagen, estado)
+    VALUES
+        (p_id_categoria, NULL, p_nombre, p_descripcion, p_precio, p_stock, TRUE, p_imagen, TRUE);
+
+END //
+
+DELIMITER ;
+
+
+-- ---------------------------------------------------------------
+-- 2. EL MENÚ REAL, usando el procedimiento
+-- ---------------------------------------------------------------
+-- id_categoria: 1 Desayunos, 2 Almuerzos y Cenas, 3 Postres,
+--               4 McCafe, 5 Bebidas, 6 Antojos, 7 Combos
+--
+-- IMPORTANTE: precio y descripcion son valores de referencia,
+-- no datos reales del negocio — ajústalos tú. El único precio
+-- confirmado es Ponche de Frutas (Q22.00), porque venía en el
+-- mockup de diseño que ya revisamos.
+
+-- Desayunos
+CALL sp_insertar_producto(1, 'Burrito de Desayuno Grande', 'Tortilla rellena de huevo, queso, salchicha y papas, tamaño grande.', 42.00, 100, 'Burrito de desayuno Grande.png');
+CALL sp_insertar_producto(1, 'Pancakes Clásico', 'Tres pancakes esponjosos con mantequilla y miel.', 36.00, 100, 'Pancakes Clásico.png');
+CALL sp_insertar_producto(1, 'Pancakes con Miel de Maple', 'Pancakes bañados en miel de maple auténtica.', 38.00, 100, 'Pancakes con Miel de Maple.png');
+
+-- Almuerzos y Cenas
+CALL sp_insertar_producto(2, 'Plato Fazbear Clásico', 'Plato principal insignia de la casa.', 55.00, 100, 'Plato Fazbear Clásico.png');
+
+-- Postres
+CALL sp_insertar_producto(3, 'Bol de Acaí del Pirata', 'Bowl de acaí con fruta fresca y granola, estilo pirata.', 34.00, 100, 'Bol de Acaí del pirata.png');
+CALL sp_insertar_producto(3, 'Sundae de Helado', 'Copa de helado con toppings variados.', 26.00, 100, 'Sundae de Helado.png');
+CALL sp_insertar_producto(3, 'Root Beer Float', 'Root beer con una bola de helado de vainilla.', 28.00, 100, 'Root Beer Float.png');
+CALL sp_insertar_producto(3, 'Waffles de Chocolate', 'Waffles bañados en chocolate.', 34.00, 100, 'Waffles de chocolate.png');
+
+-- McCafé
+CALL sp_insertar_producto(4, 'Expresso Machiato', 'Espresso con un toque de espuma de leche.', 22.00, 100, 'expresso Machiado.png');
+CALL sp_insertar_producto(4, 'Latte Clásico', 'Espresso con leche vaporizada.', 26.00, 100, 'Latte Clasico.png');
+CALL sp_insertar_producto(4, 'Mocha Chocolate Iced', 'Café frío con chocolate.', 30.00, 100, 'Macha de chocolate Iced.png');
+CALL sp_insertar_producto(4, 'Mocha Chocolate Iced (Frío)', 'Versión bien fría del mocha de chocolate.', 30.00, 100, 'Macha de Chocolate Iced(Frio).png');
+CALL sp_insertar_producto(4, 'Frappé de Caramelo (Frío)', 'Frappé de caramelo bien frío.', 32.00, 100, 'Frappé de Caramelo (Frio).png');
+CALL sp_insertar_producto(4, 'Frappé de Caramelo con Helado', 'Frappé de caramelo con una bola de helado encima.', 36.00, 100, 'frappe de caramelo con bola de helado.png');
+
+-- Bebidas
+CALL sp_insertar_producto(5, 'Bebida de Fresa', 'Bebida refrescante sabor fresa.', 20.00, 100, 'bebida de fresa.png');
+CALL sp_insertar_producto(5, 'Botín de Pirata de Foxy', 'Bebida servida en vaso temático estilo bota pirata.', 25.00, 100, 'Botín de pirata de Foxy.png');
+CALL sp_insertar_producto(5, 'Ponche de Frutas', 'Mezcla de frutas tropicales rojas y naranjas en capas, con un toque cítrico y banderas pirata.', 22.00, 100, 'Ponche de Frutas.png');
+CALL sp_insertar_producto(5, 'Granizado de Arándano', 'Granizado frío sabor arándano.', 24.00, 100, 'Granizado de Arándano.png');
+CALL sp_insertar_producto(5, 'Malteada de Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, 'Malteada de fresa.png');
+CALL sp_insertar_producto(5, 'Slushie de Lima', 'Bebida helada sabor lima.', 22.00, 100, 'Slushie de Lima.png');
+CALL sp_insertar_producto(5, 'Smoothie de Durazno', 'Smoothie natural de durazno.', 30.00, 100, 'Smoothie de Durazno.png');
+CALL sp_insertar_producto(5, 'Té Helado', 'Té negro servido helado.', 18.00, 100, 'Té helada.png');
+
+-- Antojos
+CALL sp_insertar_producto(6, 'Alitas de Foxy', 'Alitas bañadas en salsa, tema Foxy.', 40.00, 100, 'Alitas de Foxy.png');
+CALL sp_insertar_producto(6, 'Aros de Cebolla', 'Aros empanizados y crujientes.', 26.00, 100, 'Aros de cebolla.png');
+CALL sp_insertar_producto(6, 'Bocados de Maíz', 'Bocados crujientes de maíz.', 22.00, 100, 'Bocados de Maiz.png');
+CALL sp_insertar_producto(6, 'Sartén de Queso', 'Queso fundido servido en sartén individual.', 30.00, 100, 'Sartén de Queso.png');
+
+-- Combos
+CALL sp_insertar_producto(7, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, 'Combo Bonnie-Nuggets.png');
+CALL sp_insertar_producto(7, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, 'Combo Freddy Fazbear.png');
+CALL sp_insertar_producto(7, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, 'Paquete de pizza de Chica.png');
+
+
