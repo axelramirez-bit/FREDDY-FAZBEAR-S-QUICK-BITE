@@ -1,14 +1,19 @@
 package View.Registro;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-// Importamos la clase Login (Ajusta el paquete si tu clase Login está en otro lugar)
 import View.Login.Login;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Registro extends JFrame {
 
@@ -25,6 +30,12 @@ public class Registro extends JFrame {
     private boolean passwordVisible = false;
     // Guardamos el echo char original (el asterisco)
     private char echoCharOriginal;
+
+    // Resolución "de diseño" sobre la que calibraste las posiciones originales.
+    // Todas las proporciones (xP, yP, wP, hP) se calcularon dividiendo tus
+    // valores originales de setBounds entre estos números.
+    private static final double ANCHO_DISENO = 1280.0;
+    private static final double ALTO_DISENO = 720.0;
 
     public Registro() {
         setTitle("Freddy Fazbear's Quick Bite -Registro" );
@@ -69,6 +80,9 @@ public class Registro extends JFrame {
         txtCorreo = crearTextFieldTransparente();
         txtTelefono = crearTextFieldTransparente();
         txtFecha = crearTextFieldTransparente();
+
+        // 🔧 Restringir el campo de teléfono para que solo acepte dígitos numéricos
+        aplicarSoloNumeros(txtTelefono, 8); // 8 = longitud máxima permitida, ajústalo a tu necesidad
         
         txtPassword = crearPasswordFieldTransparente();
         txtConfirmPassword = crearPasswordFieldTransparente();
@@ -147,6 +161,7 @@ public class Registro extends JFrame {
         btnGuardar.addActionListener(e -> {
             String nombre = txtNombre.getText();
             String fecha = txtFecha.getText();
+            String telefono = txtTelefono.getText();
             String rol = cbRol.getSelectedItem() != null ? cbRol.getSelectedItem().toString() : "";
             
             // Validación simple de contraseñas coincidentes
@@ -162,6 +177,7 @@ public class Registro extends JFrame {
                 "✅ Datos Guardados Correctamente\n\n" +
                 "Nombre: " + nombre + "\n" +
                 "Fecha Nac: " + fecha + "\n" +
+                "Teléfono: " + telefono + "\n" +
                 "Rol: " + rol, 
                 "Registro Exitoso", 
                 JOptionPane.INFORMATION_MESSAGE);
@@ -202,34 +218,33 @@ public class Registro extends JFrame {
         txtConfirmPassword.repaint();
     }
 
-    // --- LÓGICA DE POSICIONAMIENTO PROPORCIONAL (CALIBRADA) ---
-    
+
     private void posicionarComponentes(int ancho, int alto) {
         if (ancho <= 0 || alto <= 0) return;
 
-            txtNombre.setBounds(505, 277, 220, 35); 
-        txtApellido.setBounds(738, 277, 220, 35);
+       
+
+    
+        // Fila 1: Nombre y Apellido
+        ponerBounds(txtNombre,    477 / ANCHO_DISENO, 268 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
+        ponerBounds(txtApellido,  695 / ANCHO_DISENO, 268 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
 
         // Fila 2: Correo y Teléfono
-        txtCorreo.setBounds(505, 350, 220, 35);
-        txtTelefono.setBounds(738, 350, 220, 35);
+        ponerBounds(txtCorreo,    477 / ANCHO_DISENO, 340 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
+        ponerBounds(txtTelefono,  695 / ANCHO_DISENO, 340 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
 
         // Fila 3: Contraseñas
-        txtPassword.setBounds(505, 422, 220, 35);
-        txtConfirmPassword.setBounds(738, 422, 220, 35);
+        ponerBounds(txtPassword,        477 / ANCHO_DISENO, 410 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
+        ponerBounds(txtConfirmPassword, 695 / ANCHO_DISENO, 410 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
 
         // Fila 4: Fecha y Rol
-        txtFecha.setBounds(505, 493, 220, 35); 
-        cbRol.setBounds(700, 494, 220, 35);
+        ponerBounds(txtFecha, 477 / ANCHO_DISENO, 480 / ALTO_DISENO, 220 / ANCHO_DISENO, 35 / ALTO_DISENO);
+        ponerBounds(cbRol,    660 / ANCHO_DISENO, 478 / ALTO_DISENO, 200 / ANCHO_DISENO, 35 / ALTO_DISENO);
 
         // Botones Inferiores
-        btnCancelar.setBounds(320, 680, 200, 50);
-        btnGuardar.setBounds(600, 680, 250, 60); // Botón central más grande
-        btnVerPassword.setBounds(930, 680, 200, 50);
-
-
-
-   
+        ponerBounds(btnCancelar,    320 / ANCHO_DISENO, 655 / ALTO_DISENO, 200 / ANCHO_DISENO, 55 / ALTO_DISENO);
+        ponerBounds(btnGuardar,     600 / ANCHO_DISENO, 660 / ALTO_DISENO, 250 / ANCHO_DISENO, 65 / ALTO_DISENO);
+        ponerBounds(btnVerPassword, 930 / ANCHO_DISENO, 655 / ALTO_DISENO, 200 / ANCHO_DISENO, 55 / ALTO_DISENO);
 
         actualizarFuentes(ancho, alto);
     }
@@ -243,7 +258,7 @@ public class Registro extends JFrame {
     }
 
     private void actualizarFuentes(int anchoVentana, int altoVentana) {
-        double escalaBase = Math.min(anchoVentana / 1280.0, altoVentana / 720.0);
+        double escalaBase = Math.min(anchoVentana / ANCHO_DISENO, altoVentana / ALTO_DISENO);
         int nuevoTamano = (int) (14 * escalaBase);
         nuevoTamano = Math.max(10, Math.min(nuevoTamano, 24)); 
         
@@ -287,6 +302,42 @@ public class Registro extends JFrame {
         txt.setForeground(Color.BLACK);
         txt.setCursor(new Cursor(Cursor.TEXT_CURSOR));
         return txt;
+    }
+
+    // 🔧 NUEVO: Restringe un JTextField para que solo acepte dígitos (0-9),
+    // usando un DocumentFilter. Esto bloquea letras y símbolos tanto al
+    // escribir como al pegar texto, y opcionalmente limita la longitud máxima.
+    private void aplicarSoloNumeros(JTextField campo, int longitudMaxima) {
+        ((PlainDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                String filtrado = string.replaceAll("[^0-9]", "");
+                if (filtrado.isEmpty()) return;
+                if (longitudMaxima > 0 && fb.getDocument().getLength() + filtrado.length() > longitudMaxima) {
+                    int espacioDisponible = longitudMaxima - fb.getDocument().getLength();
+                    if (espacioDisponible <= 0) return;
+                    filtrado = filtrado.substring(0, espacioDisponible);
+                }
+                super.insertString(fb, offset, filtrado, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, text, attrs);
+                    return;
+                }
+                String filtrado = text.replaceAll("[^0-9]", "");
+                int longitudResultante = fb.getDocument().getLength() - length + filtrado.length();
+                if (longitudMaxima > 0 && longitudResultante > longitudMaxima) {
+                    int espacioDisponible = longitudMaxima - (fb.getDocument().getLength() - length);
+                    if (espacioDisponible <= 0) return;
+                    filtrado = filtrado.substring(0, Math.min(filtrado.length(), espacioDisponible));
+                }
+                super.replace(fb, offset, length, filtrado, attrs);
+            }
+        });
     }
 
     private JComboBox<String> crearComboBoxTransparente() {
