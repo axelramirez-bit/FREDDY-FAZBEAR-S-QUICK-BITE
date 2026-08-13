@@ -3,9 +3,9 @@ package View.Trabajador;
 import Base.DashboardBase;
 import Base.OpcionesTrabajador;
 import Base.Rol;
-import View.Trabajador.Panels.PanelEnPreparacion;
 import View.Trabajador.Panels.PanelHistorial;
 import View.Trabajador.Panels.PanelInicio;
+import View.Trabajador.Panels.PanelPedidosEnPreparacion;
 import View.Trabajador.Panels.PanelPedidosListos;
 import View.Trabajador.Panels.PanelPedidosPendientes;
 
@@ -46,7 +46,7 @@ public class DashboardTrabajador extends DashboardBase {
 
         registrarVista(
                 OpcionesTrabajador.EN_PREPARACION.getIdVista(),
-                new PanelEnPreparacion()
+                new PanelPedidosEnPreparacion()
         );
 
         registrarVista(

@@ -1,13 +1,18 @@
 package View.Cliente.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelProductos;
 
-public class PanelDesayunos extends PanelTemporal{
+/**
+ * Catálogo de la categoría "Desayunos".
+ * Toda la lógica de carga, tarjetas y carrito vive en PanelProductos;
+ * esta clase solo define el filtro.
+ */
+public class PanelDesayunos extends PanelProductos {
 
-    public PanelDesayunos(){
+    public PanelDesayunos() {
 
-        super("DESAYUNOS");
-
+        super(producto -> producto.getCategoria() != null
+                && "Desayunos".equalsIgnoreCase(producto.getCategoria().getNombre()));
     }
 
 }

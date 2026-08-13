@@ -103,8 +103,21 @@ public static ImageIcon icono(
      */
 public static ImageIcon producto(String nombre) {
 
-    return cargarImagen(
-            RUTA_PRODUCTOS + nombre + EXTENSION);
+    if (nombre == null || nombre.isBlank()) {
+        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+    }
+
+    ImageIcon icono = cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION);
+
+    if (icono.getIconWidth() <= 0) {
+        // El producto tiene nombre de imagen pero el archivo no
+        // existe en Resources/Productos (nombre desactualizado o
+        // archivo faltante) -> imagen genérica de respaldo, en vez
+        // de dejar la tarjeta en blanco.
+        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+    }
+
+    return icono;
 }
 
 public static ImageIcon producto(
@@ -112,10 +125,17 @@ public static ImageIcon producto(
         int ancho,
         int alto) {
 
-    return cargarImagen(
-            RUTA_PRODUCTOS + nombre + EXTENSION,
-            ancho,
-            alto);
+    if (nombre == null || nombre.isBlank()) {
+        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION, ancho, alto);
+    }
+
+    ImageIcon icono = cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION);
+
+    if (icono.getIconWidth() <= 0) {
+        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION, ancho, alto);
+    }
+
+    return cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION, ancho, alto);
 }
 
     // ==========================================================

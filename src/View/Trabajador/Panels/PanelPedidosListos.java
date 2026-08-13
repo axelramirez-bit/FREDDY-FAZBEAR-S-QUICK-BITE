@@ -1,13 +1,16 @@
 package View.Trabajador.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelListaPedidos;
+import Model.EstadoPedido;
 
-public class PanelPedidosListos extends PanelTemporal{
+public class PanelPedidosListos  extends PanelListaPedidos {
 
-    public PanelPedidosListos(){
+    public PanelPedidosListos() {
 
-        super("PEDIDOSLISTOS");
-
+        super(
+                EstadoPedido.LISTO,
+                EstadoPedido.LISTO,
+                "Iniciar preparación"
+        );
     }
-
 }

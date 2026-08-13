@@ -1,13 +1,21 @@
 package View.Trabajador.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelListaPedidos;
+import Model.EstadoPedido;
 
-public class PanelPedidosPendientes extends PanelTemporal{
+/**
+ * Cola de pedidos recién confirmados por el Cliente, esperando a
+ * que el Trabajador inicie la preparación.
+ */
+public class PanelPedidosPendientes extends PanelListaPedidos {
 
-    public PanelPedidosPendientes(){
+    public PanelPedidosPendientes() {
 
-        super("PEDIDOS PENDIENTES");
-
+        super(
+                EstadoPedido.PENDIENTE,
+                EstadoPedido.PREPARACION,
+                "Iniciar preparación"
+        );
     }
 
 }

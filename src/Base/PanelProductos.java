@@ -1,4 +1,3 @@
-
 package Base;
 
 
@@ -122,13 +121,32 @@ public class PanelProductos extends PanelFondo {
 
         setOpaque(false);
 
-        setLayout(new FlowLayout(
+        setLayout(new java.awt.BorderLayout());
+
+        // El grid real de tarjetas ya NO es "this": es un panel aparte
+        // que vive DENTRO de un JScrollPane. Antes panelGrid = this,
+        // por eso nunca hubo scroll (this era directamente lo que
+        // PanelContenido agregaba con CardLayout, sin envoltura).
+        panelGrid = new JPanel(new FlowLayout(
                 FlowLayout.LEFT,
                 UIConstants.ESPACIO_ENTRE_TARJETAS,
                 UIConstants.ESPACIO_ENTRE_TARJETAS
         ));
+        panelGrid.setOpaque(false);
 
-        this.panelGrid = this;
+        // FabricaScroll.crear() deja el viewport OPACO con un color
+        // sólido (para tablas y listas normales, donde eso es
+        // correcto). Aquí no sirve: PanelProductos hereda de
+        // PanelFondo, que pinta una imagen en paintComponent(); un
+        // viewport opaque queda ENCIMA de esa imagen y la tapa por
+        // completo. Por eso, a diferencia de las tablas del CRUD de
+        // Administrador, aquí SÍ hay que forzar transparencia después
+        // de crear el scroll.
+        javax.swing.JScrollPane scroll = View.Utils.FabricaScroll.crear(panelGrid);
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+
+        add(scroll, java.awt.BorderLayout.CENTER);
     }
 
     // ==========================================================

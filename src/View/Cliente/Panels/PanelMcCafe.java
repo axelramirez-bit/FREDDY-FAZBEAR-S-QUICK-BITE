@@ -1,13 +1,13 @@
 package View.Cliente.Panels;
+import Base.PanelProductos;
 
-import View.Componentes.PanelTemporal;
 
-public class PanelMcCafe extends PanelTemporal{
+public class PanelMcCafe extends PanelProductos {
 
-    public PanelMcCafe(){
+    public PanelMcCafe() {
 
-        super("McCAFÉ");
-
+        super(producto -> producto.getPromocion() != null);
     }
+
 
 }

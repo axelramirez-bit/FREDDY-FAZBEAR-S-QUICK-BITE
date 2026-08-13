@@ -1,13 +1,13 @@
 package View.Cliente.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelProductos;
 
-public class PanelCombos extends PanelTemporal{
+public class PanelCombos extends PanelProductos {
 
-    public PanelCombos(){
+    public PanelCombos() {
 
-        super("COMBOS");
-
+        super(producto -> producto.getPromocion() != null);
     }
+
 
 }

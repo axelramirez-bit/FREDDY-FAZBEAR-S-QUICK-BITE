@@ -11,7 +11,6 @@ import View.Cliente.Panels.PanelCombos;
 import View.Cliente.Panels.PanelDesayunos;
 import View.Cliente.Panels.PanelInicio;
 import View.Cliente.Panels.PanelMcCafe;
-import View.Cliente.Panels.PanelMisPedidos;
 import View.Cliente.Panels.PanelPostres;
 import View.Cliente.Panels.PanelPromociones;
 
@@ -46,7 +45,7 @@ public class DashboardCliente extends DashboardBase {
         registrarVista("COMBOS", new PanelCombos());
         registrarVista("PROMOCIONES_CLIENTE", new PanelPromociones());
         registrarVista("CARRITO", new PanelCarrito());
-        registrarVista("MIS_PEDIDOS", new PanelMisPedidos());
+       
     }
 
     @Override

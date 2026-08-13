@@ -1,13 +1,14 @@
 package View.Cliente.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelProductos;
 
-public class PanelCajitaFeliz extends PanelTemporal{
 
-    public PanelCajitaFeliz(){
+public class PanelCajitaFeliz extends PanelProductos {
 
-        super("CAJITA FELIZ");
+    public PanelCajitaFeliz() {
 
+        super(producto -> producto.getPromocion() != null);
     }
+
 
 }

@@ -1,13 +1,17 @@
 package View.Cliente.Panels;
 
-import View.Componentes.PanelTemporal;
+import Base.PanelProductos;
 
-public class PanelPromociones extends PanelTemporal{
+/**
+ * Productos con promoción activa. No filtra por categoría, sino por
+ * si el producto tiene una Promocion asociada — muestra que el
+ * filtro de PanelProductos no está atado únicamente a Categoria.
+ */
+public class PanelPromociones extends PanelProductos {
 
-    public PanelPromociones(){
+    public PanelPromociones() {
 
-        super("PROMOCIONES");
-
+        super(producto -> producto.getPromocion() != null);
     }
 
 }
