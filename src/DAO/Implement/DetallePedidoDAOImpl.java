@@ -6,8 +6,8 @@ package DAO.Implement;
 
 /**
  *
- * @author Axel Stanley
+ * @author anerm
  */
-public class DetallePedidoDAO {
+public class DetallePedidoDAOImpl {
     
 }
