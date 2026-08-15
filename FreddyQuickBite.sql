@@ -1,274 +1,229 @@
-drop DATABASE IF EXISTS FreddyQuickBite;
+-- ============================================================
+-- BASE DE DATOS: FreddyQuickBite
+-- Proyecto: Freddy Fazbear's Quick Bite - Pantalla de autoservicio
+-- Versión: CORREGIDA Y MEJORADA
+-- ============================================================
+-- Cambios respecto a la versión original:
+--   1. pedido.subtotal / pedido.descuento ahora son NOT NULL DEFAULT 0
+--      (antes permitían NULL y rompían los cálculos de total).
+--   2. pedido ahora tiene id_carrito (FK opcional) para dejar
+--      trazabilidad de qué carrito originó el pedido.
+--   3. detalle_pedido ahora tiene id_promocion (FK opcional) para
+--      saber qué promoción se aplicó a cada línea del pedido.
+--   4. Se agregaron CHECK constraints para evitar precios,
+--      descuentos y cantidades inválidas.
+--   5. Se agregó un TRIGGER que descuenta el stock automáticamente
+--      al insertar un detalle_pedido.
+--   6. Se normalizó el ENUM de metodo_pago ('TRANSFERENCIA' -> 'Transferencia').
+--   7. Se corrigió el precio faltante de "Muffin Arándanos" (.00 -> 24.00).
+--   8. Se agregó una VISTA (vw_ventas_dia) para el módulo de Reportes.
+--   9. Se agregaron índices adicionales documentados explícitamente.
+-- ============================================================
+
+DROP DATABASE IF EXISTS FreddyQuickBite;
 CREATE DATABASE IF NOT EXISTS FreddyQuickBite;
 USE FreddyQuickBite;
 
-CREATE TABLE rol(
-    id_rol INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(30) NOT NULL UNIQUE,
+-- ============================================================
+-- TABLA: rol
+-- ============================================================
+CREATE TABLE rol (
+    id_rol      INT AUTO_INCREMENT PRIMARY KEY,
+    nombre      VARCHAR(30) NOT NULL UNIQUE,
     descripcion VARCHAR(100)
 );
-CREATE TABLE usuario(
 
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_rol INT NOT NULL,
-
-    nombre VARCHAR(50) NOT NULL,
-
-    apellido VARCHAR(50) NOT NULL,
-
-    correo VARCHAR(100) NOT NULL UNIQUE,
-
-    telefono VARCHAR(20),
-
-    password VARCHAR(255) NOT NULL,
-
-    fecha_nacimiento DATE,
-
-    estado BOOLEAN DEFAULT TRUE,
-
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	fecha_actualizacion TIMESTAMP
-	DEFAULT CURRENT_TIMESTAMP
-	ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY(id_rol)
-        REFERENCES rol(id_rol)
-
+-- ============================================================
+-- TABLA: usuario
+-- ============================================================
+CREATE TABLE usuario (
+    id_usuario          INT AUTO_INCREMENT PRIMARY KEY,
+    id_rol               INT NOT NULL,
+    nombre                VARCHAR(50) NOT NULL,
+    apellido              VARCHAR(50) NOT NULL,
+    correo                VARCHAR(100) NOT NULL UNIQUE,
+    telefono              VARCHAR(20),
+    password              VARCHAR(255) NOT NULL,
+    fecha_nacimiento     DATE,
+    estado                BOOLEAN DEFAULT TRUE,
+    fecha_registro       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_rol) REFERENCES rol(id_rol)
 );
-CREATE TABLE categoria(
 
+-- ============================================================
+-- TABLA: categoria
+-- ============================================================
+CREATE TABLE categoria (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-
-    nombre VARCHAR(50) NOT NULL UNIQUE,
-
-    descripcion VARCHAR(200),
-
-    icono VARCHAR(100),
-
-    imagen VARCHAR(255),
-
-    estado BOOLEAN DEFAULT TRUE
-
+    nombre        VARCHAR(50) NOT NULL UNIQUE,
+    descripcion   VARCHAR(200),
+    icono         VARCHAR(100),
+    imagen        VARCHAR(255),
+    estado        BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE promocion(
-
+-- ============================================================
+-- TABLA: promocion
+-- ============================================================
+CREATE TABLE promocion (
     id_promocion INT AUTO_INCREMENT PRIMARY KEY,
-
-    nombre VARCHAR(80),
-
-    descripcion VARCHAR(255),
-
-    descuento DECIMAL(5,2),
-
+    nombre        VARCHAR(80),
+    descripcion   VARCHAR(255),
+    descuento     DECIMAL(5,2),
     fecha_inicio DATE,
-
-    fecha_fin DATE,
-
-    estado BOOLEAN DEFAULT TRUE
-
+    fecha_fin    DATE,
+    estado        BOOLEAN DEFAULT TRUE,
+    CONSTRAINT chk_promocion_descuento CHECK (descuento IS NULL OR (descuento >= 0 AND descuento <= 100)),
+    CONSTRAINT chk_promocion_fechas CHECK (fecha_inicio IS NULL OR fecha_fin IS NULL OR fecha_inicio <= fecha_fin)
 );
-CREATE TABLE producto(
 
-    id_producto INT AUTO_INCREMENT PRIMARY KEY,
-
+-- ============================================================
+-- TABLA: producto
+-- ============================================================
+CREATE TABLE producto (
+    id_producto  INT AUTO_INCREMENT PRIMARY KEY,
     id_categoria INT NOT NULL,
-
     id_promocion INT,
-
-    nombre VARCHAR(100) NOT NULL,
-
-    descripcion TEXT,
-
-    precio DECIMAL(10,2) NOT NULL,
-
-    stock INT NOT NULL DEFAULT 0,
-	disponible BOOLEAN DEFAULT TRUE,
-    imagen VARCHAR(255),
-
-    estado BOOLEAN DEFAULT TRUE,
-
-    FOREIGN KEY(id_categoria)
-        REFERENCES categoria(id_categoria),
-
-    FOREIGN KEY(id_promocion)
-        REFERENCES promocion(id_promocion)
-
+    nombre        VARCHAR(100) NOT NULL,
+    descripcion   TEXT,
+    precio        DECIMAL(10,2) NOT NULL,
+    stock         INT NOT NULL DEFAULT 0,
+    disponible    BOOLEAN DEFAULT TRUE,
+    imagen        VARCHAR(255),
+    estado        BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria),
+    FOREIGN KEY (id_promocion) REFERENCES promocion(id_promocion),
+    CONSTRAINT chk_producto_precio CHECK (precio > 0),
+    CONSTRAINT chk_producto_stock CHECK (stock >= 0)
 );
-CREATE TABLE carrito(
 
-    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_usuario INT NOT NULL,
-
+-- ============================================================
+-- TABLA: carrito
+-- ============================================================
+CREATE TABLE carrito (
+    id_carrito      INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario      INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    estado ENUM('Activo','Finalizado','Cancelado') DEFAULT 'Activo',
-
-    FOREIGN KEY(id_usuario)
-        REFERENCES usuario(id_usuario)
-
+    estado          ENUM('Activo','Finalizado','Cancelado') DEFAULT 'Activo',
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
-CREATE TABLE carrito_detalle(
 
+-- ============================================================
+-- TABLA: carrito_detalle
+-- ============================================================
+CREATE TABLE carrito_detalle (
     id_carrito_detalle INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_carrito INT NOT NULL,
-
-    id_producto INT NOT NULL,
-
-    cantidad INT NOT NULL,
-
-    observaciones VARCHAR(255),
-
-    FOREIGN KEY(id_carrito)
-        REFERENCES carrito(id_carrito)
-        ON DELETE CASCADE,
-
-    FOREIGN KEY(id_producto)
-        REFERENCES producto(id_producto)
-
+    id_carrito          INT NOT NULL,
+    id_producto         INT NOT NULL,
+    cantidad             INT NOT NULL,
+    observaciones        VARCHAR(255),
+    FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito) ON DELETE CASCADE,
+    FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
+    CONSTRAINT chk_carrito_detalle_cantidad CHECK (cantidad > 0)
 );
-CREATE TABLE pedido(
 
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-    
+-- ============================================================
+-- TABLA: pedido
+-- MEJORA: se agregó id_carrito (FK opcional) para dejar
+-- trazabilidad de qué carrito dio origen al pedido.
+-- MEJORA: subtotal y descuento ahora son NOT NULL DEFAULT 0.
+-- ============================================================
+CREATE TABLE pedido (
+    id_pedido     INT AUTO_INCREMENT PRIMARY KEY,
     numero_orden VARCHAR(20) UNIQUE,
-
-    id_usuario INT NOT NULL,
-
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    tipo_entrega ENUM(
-'Comer en restaurante',
-'Para llevar'
-),
-    estado ENUM(
-
-        'Pendiente',
-        'Preparacion',
-        'Listo',
-        'Entregado',
-        'Cancelado'
-
-    ) DEFAULT 'Pendiente',
-
-    subtotal DECIMAL(10,2),
-
-    descuento DECIMAL(10,2),
-
-    total DECIMAL(10,2)DEFAULT 0,
-
-    FOREIGN KEY(id_usuario)
-        REFERENCES usuario(id_usuario)
-
+    id_usuario    INT NOT NULL,
+    id_carrito    INT NULL,
+    fecha          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo_entrega ENUM('Comer en restaurante','Para llevar'),
+    estado         ENUM('Pendiente','Preparacion','Listo','Entregado','Cancelado') DEFAULT 'Pendiente',
+    subtotal       DECIMAL(10,2) NOT NULL DEFAULT 0,
+    descuento      DECIMAL(10,2) NOT NULL DEFAULT 0,
+    total          DECIMAL(10,2) NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito),
+    CONSTRAINT chk_pedido_montos CHECK (subtotal >= 0 AND descuento >= 0 AND total >= 0)
 );
-CREATE TABLE detalle_pedido(
 
-    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_pedido INT NOT NULL,
-
-    id_producto INT NOT NULL,
-
-    cantidad INT NOT NULL,
-
-    precio DECIMAL(10,2) NOT NULL,
-
-    subtotal DECIMAL(10,2)DEFAULT 0,
-
-
-    FOREIGN KEY(id_pedido)
-        REFERENCES pedido(id_pedido)
-        ON DELETE CASCADE,
-
-    FOREIGN KEY(id_producto)
-        REFERENCES producto(id_producto)
-
+-- ============================================================
+-- TABLA: detalle_pedido
+-- MEJORA: se agregó id_promocion (FK opcional) para saber qué
+-- promoción se aplicó a esa línea específica del pedido.
+-- ============================================================
+CREATE TABLE detalle_pedido (
+    id_detalle   INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido    INT NOT NULL,
+    id_producto  INT NOT NULL,
+    id_promocion INT NULL,
+    cantidad      INT NOT NULL,
+    precio        DECIMAL(10,2) NOT NULL,
+    subtotal      DECIMAL(10,2) DEFAULT 0,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido) ON DELETE CASCADE,
+    FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
+    FOREIGN KEY (id_promocion) REFERENCES promocion(id_promocion),
+    CONSTRAINT chk_detalle_cantidad CHECK (cantidad > 0),
+    CONSTRAINT chk_detalle_precio CHECK (precio > 0)
 );
-CREATE TABLE pago(
 
-    id_pago INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_pedido INT UNIQUE,
-
-    metodo_pago ENUM(
-
-        'Efectivo',
-        'Tarjeta',
-        'TRANSFERENCIA'
-
-    ),
-
-    monto DECIMAL(10,2),
-
-    fecha_pago TIMESTAMP NULL,
-
-    estado ENUM(
-
-        'Pendiente',
-        'Pagado',
-        'Rechazado'
-
-    ) DEFAULT 'Pendiente',
-
-    FOREIGN KEY(id_pedido)
-        REFERENCES pedido(id_pedido)
-
+-- ============================================================
+-- TABLA: pago
+-- MEJORA: ENUM normalizado ('TRANSFERENCIA' -> 'Transferencia')
+-- ============================================================
+CREATE TABLE pago (
+    id_pago      INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido    INT UNIQUE,
+    metodo_pago ENUM('Efectivo','Tarjeta','Transferencia'),
+    monto         DECIMAL(10,2),
+    fecha_pago   TIMESTAMP NULL,
+    estado        ENUM('Pendiente','Pagado','Rechazado') DEFAULT 'Pendiente',
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    CONSTRAINT chk_pago_monto CHECK (monto IS NULL OR monto >= 0)
 );
+
+-- ============================================================
+-- TABLA: factura
+-- ============================================================
 CREATE TABLE factura (
-
-    id_factura INT AUTO_INCREMENT PRIMARY KEY,
-
-    id_pedido INT NOT NULL UNIQUE,
-
+    id_factura      INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido       INT NOT NULL UNIQUE,
     numero_factura VARCHAR(30) UNIQUE NOT NULL,
-
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    nit VARCHAR(20),
-
-    nombre_cliente VARCHAR(100),
-
-    direccion VARCHAR(200),
-
-    subtotal DECIMAL(10,2) NOT NULL,
-
-    descuento DECIMAL(10,2) DEFAULT 0,
-
-    iva DECIMAL(10,2) NOT NULL,
-
-    total DECIMAL(10,2) NOT NULL,
-
-    FOREIGN KEY(id_pedido)
-        REFERENCES pedido(id_pedido)
-
+    fecha            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    nit              VARCHAR(20),
+    nombre_cliente  VARCHAR(100),
+    direccion        VARCHAR(200),
+    subtotal         DECIMAL(10,2) NOT NULL,
+    descuento        DECIMAL(10,2) DEFAULT 0,
+    iva              DECIMAL(10,2) NOT NULL,
+    total            DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    CONSTRAINT chk_factura_montos CHECK (subtotal >= 0 AND descuento >= 0 AND iva >= 0 AND total >= 0)
 );
-INSERT INTO rol(nombre,descripcion) VALUES
 
-('Administrador','Control total'),
+-- ============================================================
+-- DATOS INICIALES: rol
+-- ============================================================
+INSERT INTO rol (nombre, descripcion) VALUES
+('Administrador', 'Control total'),
+('Trabajador', 'Gestiona pedidos'),
+('Cliente', 'Realiza compras');
 
-('Trabajador','Gestiona pedidos'),
+-- ============================================================
+-- DATOS INICIALES: categoria
+-- ============================================================
+INSERT INTO categoria (nombre, descripcion) VALUES
+('Desayunos', 'Menú de desayuno'),
+('Almuerzos y Cenas', 'Comidas principales'),
+('Postres', 'Postres'),
+('McCafe', 'Café y bebidas calientes'),
+('Bebidas', 'Bebidas frías'),
+('Antojos', 'Snacks'),
+('Cajita Feliz', 'Menú infantil'),
+('Promociones', 'Ofertas especiales');
 
-('Cliente','Realiza compras');
-INSERT INTO categoria(nombre,descripcion) VALUES
-
-('Desayunos','Menú de desayuno'),
-
-('Almuerzos y Cenas','Comidas principales'),
-
-('Postres','Postres'),
-
-('McCafe','Café y bebidas calientes'),
-
-('Bebidas','Bebidas frías'),
-
-('Antojos','Snacks'),
-
-('Cajita Feliz','Menú infantil'),
-
-('Promociones','Ofertas especiales');
-
+-- ============================================================
+-- DATOS INICIALES: producto
+-- MEJORA: se corrigió el precio de "Muffin Arándanos" (.00 -> 24.00)
+-- ============================================================
 INSERT INTO producto
 (id_categoria, id_promocion, nombre, descripcion, precio, stock, disponible, estado)
 VALUES
@@ -283,9 +238,9 @@ VALUES
 (1, NULL, 'Combo Buenos días', 'Café, jugo de naranja y muffin de vainilla', 38.00, 100, TRUE, TRUE),
 -- Almuerzos
 (2, NULL, 'Freddy Burger Deluxe', 'Carne 100% res, doble queso cheddar, lechuga, tomate y salsa especial Quick Bite.', 58.00, 100, TRUE, TRUE),
-(2, NULL, 'Bonnie BBQ Burger', 'Hmaburguesa con salsa BBQ, cebolla caramelizada y queso suizo.', 62.00, 100, TRUE, TRUE),
-(2, NULL, 'Chica Chiken Burger', 'Pechuga de pollo empanizada, queso y salsa miel-mostaza.', 54.00, 100, TRUE, TRUE),
-(2, NULL, 'Foxy Triple Burger', 'Triple care, doble queso, tocino y pepinillos.', 72.00, 100, TRUE, TRUE),
+(2, NULL, 'Bonnie BBQ Burger', 'Hamburguesa con salsa BBQ, cebolla caramelizada y queso suizo.', 62.00, 100, TRUE, TRUE),
+(2, NULL, 'Chica Chicken Burger', 'Pechuga de pollo empanizada, queso y salsa miel-mostaza.', 54.00, 100, TRUE, TRUE),
+(2, NULL, 'Foxy Triple Burger', 'Triple carne, doble queso, tocino y pepinillos.', 72.00, 100, TRUE, TRUE),
 (2, NULL, 'Pizza Party Personal', 'Pizza individual de pepperoni con queso mozzarella.', 48.00, 100, TRUE, TRUE),
 (2, NULL, 'Wrap Fazbear', 'Tortilla de harina con pollo, vegetales y aderezo ranch.', 44.00, 100, TRUE, TRUE),
 (2, NULL, 'Combo Fazbear Supremo', 'Hamburguesa Deluxe, papas grandes y bebida mediana', 79.00, 100, TRUE, TRUE),
@@ -293,27 +248,27 @@ VALUES
 -- Postres
 (3, NULL, 'Brownie Freddy', 'Brownie de chocolate con helado de vainilla.', 28.00, 100, TRUE, TRUE),
 (3, NULL, 'Sundae Fazbear', 'Helado de vainilla con chocolate, nueces y cereza.', 24.00, 100, TRUE, TRUE),
-(3, NULL, 'Patel Golden', 'Rebanada de pastel de vainilla con crema.', 27.00, 100, TRUE, TRUE),
+(3, NULL, 'Pastel Golden', 'Rebanada de pastel de vainilla con crema.', 27.00, 100, TRUE, TRUE),
 (3, NULL, 'Cheesecake Puppet', 'Cheesecake con salsa de frutos rojos.', 30.00, 100, TRUE, TRUE),
-(3, NULL, 'Galletas Animatronic', 'Cuatro Galletas con chispas de chocolate.', 22.00, 100, TRUE, TRUE),
+(3, NULL, 'Galletas Animatronic', 'Cuatro galletas con chispas de chocolate.', 22.00, 100, TRUE, TRUE),
 (3, NULL, 'Mini donuts', 'Seis mini donuts espolvoreadas con azúcar y canela.', 25.00, 100, TRUE, TRUE),
 (3, NULL, 'Banana Split Freddy', 'Helado, frutas, crema batida y chocolate.', 36.00, 100, TRUE, TRUE),
 (3, NULL, 'Volcán de chocolate', 'Pastel tibio con centro líquido de chocolate.', 34.00, 100, TRUE, TRUE),
 -- McCafé
 (4, NULL, 'Espresso Fazbear', 'Café espresso de grano seleccionado.', 18.00, 100, TRUE, TRUE),
-(4, NULL, 'Cappucino Freddy', 'Espresso con leche vaporizada y espuma cremosa.', 26.00, 100, TRUE, TRUE),
+(4, NULL, 'Cappuccino Freddy', 'Espresso con leche vaporizada y espuma cremosa.', 26.00, 100, TRUE, TRUE),
 (4, NULL, 'Latte Vainilla', 'Café latte con un toque de vainilla.', 28.00, 100, TRUE, TRUE),
 (4, NULL, 'Mocha Chica', 'Café con chocolate y crema batida.', 30.00, 100, TRUE, TRUE),
 (4, NULL, 'Chocolate Caliente', 'Chocolate caliente con malvaviscos.', 25.00, 100, TRUE, TRUE),
 (4, NULL, 'Frappé Cookies', 'Frappé de vainilla con galleta triturada.', 34.00, 100, TRUE, TRUE),
 (4, NULL, 'Té Helado Limón', 'Té negro con limón natural.', 20.00, 100, TRUE, TRUE),
-(4, NULL, 'Muffin Arándanos', 'Muffin recién horneado de arándanos.', .00, 100, TRUE, TRUE),
+(4, NULL, 'Muffin Arándanos', 'Muffin recién horneado de arándanos.', 24.00, 100, TRUE, TRUE),
 -- Bebidas
 (5, NULL, 'Refresco Mediano', 'Bebida gaseosa de 16 oz.', 15.00, 100, TRUE, TRUE),
 (5, NULL, 'Refresco Grande', 'Bebida gaseosa de 22 oz.', 18.00, 100, TRUE, TRUE),
 (5, NULL, 'Limonada natural', 'Limonada preparada con limón fresco.', 18.00, 100, TRUE, TRUE),
 (5, NULL, 'Jugo de naranja', 'Jugo natural recién exprimido', 20.00, 100, TRUE, TRUE),
-(5, NULL, 'Malteada Chocolate', '', 32.00, 100, TRUE, TRUE),
+(5, NULL, 'Malteada Chocolate', 'Malteada cremosa de chocolate.', 32.00, 100, TRUE, TRUE),
 (5, NULL, 'Malteada Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, TRUE, TRUE),
 (5, NULL, 'Agua Embotellada', 'Agua purificada de 600 ml.', 10.00, 100, TRUE, TRUE),
 (5, NULL, 'Smoothie Tropical', 'Mango, piña y naranja licuados con hielo.', 34.00, 100, TRUE, TRUE),
@@ -336,6 +291,9 @@ VALUES
 (7, NULL, 'Combo Golden Pizza-Burger', 'Un combo dorado: burger premium con sabor a pizza, bebida grande y juguete.', 55.00, 100, TRUE, TRUE),
 (7, NULL, 'Cajita Fazbear Deluxe', 'Hamburguesa infantil, postre pequeño y juguete exclusivo.', 52.00, 100, TRUE, TRUE);
 
+-- ============================================================
+-- DATOS INICIALES: promocion
+-- ============================================================
 INSERT INTO promocion
 (nombre, descripcion, descuento, fecha_inicio, fecha_fin, estado)
 VALUES
@@ -348,44 +306,76 @@ VALUES
 ('Noche Fazbear', 'Después de las 7:00 p.m., segunda pizza personal al 50%.', 50.00, '2026-01-01', '2026-12-31', TRUE),
 ('Cumpleaños Fazbear', 'El cumpleañero recibe un pastel individual gratis al presentar su identificación.', NULL, '2026-01-01', '2026-12-31', TRUE);
 
+-- ============================================================
+-- ÍNDICES
+-- MEJORA: se agregó idx_detalle_pedido_pedido explícito
+-- (documenta la consulta más frecuente: "dame el detalle de este pedido").
+-- ============================================================
+CREATE INDEX idx_usuario_correo ON usuario(correo);
+CREATE INDEX idx_producto_categoria ON producto(id_categoria);
+CREATE INDEX idx_pedido_usuario ON pedido(id_usuario);
+CREATE INDEX idx_producto_nombre ON producto(nombre);
+CREATE INDEX idx_pedido_estado ON pedido(estado);
+CREATE INDEX idx_producto_stock ON producto(stock);
+CREATE INDEX idx_detalle_pedido_pedido ON detalle_pedido(id_pedido);
 
-CREATE INDEX idx_usuario_correo
-ON usuario(correo);
-CREATE INDEX idx_producto_categoria
-ON producto(id_categoria);
-CREATE INDEX idx_pedido_usuario
-ON pedido(id_usuario);
-CREATE INDEX idx_producto_nombre
-ON producto(nombre);
-CREATE INDEX idx_pedido_estado
-ON pedido(estado);
-CREATE INDEX idx_producto_stock
-ON producto(stock);
-
+-- ============================================================
+-- PROCEDIMIENTO: sp_insertar_producto
+-- ============================================================
 DELIMITER //
 
 CREATE PROCEDURE sp_insertar_producto(
-    IN p_id_categoria   INT,
-    IN p_nombre         VARCHAR(100),
-    IN p_descripcion    TEXT,
-    IN p_precio         DECIMAL(10,2),
-    IN p_stock          INT,
-    IN p_imagen         VARCHAR(255)
+    IN p_id_categoria INT,
+    IN p_nombre        VARCHAR(100),
+    IN p_descripcion   TEXT,
+    IN p_precio        DECIMAL(10,2),
+    IN p_stock         INT,
+    IN p_imagen        VARCHAR(255)
 )
 BEGIN
-
     INSERT INTO producto
         (id_categoria, id_promocion, nombre, descripcion, precio, stock, disponible, imagen, estado)
     VALUES
         (p_id_categoria, NULL, p_nombre, p_descripcion, p_precio, p_stock, TRUE, p_imagen, TRUE);
-
 END //
 
 DELIMITER ;
 
+-- ============================================================
+-- MEJORA: TRIGGER que descuenta el stock automáticamente al
+-- registrar el detalle de un pedido. Así el stock siempre queda
+-- sincronizado sin depender de que el DAO en Java lo recuerde.
+-- ============================================================
+DELIMITER //
+
+CREATE TRIGGER trg_descontar_stock
+AFTER INSERT ON detalle_pedido
+FOR EACH ROW
+BEGIN
+    UPDATE producto
+    SET stock = stock - NEW.cantidad
+    WHERE id_producto = NEW.id_producto;
+END //
+
+DELIMITER ;
+
+-- ============================================================
+-- MEJORA: VISTA para el módulo de Reportes (ventas por día).
+-- Evita reescribir el mismo JOIN cada vez desde Java.
+-- ============================================================
+CREATE VIEW vw_ventas_dia AS
+SELECT
+    DATE(p.fecha)      AS dia,
+    COUNT(DISTINCT p.id_pedido) AS total_pedidos,
+    SUM(p.subtotal)    AS total_subtotal,
+    SUM(p.descuento)   AS total_descuento,
+    SUM(p.total)       AS total_ventas
+FROM pedido p
+WHERE p.estado <> 'Cancelado'
+GROUP BY DATE(p.fecha);
 
 -- ---------------------------------------------------------------
--- 2. EL MENÚ REAL, usando el procedimiento
+-- MENÚ ADICIONAL, usando el procedimiento sp_insertar_producto
 -- ---------------------------------------------------------------
 -- id_categoria: 1 Desayunos, 2 Almuerzos y Cenas, 3 Postres,
 --               4 McCafe, 5 Bebidas, 6 Antojos, 7 Combos
@@ -437,5 +427,3 @@ CALL sp_insertar_producto(6, 'Sartén de Queso', 'Queso fundido servido en sart�
 CALL sp_insertar_producto(7, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, 'Combo Bonnie-Nuggets.png');
 CALL sp_insertar_producto(7, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, 'Combo Freddy Fazbear.png');
 CALL sp_insertar_producto(7, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, 'Paquete de pizza de Chica.png');
-
-
