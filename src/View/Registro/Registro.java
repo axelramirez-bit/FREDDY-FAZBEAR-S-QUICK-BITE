@@ -14,11 +14,14 @@ import java.net.URL;
 import View.Login.Login;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+<<<<<<< HEAD
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import Model.Usuario;
 import Model.Rol;
 import Service.Implement.UsuarioServiceImpl;
+=======
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
 
 public class Registro extends JFrame {
 
@@ -42,6 +45,7 @@ public class Registro extends JFrame {
     private static final double ANCHO_DISENO = 1280.0;
     private static final double ALTO_DISENO = 720.0;
 
+<<<<<<< HEAD
     // El registro público solo crea cuentas de Cliente. Administrador y
     // Trabajador se crean después desde el CRUD de usuarios del Administrador.
     // id_rol=3 corresponde a "Cliente" según el orden de inserción en
@@ -49,6 +53,8 @@ public class Registro extends JFrame {
     private static final int ID_ROL_CLIENTE = 3;
     private static final String NOMBRE_ROL_CLIENTE = "Cliente";
 
+=======
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
     public Registro() {
         setTitle("Freddy Fazbear's Quick Bite -Registro" );
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,11 +112,18 @@ public class Registro extends JFrame {
         echoCharOriginal = txtPassword.getEchoChar();
 
         cbRol = crearComboBoxTransparente();
+<<<<<<< HEAD
         // El registro público solo permite crear cuentas de Cliente.
         // Administrador y Trabajador se crean desde el CRUD de usuarios
         // del panel de Administrador, no desde esta pantalla pública.
         cbRol.addItem(NOMBRE_ROL_CLIENTE);
         cbRol.setEnabled(false); // fijo en "Cliente", no editable por el usuario
+=======
+        cbRol.addItem("");
+        cbRol.addItem("Usuario ");
+        cbRol.addItem("Administrador");
+        cbRol.addItem("Empleado");
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
 
         btnGuardar = crearBotonTransparente();
         btnCancelar = crearBotonTransparente();      // Antes btnTablePlaque
@@ -176,6 +189,7 @@ public class Registro extends JFrame {
 
         // 3. Acción Botón GUARDAR
         btnGuardar.addActionListener(e -> {
+<<<<<<< HEAD
             String nombre = txtNombre.getText().trim();
             String apellido = txtApellido.getText().trim();
             String correo = txtCorreo.getText().trim();
@@ -194,6 +208,17 @@ public class Registro extends JFrame {
                 return;
             }
 
+=======
+            String nombre = txtNombre.getText();
+            String fecha = txtFecha.getText();
+            String telefono = txtTelefono.getText();
+            String rol = cbRol.getSelectedItem() != null ? cbRol.getSelectedItem().toString() : "";
+            
+            // Validación simple de contraseñas coincidentes
+            String pass1 = new String(txtPassword.getPassword());
+            String pass2 = new String(txtConfirmPassword.getPassword());
+            
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
             if (!pass1.equals(pass2)) {
                 JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -207,6 +232,7 @@ public class Registro extends JFrame {
                 return;
             }
 
+<<<<<<< HEAD
             LocalDate fechaNacimiento = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
             // El registro público siempre crea el rol Cliente.
@@ -247,6 +273,20 @@ public class Registro extends JFrame {
                         "6 caracteres, edad mínima de 13 años).",
                         "Error de registro", JOptionPane.ERROR_MESSAGE);
             }
+=======
+            JOptionPane.showMessageDialog(this, 
+                "✅ Datos Guardados Correctamente\n\n" +
+                "Nombre: " + nombre + "\n" +
+                "Fecha Nac: " + fecha + "\n" +
+                "Teléfono: " + telefono + "\n" +
+                "Rol: " + rol, 
+                "Registro Exitoso", 
+                JOptionPane.INFORMATION_MESSAGE);
+                
+            // Opcional: Limpiar campos o ir al login después de guardar
+            // this.dispose();
+            // new Login().setVisible(true);
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
         });
 
         // ✅ Configuración inicial
@@ -305,8 +345,13 @@ public class Registro extends JFrame {
 
         // Botones Inferiores
         ponerBounds(btnCancelar,    320 / ANCHO_DISENO, 655 / ALTO_DISENO, 200 / ANCHO_DISENO, 55 / ALTO_DISENO);
+<<<<<<< HEAD
         ponerBounds(btnGuardar,     560 / ANCHO_DISENO, 660 / ALTO_DISENO, 250 / ANCHO_DISENO, 65 / ALTO_DISENO);
         ponerBounds(btnVerPassword, 850/ANCHO_DISENO, 640 / ALTO_DISENO, 260 / ANCHO_DISENO, 50 / ALTO_DISENO);
+=======
+        ponerBounds(btnGuardar,     600 / ANCHO_DISENO, 660 / ALTO_DISENO, 250 / ANCHO_DISENO, 65 / ALTO_DISENO);
+        ponerBounds(btnVerPassword, 930 / ANCHO_DISENO, 655 / ALTO_DISENO, 200 / ANCHO_DISENO, 55 / ALTO_DISENO);
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
 
         actualizarFuentes(ancho, alto);
     }

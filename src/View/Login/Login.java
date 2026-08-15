@@ -52,11 +52,22 @@ public class Login extends JFrame {
         // ══════════════════════════════════════════════════════
         // CONFIGURACIÓN DE VENTANA RESPONSIVA
         // ══════════════════════════════════════════════════════
+<<<<<<< HEAD
  
         UtilPantalla.aplicarTamañoMinimo(this);
         
         
         setExtendedState(JFrame.MAXIMIZED_BOTH); 
+=======
+        // 1. Aplicar tamaño mínimo para evitar que se rompa si es muy pequeña
+        UtilPantalla.aplicarTamañoMinimo(this);
+        
+        // 2. NO usar pantallaCompleta fija si queremos que el usuario pueda redimensionar.
+        //    En su lugar, iniciamos maximizada pero permitiendo cambio de tamaño.
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        // Si prefieres que inicie en tamaño normal pero adaptable, comenta la línea de arriba y usa:
+        // setSize(1280, 720); setLocationRelativeTo(null);
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
 
         // ══════════════════════════════════════════════════════
         // 1. CARGAR IMAGEN DE FONDO
@@ -188,7 +199,11 @@ public class Login extends JFrame {
         // ── POSICIONES DE COMPONENTES (TUS VALORES ORIGINALES RESPETADOS) ──
         ponerBounds(txtCorreo,         0.563,  0.360,  0.340,  0.065);
         ponerBounds(txtPassword,       0.543,  0.480,  0.340,  0.065);
+<<<<<<< HEAD
         ponerBounds(btnIniciarSesion,  0.555,  0.629,  0.340,  0.070);
+=======
+        ponerBounds(btnIniciarSesion,  0.563,  0.629,  0.340,  0.070);
+>>>>>>> 676bcd3ca619b60115ccde4e9c43835fcef92011
         ponerBounds(chkRecordarme,     0.553,  0.565,  0.035,  0.035);
 
         ponerBounds(btnGoogle,         0.563,  0.730,  0.160,  0.060);
