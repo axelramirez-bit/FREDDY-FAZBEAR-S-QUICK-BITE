@@ -19,8 +19,11 @@ import View.Utils.UIConstants;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -135,7 +138,21 @@ public class PanelProductos extends PanelFondo {
         // que vive DENTRO de un JScrollPane. Antes panelGrid = this,
         // por eso nunca hubo scroll (this era directamente lo que
         // PanelContenido agregaba con CardLayout, sin envoltura).
-        panelGrid = new JPanel(new FlowLayout(
+        //
+        // BUG QUE ESTO CORRIGE: un JPanel con FlowLayout dentro de un
+        // JScrollPane, POR DEFECTO, no ajusta su ancho al del
+        // viewport — Swing le deja "ancho infinito" para calcular su
+        // tamaño preferido, así que FlowLayout pone TODAS las
+        // tarjetas en una sola fila horizontal en vez de saltar de
+        // línea, y el scroll termina siendo horizontal (o las
+        // tarjetas quedan cortadas fuera del área visible) en vez de
+        // vertical. Se soluciona con PanelGridDesplazable, que
+        // implementa Scrollable y devuelve true en
+        // getScrollableTracksViewportWidth(): así el panel SIEMPRE
+        // toma el ancho del viewport, FlowLayout envuelve
+        // correctamente en varias filas, y el scroll queda vertical
+        // (comportamiento esperado, como en Bebidas/Postres/etc.).
+        panelGrid = new PanelGridDesplazable(new FlowLayout(
                 FlowLayout.LEFT,
                 UIConstants.ESPACIO_ENTRE_TARJETAS,
                 UIConstants.ESPACIO_ENTRE_TARJETAS
@@ -275,6 +292,55 @@ public class PanelProductos extends PanelFondo {
                         JOptionPane.INFORMATION_MESSAGE
                 )
         );
+    }
+
+    // ==========================================================
+    // GRID CON SCROLL VERTICAL CORRECTO
+    // ==========================================================
+
+    /**
+     * JPanel + FlowLayout que SÍ envuelve correctamente dentro de un
+     * JScrollPane. Un JPanel normal no implementa Scrollable, así que
+     * el JScrollPane no lo obliga a ajustarse al ancho del viewport y
+     * FlowLayout termina poniendo todo en una sola fila horizontal
+     * (el bug que hacía que Inicio se viera como una fila cortada de
+     * tarjetas sin texto). Con getScrollableTracksViewportWidth() ==
+     * true, el panel siempre toma el ancho disponible, FlowLayout
+     * envuelve en varias filas, y solo queda scroll vertical.
+     */
+    private static class PanelGridDesplazable extends JPanel implements Scrollable {
+
+        PanelGridDesplazable(FlowLayout layout) {
+            super(layout);
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
+
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return UIConstants.ESPACIO_ENTRE_TARJETAS * 4;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return orientation == javax.swing.SwingConstants.VERTICAL
+                    ? visibleRect.height
+                    : visibleRect.width;
+        }
+
     }
 
 }

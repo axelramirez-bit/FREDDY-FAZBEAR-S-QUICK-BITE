@@ -1,6 +1,7 @@
 package DAO.Implement;
 
 import Config.Conexion;
+import DAO.Interfaz.IProductoCategoriaDAO;
 import DAO.Interfaz.IProductoDAO;
 import Model.Categoria;
 import Model.Producto;
@@ -13,16 +14,23 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ProductoDAOImpl implements IProductoDAO {
+
+    // DAO de la tabla intermedia producto_categoria, para resolver las
+    // categorías ADICIONALES de cada producto (relación N:M). Se usa
+    // solo aquí, dentro de la capa DAO, para que el resto del sistema
+    // siga trabajando con Producto ya "armado" con todas sus categorías.
+    private final IProductoCategoriaDAO productoCategoriaDAO = new ProductoCategoriaDAOImpl();
     
     @Override
     public boolean insertar(Producto producto) {
 
         String sql = "INSERT INTO producto "
                 + "(id_categoria,id_promocion,nombre,descripcion,"
-                + "precio,stock,disponible,estado) "
-                + "VALUES (?,?,?,?,?,?,?,?)";
+                + "precio,stock,disponible,estado,imagen) "
+                + "VALUES (?,?,?,?,?,?,?,?,?)";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -41,6 +49,7 @@ public class ProductoDAOImpl implements IProductoDAO {
             ps.setInt(6, producto.getStock());
             ps.setBoolean(7, producto.isDisponible());
             ps.setBoolean(8, producto.isEstado());
+            ps.setString(9, producto.getImagenPrincipal());
 
             return ps.executeUpdate() > 0;
 
@@ -64,7 +73,8 @@ public class ProductoDAOImpl implements IProductoDAO {
                 + "precio=?,"
                 + "stock=?,"
                 + "disponible=?,"
-                + "estado=? "
+                + "estado=?,"
+                + "imagen=? "
                 + "WHERE id_producto=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
@@ -84,7 +94,8 @@ public class ProductoDAOImpl implements IProductoDAO {
             ps.setInt(6, producto.getStock());
             ps.setBoolean(7, producto.isDisponible());
             ps.setBoolean(8, producto.isEstado());
-            ps.setInt(9, producto.getIdProducto());
+            ps.setString(9, producto.getImagenPrincipal());
+            ps.setInt(10, producto.getIdProducto());
 
             return ps.executeUpdate() > 0;
 
@@ -152,7 +163,15 @@ public class ProductoDAOImpl implements IProductoDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
-                    return mapearProducto(rs);
+
+                    Producto producto = mapearProducto(rs);
+
+                    // Categorías adicionales de ESTE producto (relación N:M).
+                    producto.setCategoriasAdicionales(
+                            productoCategoriaDAO.listarCategoriasPorProducto(idProducto));
+
+                    return producto;
+
                 }
 
             }
@@ -183,6 +202,21 @@ public class ProductoDAOImpl implements IProductoDAO {
         } catch (SQLException e) {
 
             e.printStackTrace();
+
+        }
+
+        // Una sola consulta extra para TODOS los productos (evita el
+        // problema N+1 de pedir las categorías adicionales una por una).
+        Map<Integer, List<Categoria>> categoriasPorProducto =
+                productoCategoriaDAO.listarCategoriasPorTodosLosProductos();
+
+        for (Producto producto : lista) {
+
+            List<Categoria> adicionales = categoriasPorProducto.get(producto.getIdProducto());
+
+            if (adicionales != null) {
+                producto.setCategoriasAdicionales(adicionales);
+            }
 
         }
 
@@ -226,6 +260,12 @@ public class ProductoDAOImpl implements IProductoDAO {
         producto.setStock(rs.getInt("stock"));
         producto.setDisponible(rs.getBoolean("disponible"));
         producto.setEstado(rs.getBoolean("estado"));
+        // BUG: nunca se asignaba la imagen del producto, así que
+        // TarjetaProducto siempre recibía imagenPrincipal == null y
+        // UtilImagenes.producto(null,...) caía siempre en la imagen
+        // genérica de respaldo ("Comidarealista.png"), sin importar
+        // qué producto fuera. La columna real en MySQL es "imagen".
+        producto.setImagenPrincipal(rs.getString("imagen"));
 
         return producto;
 

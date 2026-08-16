@@ -20,4 +20,15 @@ public interface IProductoService {
 
     boolean actualizarStock(int idProducto, int cantidad);
 
+    /**
+     * Asocia una categoría ADICIONAL a un producto (además de su
+     * categoría principal), para que aparezca en más de un panel del
+     * Cliente. Ej: asignarCategoriaAdicional(idComboDesayuno, idDesayunos)
+     * si su categoría principal ya es "Combos".
+     */
+    boolean asignarCategoriaAdicional(int idProducto, int idCategoria);
+
+    /** Quita una categoría adicional previamente asignada a un producto. */
+    boolean quitarCategoriaAdicional(int idProducto, int idCategoria);
+
 }

@@ -57,6 +57,12 @@ private static final String EXTENSION = ".png";
 
         ImageIcon icono = cargarImagen(ruta);
 
+        if (icono.getIconWidth() <= 0) {
+            // Imagen no encontrada: se devuelve un ImageIcon vacío
+            // en vez de tronar con NullPointerException.
+            return icono;
+        }
+
         Image imagen = icono.getImage().getScaledInstance(
                 ancho,
                 alto,

@@ -124,7 +124,9 @@ public class SelectorCantidad extends PanelRedondeado {
         lblCantidad.setHorizontalAlignment(
                 SwingConstants.CENTER);
 
-        actualizarCantidad();
+        // No llamar aquí a actualizarCantidad(): btnMas todavía no existe
+        // (se crea después, en crearBotonMas()). inicializar() ya llama a
+        // actualizarCantidad() una vez que los 3 componentes existen.
 
         add(lblCantidad);
 
