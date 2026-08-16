@@ -118,44 +118,42 @@ public class ProductoDAOImpl implements IProductoDAO {
 
     }
 
+    // Consulta base reutilizada por buscarPorId() y listar().
+    // JOIN con categoria y promocion para poder mapear el nombre de la
+    // categoría (y los datos de la promoción) en el objeto Producto.
+    // Antes esto se hacía con "SELECT * FROM producto" y solo se
+    // guardaba el id_categoria, dejando categoria.getNombre() == null
+    // siempre: eso rompía cualquier filtro que comparara nombres de
+    // categoría (ver Base/PanelProductos y los paneles de Cliente).
+    private static final String SQL_BASE =
+            "SELECT p.*, "
+            + "c.nombre AS nombre_categoria, "
+            + "c.descripcion AS descripcion_categoria, "
+            + "c.icono AS icono_categoria, "
+            + "c.imagen AS imagen_categoria, "
+            + "c.estado AS estado_categoria, "
+            + "pr.nombre AS nombre_promocion, "
+            + "pr.descuento AS descuento_promocion, "
+            + "pr.estado AS estado_promocion "
+            + "FROM producto p "
+            + "JOIN categoria c ON c.id_categoria = p.id_categoria "
+            + "LEFT JOIN promocion pr ON pr.id_promocion = p.id_promocion";
+
     @Override
     public Producto buscarPorId(int idProducto) {
 
-        String sql = "SELECT * FROM producto WHERE id_producto=?";
+        String sql = SQL_BASE + " WHERE p.id_producto = ?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
 
-            if (rs.next()) {
-
-                Producto producto = new Producto();
-
-                Categoria categoria = new Categoria();
-                categoria.setIdCategoria(rs.getInt("id_categoria"));
-
-                producto.setCategoria(categoria);
-
-                if (rs.getObject("id_promocion") != null) {
-
-                    Promocion promocion = new Promocion();
-                    promocion.setIdPromocion(rs.getInt("id_promocion"));
-                    producto.setPromocion(promocion);
-
+                if (rs.next()) {
+                    return mapearProducto(rs);
                 }
-
-                producto.setIdProducto(rs.getInt("id_producto"));
-                producto.setNombre(rs.getString("nombre"));
-                producto.setDescripcion(rs.getString("descripcion"));
-                producto.setPrecio(rs.getBigDecimal("precio"));
-                producto.setStock(rs.getInt("stock"));
-                producto.setDisponible(rs.getBoolean("disponible"));
-                producto.setEstado(rs.getBoolean("estado"));
-
-                return producto;
 
             }
 
@@ -174,39 +172,12 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         List<Producto> lista = new ArrayList<>();
 
-        String sql = "SELECT * FROM producto";
-
         try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
+             PreparedStatement ps = con.prepareStatement(SQL_BASE);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
-                Producto producto = new Producto();
-
-                Categoria categoria = new Categoria();
-                categoria.setIdCategoria(rs.getInt("id_categoria"));
-
-                producto.setCategoria(categoria);
-
-                if (rs.getObject("id_promocion") != null) {
-
-                    Promocion promocion = new Promocion();
-                    promocion.setIdPromocion(rs.getInt("id_promocion"));
-                    producto.setPromocion(promocion);
-
-                }
-
-                producto.setIdProducto(rs.getInt("id_producto"));
-                producto.setNombre(rs.getString("nombre"));
-                producto.setDescripcion(rs.getString("descripcion"));
-                producto.setPrecio(rs.getBigDecimal("precio"));
-                producto.setStock(rs.getInt("stock"));
-                producto.setDisponible(rs.getBoolean("disponible"));
-                producto.setEstado(rs.getBoolean("estado"));
-
-                lista.add(producto);
-
+                lista.add(mapearProducto(rs));
             }
 
         } catch (SQLException e) {
@@ -216,6 +187,47 @@ public class ProductoDAOImpl implements IProductoDAO {
         }
 
         return lista;
+
+    }
+
+    // Construye un Producto completo (con su Categoria y, si aplica,
+    // su Promocion ya con nombre/descuento) a partir de una fila del
+    // SQL_BASE. Centralizado aquí para no duplicar el mapeo entre
+    // listar() y buscarPorId().
+    private Producto mapearProducto(ResultSet rs) throws SQLException {
+
+        Producto producto = new Producto();
+
+        Categoria categoria = new Categoria();
+        categoria.setIdCategoria(rs.getInt("id_categoria"));
+        categoria.setNombre(rs.getString("nombre_categoria"));
+        categoria.setDescripcion(rs.getString("descripcion_categoria"));
+        categoria.setIcono(rs.getString("icono_categoria"));
+        categoria.setImagen(rs.getString("imagen_categoria"));
+        categoria.setEstado(rs.getBoolean("estado_categoria"));
+
+        producto.setCategoria(categoria);
+
+        if (rs.getObject("id_promocion") != null) {
+
+            Promocion promocion = new Promocion();
+            promocion.setIdPromocion(rs.getInt("id_promocion"));
+            promocion.setNombre(rs.getString("nombre_promocion"));
+            promocion.setDescuento(rs.getBigDecimal("descuento_promocion"));
+            promocion.setEstado(rs.getBoolean("estado_promocion"));
+            producto.setPromocion(promocion);
+
+        }
+
+        producto.setIdProducto(rs.getInt("id_producto"));
+        producto.setNombre(rs.getString("nombre"));
+        producto.setDescripcion(rs.getString("descripcion"));
+        producto.setPrecio(rs.getBigDecimal("precio"));
+        producto.setStock(rs.getInt("stock"));
+        producto.setDisponible(rs.getBoolean("disponible"));
+        producto.setEstado(rs.getBoolean("estado"));
+
+        return producto;
 
     }
 

@@ -427,3 +427,56 @@ CALL sp_insertar_producto(6, 'Sartén de Queso', 'Queso fundido servido en sart�
 CALL sp_insertar_producto(7, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, 'Combo Bonnie-Nuggets.png');
 CALL sp_insertar_producto(7, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, 'Combo Freddy Fazbear.png');
 CALL sp_insertar_producto(7, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, 'Paquete de pizza de Chica.png');
+
+-- ============================================================
+-- MIGRACIÓN: agregar categoría "Combos" y reasignar productos
+-- ============================================================
+-- Contexto: PanelCombos.java filtra por categoria.getNombre()
+-- == "Combos", pero esa categoría nunca existió en la base de
+-- datos. Los productos tipo combo estaban mezclados dentro de
+-- "Cajita Feliz" junto con los menús infantiles.
+-- Ejecutar sobre la base de datos FreddyQuickBite ya creada.
+-- ============================================================
+
+USE FreddyQuickBite;
+
+-- 1. Crear la categoría que falta
+INSERT INTO categoria (nombre, descripcion, estado)
+VALUES ('Combos', 'Combos para toda la familia', TRUE);
+
+-- 2. Mover a "Combos" los productos que hoy están en "Cajita Feliz"
+--    pero su nombre empieza con "Combo" (combos de adultos, no menú
+--    infantil). Los que sí son menú infantil (ej. "Cajita Freddy
+--    Burger", "Paquete de pizza de Chica") se quedan en Cajita Feliz.
+UPDATE producto p
+JOIN categoria origen ON origen.id_categoria = p.id_categoria
+                      AND origen.nombre = 'Cajita Feliz'
+JOIN categoria destino ON destino.nombre = 'Combos'
+SET p.id_categoria = destino.id_categoria
+WHERE p.nombre LIKE 'Combo%';
+
+-- 3. Verificar el resultado de la migración
+SELECT c.nombre AS categoria, p.nombre AS producto
+FROM producto p
+JOIN categoria c ON c.id_categoria = p.id_categoria
+WHERE c.nombre IN ('Cajita Feliz', 'Combos')
+ORDER BY c.nombre, p.nombre;
+
+-- ============================================================
+-- VERIFICACIÓN DE DATOS DE PRUEBA (según lo que se pidió)
+-- ============================================================
+-- listarProductosDisponibles() en ProductoServiceImpl exige
+-- estado = 1 AND disponible = 1 AND stock > 0. Esta consulta
+-- muestra cuántos productos "vendibles" hay por categoría; si
+-- alguna categoría sale en 0, ese panel se verá vacío aunque el
+-- filtro Java esté correcto.
+SELECT
+    c.nombre AS categoria,
+    COUNT(*) AS productos_visibles_en_panel
+FROM producto p
+JOIN categoria c ON c.id_categoria = p.id_categoria
+WHERE p.estado = 1
+  AND p.disponible = 1
+  AND p.stock > 0
+GROUP BY c.nombre
+ORDER BY c.nombre;

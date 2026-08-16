@@ -11,6 +11,7 @@ import Service.Implement.ProductoServiceImpl;
 import Service.Interfaz.ICarritoDetalleService;
 import Service.Interfaz.ICarritoService;
 import Service.Interfaz.IProductoService;
+import Service.ServicioBusqueda;
 import Utils.Sesion;
 import View.Componentes.PanelFondo;
 import View.Componentes.TarjetaProducto;
@@ -92,6 +93,13 @@ public class PanelProductos extends PanelFondo {
 
     private JPanel panelGrid;
 
+    // Última lista que pasó el filtro de categoría/promoción (antes de
+    // aplicar texto de búsqueda). Se guarda para no volver a consultar
+    // la base de datos cada vez que el usuario escribe en la barra de
+    // búsqueda: ServicioBusqueda.buscarProductos() filtra en memoria
+    // sobre esta lista.
+    private List<Producto> productosFiltroCategoria = List.of();
+
     public PanelProductos(Predicate<Producto> filtro) {
 
         super();
@@ -161,11 +169,32 @@ public class PanelProductos extends PanelFondo {
      */
     public void cargarProductos() {
 
-        List<Producto> productos = productoService
+        productosFiltroCategoria = productoService
                 .listarProductosDisponibles()
                 .stream()
                 .filter(filtro)
                 .collect(Collectors.toList());
+
+        renderizar(productosFiltroCategoria);
+    }
+
+    /**
+     * Filtra por texto (nombre de producto) sobre la lista que ya pasó
+     * el filtro de categoría/promoción, reutilizando el servicio
+     * ServicioBusqueda que ya existía pero no estaba conectado a
+     * ninguna vista. No vuelve a consultar la base de datos.
+     *
+     * @param texto Texto escrito en la barra de búsqueda. Vacío o null
+     *              muestra de nuevo todos los productos del filtro.
+     */
+    public void aplicarBusqueda(String texto) {
+
+        renderizar(ServicioBusqueda.buscarProductos(productosFiltroCategoria, texto));
+    }
+
+    // Pinta el grid de tarjetas a partir de la lista final ya filtrada
+    // (categoría + búsqueda de texto, si aplica).
+    private void renderizar(List<Producto> productos) {
 
         panelGrid.removeAll();
 

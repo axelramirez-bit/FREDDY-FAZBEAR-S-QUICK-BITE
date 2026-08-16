@@ -7,7 +7,8 @@ public class PanelAlmuerzos extends PanelProductos {
 
     public PanelAlmuerzos() {
 
-        super(producto -> producto.getPromocion() != null);
+        super(producto -> producto.getCategoria() != null
+                && "Almuerzos y Cenas".equalsIgnoreCase(producto.getCategoria().getNombre()));
     }
 
 }

@@ -7,7 +7,8 @@ public class PanelBebidas extends PanelProductos {
 
     public PanelBebidas() {
 
-        super(producto -> producto.getPromocion() != null);
+        super(producto -> producto.getCategoria() != null
+                && "Bebidas".equalsIgnoreCase(producto.getCategoria().getNombre()));
     }
 
 
