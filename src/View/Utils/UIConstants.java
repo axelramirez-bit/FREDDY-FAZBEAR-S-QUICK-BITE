@@ -297,9 +297,20 @@ public final class UIConstants {
 
     public static final int ALTO_TARJETA = 185;
 
-    public static final int ANCHO_TARJETA_PRODUCTO = 250;
+    // ANTES: ANCHO_TARJETA_PRODUCTO = 250 y ANCHO_IMAGEN_PRODUCTO = 200.
+    // BUG QUE ESTO CORRIGE: TarjetaProducto pone la imagen a la
+    // IZQUIERDA (BorderLayout.WEST, ancho fijo) y el resto del
+    // contenido (nombre, descripción, precio, cantidad y botón) al
+    // CENTRO. Con esos valores, la imagen (200px) + su borde (16px
+    // de hgap) ya casi llenaban el ancho útil de la tarjeta
+    // (250 - 32 de padding = 218px), dejando prácticamente 0px para
+    // el panel de contenido: por eso las tarjetas del Cliente solo
+    // mostraban la imagen, sin nombre/descripción/precio/cantidad/
+    // botón "Agregar al carrito". Se agranda la tarjeta y se achica
+    // un poco la imagen para que el contenido tenga espacio real.
+    public static final int ANCHO_TARJETA_PRODUCTO = 420;
 
-    public static final int ALTO_TARJETA_PRODUCTO = 340;
+    public static final int ALTO_TARJETA_PRODUCTO = 230;
 
     public static final int PADDING_TARJETA = 24;
 
@@ -312,9 +323,9 @@ public final class UIConstants {
 
     public static final int ESPACIO_PRODUCTOS = 20;
 
-    public static final int ANCHO_IMAGEN_PRODUCTO = 200;
+    public static final int ANCHO_IMAGEN_PRODUCTO = 150;
 
-    public static final int ALTO_IMAGEN_PRODUCTO = 170;
+    public static final int ALTO_IMAGEN_PRODUCTO = 150;
 
     /** alias de ALTO_IMAGEN_PRODUCTO */
     public static final int IMAGEN_PRODUCTO = ALTO_IMAGEN_PRODUCTO;

@@ -149,7 +149,7 @@ public class TarjetaProducto extends PanelRedondeado {
         lblNombre.setAlignmentX(LEFT_ALIGNMENT);
 
         JLabel lblDescripcion = FabricaEtiquetas.crearTexto(
-                "<html><body style='width:220px'>"
+                "<html><body style='width:210px'>"
                 + producto.getDescripcion()
                 + "</body></html>"
         );
