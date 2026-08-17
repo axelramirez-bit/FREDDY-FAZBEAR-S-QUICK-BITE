@@ -1,6 +1,8 @@
 package Service.Implement;
 
+import DAO.Implement.ProductoCategoriaDAOImpl;
 import DAO.Implement.ProductoDAOImpl;
+import DAO.Interfaz.IProductoCategoriaDAO;
 import DAO.Interfaz.IProductoDAO;
 import Model.Producto;
 import Service.Interfaz.IProductoService;
@@ -12,13 +14,16 @@ import java.util.stream.Collectors;
 public class ProductoServiceImpl implements IProductoService {
 
     private final IProductoDAO productoDAO;
+    private final IProductoCategoriaDAO productoCategoriaDAO;
 
     public ProductoServiceImpl() {
         this.productoDAO = new ProductoDAOImpl();
+        this.productoCategoriaDAO = new ProductoCategoriaDAOImpl();
     }
 
     public ProductoServiceImpl(IProductoDAO productoDAO) {
         this.productoDAO = productoDAO;
+        this.productoCategoriaDAO = new ProductoCategoriaDAOImpl();
     }
 
     @Override
@@ -114,6 +119,30 @@ public class ProductoServiceImpl implements IProductoService {
         producto.setDisponible(nuevoStock > 0);
 
         return productoDAO.actualizar(producto);
+
+    }
+
+    // ---------- Categorías adicionales (relación N:M) ----------
+
+    @Override
+    public boolean asignarCategoriaAdicional(int idProducto, int idCategoria) {
+
+        if (idProducto <= 0 || idCategoria <= 0) {
+            return false;
+        }
+
+        return productoCategoriaDAO.asignarCategoria(idProducto, idCategoria);
+
+    }
+
+    @Override
+    public boolean quitarCategoriaAdicional(int idProducto, int idCategoria) {
+
+        if (idProducto <= 0 || idCategoria <= 0) {
+            return false;
+        }
+
+        return productoCategoriaDAO.quitarCategoria(idProducto, idCategoria);
 
     }
 

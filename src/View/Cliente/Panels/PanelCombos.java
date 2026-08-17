@@ -13,8 +13,7 @@ public class PanelCombos extends PanelProductos {
     // SQL de migración que agrega esta categoría.
     public PanelCombos() {
 
-        super(producto -> producto.getCategoria() != null
-                && "Combos".equalsIgnoreCase(producto.getCategoria().getNombre()));
+        super(producto -> producto.perteneceACategoria("Combos"));
     }
 
 

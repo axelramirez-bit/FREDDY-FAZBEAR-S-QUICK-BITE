@@ -11,8 +11,7 @@ public class PanelDesayunos extends PanelProductos {
 
     public PanelDesayunos() {
 
-        super(producto -> producto.getCategoria() != null
-                && "Desayunos".equalsIgnoreCase(producto.getCategoria().getNombre()));
+        super(producto -> producto.perteneceACategoria("Desayunos"));
     }
 
 }

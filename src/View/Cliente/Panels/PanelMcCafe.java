@@ -6,8 +6,7 @@ public class PanelMcCafe extends PanelProductos {
 
     public PanelMcCafe() {
 
-        super(producto -> producto.getCategoria() != null
-                && "McCafe".equalsIgnoreCase(producto.getCategoria().getNombre()));
+        super(producto -> producto.perteneceACategoria("McCafe"));
     }
 
 

@@ -3,8 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UtilImagenes.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/PanelProductos.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/DashboardCliente.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Service/Implement/ProductoServiceImpl.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Service/Interfaz/IUsuarioService.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Componentes/SelectorCantidad.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/DAO/Implement/ProductoCategoriaDAOImpl.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Service/Interfaz/IProductoService.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UIConstants.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/DAO/Implement/ProductoDAOImpl.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Usuario.java</file>
             <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Registro/Registro.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/Model/Producto.java</file>
             <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Login/Login.java</file>
+            <file>file:/C:/Users/Axel%20Stanley/Desktop/pantalla%20de%20auto%20servicio/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/Panels/PanelAlmuerzos.java</file>
         </group>
     </open-files>
 </project-private>

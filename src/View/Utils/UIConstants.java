@@ -234,7 +234,7 @@ public final class UIConstants {
     // ==========================================================
     public static final int ANCHO_BUSQUEDA = 320;
 
-    public static final int ALTURA_BUSQUEDA = 42;
+    public static final int ALTURA_BUSQUEDA = 56;
 
     public static final int RADIO_BUSQUEDA = 20;
 

@@ -2,6 +2,8 @@ package Model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Producto {
@@ -9,6 +11,12 @@ public class Producto {
     private int idProducto;
 
     private Categoria categoria;
+
+    // Categorías ADICIONALES a la principal (relación N:M vía la
+    // tabla producto_categoria). Ej: un "Combo Buenos días" cuya
+    // categoria principal es Combos puede llevar también Desayunos
+    // aquí, y así aparecer en ambos paneles del Cliente.
+    private List<Categoria> categoriasAdicionales = new ArrayList<>();
 
     private String nombre;
 
@@ -63,6 +71,44 @@ public class Producto {
  
     public Categoria getCategoria() {
         return categoria;
+    }
+
+    public List<Categoria> getCategoriasAdicionales() {
+        return categoriasAdicionales;
+    }
+
+    public void setCategoriasAdicionales(List<Categoria> categoriasAdicionales) {
+        this.categoriasAdicionales = (categoriasAdicionales != null)
+                ? categoriasAdicionales
+                : new ArrayList<>();
+    }
+
+    /**
+     * True si el producto pertenece a la categoría indicada, ya sea
+     * como categoría principal o como una de sus categorías
+     * adicionales. Es el método que deben usar los filtros de los
+     * paneles del Cliente (PanelDesayunos, PanelCombos, etc.) en vez
+     * de comparar directamente contra getCategoria().getNombre(),
+     * para que un mismo producto pueda mostrarse en varios paneles.
+     */
+    public boolean perteneceACategoria(String nombreCategoria) {
+
+        if (nombreCategoria == null) {
+            return false;
+        }
+
+        if (categoria != null && nombreCategoria.equalsIgnoreCase(categoria.getNombre())) {
+            return true;
+        }
+
+        for (Categoria c : categoriasAdicionales) {
+            if (c != null && nombreCategoria.equalsIgnoreCase(c.getNombre())) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
     public int getIdProducto() {
