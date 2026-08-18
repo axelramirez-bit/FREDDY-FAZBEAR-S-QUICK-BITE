@@ -1,13 +1,9 @@
 package View.Cliente.Panels;
 
-import View.Componentes.PanelTemporal;
+import View.Componentes.PanelFondo;
 
-public class PanelCarrito extends PanelTemporal{
 
-    public PanelCarrito(){
+public class PanelCarrito extends PanelFondo{
 
-        super("CARRITO");
-
-    }
 
 }
