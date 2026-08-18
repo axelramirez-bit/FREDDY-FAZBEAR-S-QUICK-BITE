@@ -13,6 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -148,12 +149,35 @@ public class TarjetaProducto extends PanelRedondeado {
         JLabel lblNombre = FabricaEtiquetas.crearTitulo(producto.getNombre());
         lblNombre.setAlignmentX(LEFT_ALIGNMENT);
 
-        JLabel lblDescripcion = FabricaEtiquetas.crearTexto(
-                "<html><body style='width:210px'>"
-                + producto.getDescripcion()
-                + "</body></html>"
-        );
+        // ANTES: JLabel con "<html><body style='width:210px'>...".
+        // BUG QUE ESTO CORRIGE: ese 210px estaba escrito a mano para
+        // el ancho fijo que tenía la tarjeta en ese momento. Ahora la
+        // tarjeta se estira para llenar la mitad del ancho de
+        // cualquier monitor (ver GridLayout(0,2) en
+        // Base.PanelProductos), así que un ancho de texto fijo en
+        // píxeles queda corto en un monitor grande (texto amontonado
+        // en una columna angosta dentro de una tarjeta ancha) y se
+        // desborda en uno chico. JTextArea con salto de línea por
+        // palabra SÍ recalcula su ajuste según el ancho real que le
+        // toque en cada layout — se ve y se comporta como una
+        // etiqueta normal (sin borde, sin fondo, no editable) pero el
+        // texto se adapta solo.
+        JTextArea lblDescripcion = new JTextArea(producto.getDescripcion());
+        lblDescripcion.setFont(AdministradorTema.fuenteNormal());
+        lblDescripcion.setForeground(AdministradorTema.colorTexto());
+        lblDescripcion.setLineWrap(true);
+        lblDescripcion.setWrapStyleWord(true);
+        lblDescripcion.setEditable(false);
+        lblDescripcion.setFocusable(false);
+        lblDescripcion.setOpaque(false);
+        lblDescripcion.setBorder(null);
         lblDescripcion.setAlignmentX(LEFT_ALIGNMENT);
+        // Le dice a BoxLayout "tómate todo el ancho disponible de la
+        // columna, no solo el que el texto necesitaría sin envolver".
+        lblDescripcion.setMaximumSize(new Dimension(
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE
+        ));
 
         JLabel lblPrecio = FabricaEtiquetas.crearSubtitulo(formatearPrecio());
         lblPrecio.setForeground(AdministradorTema.colorPrincipal());

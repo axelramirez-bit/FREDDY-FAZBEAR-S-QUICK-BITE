@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.util.List;
 import java.util.function.Predicate;
@@ -139,8 +139,8 @@ public class PanelProductos extends PanelFondo {
         // por eso nunca hubo scroll (this era directamente lo que
         // PanelContenido agregaba con CardLayout, sin envoltura).
         //
-        // BUG QUE ESTO CORRIGE: un JPanel con FlowLayout dentro de un
-        // JScrollPane, POR DEFECTO, no ajusta su ancho al del
+        // BUG QUE ESTO CORRIGE (1): un JPanel con FlowLayout dentro de
+        // un JScrollPane, POR DEFECTO, no ajusta su ancho al del
         // viewport — Swing le deja "ancho infinito" para calcular su
         // tamaño preferido, así que FlowLayout pone TODAS las
         // tarjetas en una sola fila horizontal en vez de saltar de
@@ -149,11 +149,25 @@ public class PanelProductos extends PanelFondo {
         // vertical. Se soluciona con PanelGridDesplazable, que
         // implementa Scrollable y devuelve true en
         // getScrollableTracksViewportWidth(): así el panel SIEMPRE
-        // toma el ancho del viewport, FlowLayout envuelve
-        // correctamente en varias filas, y el scroll queda vertical
-        // (comportamiento esperado, como en Bebidas/Postres/etc.).
-        panelGrid = new PanelGridDesplazable(new FlowLayout(
-                FlowLayout.LEFT,
+        // toma el ancho del viewport.
+        //
+        // BUG QUE ESTO CORRIGE (2): con FlowLayout, cuántas tarjetas
+        // caben por fila depende del tamaño de cada tarjeta y del
+        // ancho de la ventana — en un monitor grande caben 4 o 5, en
+        // uno chico 1 o 2, y las tarjetas SIEMPRE se dibujan a su
+        // tamaño preferido fijo (nunca se ven "grandes" en un monitor
+        // grande, solo se repiten más veces por fila). El requisito
+        // es que se muestren SIEMPRE exactamente 2 tarjetas por fila
+        // sin importar el monitor, y que la tarjeta se estire para
+        // ocupar el ancho disponible. GridLayout(0, 2, ...) hace
+        // exactamente eso: fuerza 2 columnas fijas y reparte el ancho
+        // real del viewport entre ellas por partes iguales (ignora el
+        // ancho preferido de la tarjeta), agregando filas nuevas
+        // automáticamente (0 = filas ilimitadas) a medida que hay más
+        // productos.
+        panelGrid = new PanelGridDesplazable(new GridLayout(
+                0,
+                2,
                 UIConstants.ESPACIO_ENTRE_TARJETAS,
                 UIConstants.ESPACIO_ENTRE_TARJETAS
         ));
@@ -299,18 +313,20 @@ public class PanelProductos extends PanelFondo {
     // ==========================================================
 
     /**
-     * JPanel + FlowLayout que SÍ envuelve correctamente dentro de un
+     * JPanel que SÍ se ajusta correctamente al ancho de un
      * JScrollPane. Un JPanel normal no implementa Scrollable, así que
-     * el JScrollPane no lo obliga a ajustarse al ancho del viewport y
-     * FlowLayout termina poniendo todo en una sola fila horizontal
-     * (el bug que hacía que Inicio se viera como una fila cortada de
-     * tarjetas sin texto). Con getScrollableTracksViewportWidth() ==
-     * true, el panel siempre toma el ancho disponible, FlowLayout
-     * envuelve en varias filas, y solo queda scroll vertical.
+     * el JScrollPane no lo obliga a ajustarse al ancho del viewport
+     * y su layout termina calculando el tamaño como si tuviera
+     * ancho infinito (el bug que hacía que Inicio se viera como una
+     * fila cortada de tarjetas sin texto, o todas amontonadas en una
+     * sola fila). Con getScrollableTracksViewportWidth() == true, el
+     * panel siempre toma el ancho disponible del viewport; el layout
+     * real (GridLayout de 2 columnas) se encarga de partir ese ancho
+     * en dos y solo queda scroll vertical.
      */
     private static class PanelGridDesplazable extends JPanel implements Scrollable {
 
-        PanelGridDesplazable(FlowLayout layout) {
+        PanelGridDesplazable(java.awt.LayoutManager layout) {
             super(layout);
         }
 

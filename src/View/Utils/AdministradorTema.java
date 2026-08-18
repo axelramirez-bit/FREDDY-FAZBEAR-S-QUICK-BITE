@@ -442,20 +442,31 @@ public final class AdministradorTema {
         return UIConstants.RADIO_TARJETA;
     }
 
+    // Estas 4 medidas SÍ se escalan según la resolución del monitor
+    // (a diferencia del resto de la clase, que usa los valores fijos
+    // de UIConstants). anchoTarjetaProducto()/altoTarjetaProducto()
+    // ya no determinan el ancho final de la tarjeta en pantalla —
+    // eso lo decide GridLayout(0,2) en Base.PanelProductos para
+    // garantizar siempre 2 columnas — pero sí definen su ALTO base y
+    // el tamaño de la imagen, que deben verse proporcionalmente más
+    // grandes en un monitor grande y más chicos en una laptop.
+    // DisenoAdaptable usa como referencia un diseño pensado para
+    // 1920x1080 y escala hacia arriba o hacia abajo según la
+    // resolución real detectada al iniciar la aplicación.
     public static int anchoTarjetaProducto() {
-        return UIConstants.ANCHO_TARJETA_PRODUCTO;
+        return DisenoAdaptable.escalarAncho(UIConstants.ANCHO_TARJETA_PRODUCTO);
     }
 
     public static int altoTarjetaProducto() {
-        return UIConstants.ALTO_TARJETA_PRODUCTO;
+        return DisenoAdaptable.escalarAlto(UIConstants.ALTO_TARJETA_PRODUCTO);
     }
 
     public static int altoImagenProducto() {
-        return UIConstants.ALTO_IMAGEN_PRODUCTO;
+        return DisenoAdaptable.escalarAlto(UIConstants.ALTO_IMAGEN_PRODUCTO);
     }
 
     public static int anchoImagenProducto() {
-        return UIConstants.ANCHO_IMAGEN_PRODUCTO;
+        return DisenoAdaptable.escalarAncho(UIConstants.ANCHO_IMAGEN_PRODUCTO);
     }
 
     // ==========================================================
