@@ -14,6 +14,7 @@ import Service.Interfaz.IProductoService;
 import Service.ServicioBusqueda;
 import Utils.Sesion;
 import View.Componentes.PanelFondo;
+import View.Componentes.RejillaResponsiva;
 import View.Componentes.TarjetaProducto;
 import View.Utils.UIConstants;
 
@@ -22,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.util.List;
 import java.util.function.Predicate;
@@ -151,25 +151,32 @@ public class PanelProductos extends PanelFondo {
         // getScrollableTracksViewportWidth(): así el panel SIEMPRE
         // toma el ancho del viewport.
         //
-        // BUG QUE ESTO CORRIGE (2): con FlowLayout, cuántas tarjetas
-        // caben por fila depende del tamaño de cada tarjeta y del
-        // ancho de la ventana — en un monitor grande caben 4 o 5, en
-        // uno chico 1 o 2, y las tarjetas SIEMPRE se dibujan a su
-        // tamaño preferido fijo (nunca se ven "grandes" en un monitor
-        // grande, solo se repiten más veces por fila). El requisito
-        // es que se muestren SIEMPRE exactamente 2 tarjetas por fila
-        // sin importar el monitor, y que la tarjeta se estire para
-        // ocupar el ancho disponible. GridLayout(0, 2, ...) hace
-        // exactamente eso: fuerza 2 columnas fijas y reparte el ancho
-        // real del viewport entre ellas por partes iguales (ignora el
-        // ancho preferido de la tarjeta), agregando filas nuevas
-        // automáticamente (0 = filas ilimitadas) a medida que hay más
-        // productos.
-        panelGrid = new PanelGridDesplazable(new GridLayout(
-                0,
-                2,
+        // BUG QUE ESTO CORRIGE (2): antes se usaba GridLayout(0, 2, ...),
+        // que fuerza SIEMPRE 2 columnas fijas y además reparte el ancho
+        // (y el alto) real del viewport entre las celdas por partes
+        // iguales, IGNORANDO el tamaño preferido de la tarjeta. Eso traía
+        // dos problemas: (a) en pantalla completa también se mostraban
+        // varias tarjetas por fila/pantalla, encimadas/apretadas; y (b) al
+        // repartir también el alto entre todas las filas visibles, con
+        // varios productos cada fila quedaba más baja de lo que la
+        // tarjeta necesita para mostrar completo su contenido, cortando lo
+        // último del panel (la fila de cantidad -selectorCantidad, con sus
+        // botones "-"/"+"- y el botón "Agregar al carrito" quedaban fuera
+        // del área visible de la tarjeta, o se veían apretados/incompletos).
+        //
+        // RejillaResponsiva soluciona ambas cosas: NUNCA cambia el tamaño
+        // de la tarjeta (usa siempre el tamaño real definido en el tema:
+        // AdministradorTema.anchoTarjetaProducto()/altoTarjetaProducto(),
+        // el mismo tamaño con el que ya estaba en git), y agrega tantas
+        // filas verticales como haga falta -cada una con la ALTURA REAL de
+        // la tarjeta, nunca comprimida- dejando el scroll vertical del
+        // JScrollPane hacer el resto. El "2" de abajo es el máximo de
+        // columnas; se deja en 1 para que, sin importar el tamaño de la
+        // pantalla (chica o pantalla completa), SIEMPRE se muestre una
+        // sola tarjeta por fila, tal como se pidió.
+        panelGrid = new PanelGridDesplazable(new RejillaResponsiva(
                 UIConstants.ESPACIO_ENTRE_TARJETAS,
-                UIConstants.ESPACIO_ENTRE_TARJETAS
+                1
         ));
         panelGrid.setOpaque(false);
 

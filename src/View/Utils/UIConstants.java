@@ -308,9 +308,9 @@ public final class UIConstants {
     // mostraban la imagen, sin nombre/descripción/precio/cantidad/
     // botón "Agregar al carrito". Se agranda la tarjeta y se achica
     // un poco la imagen para que el contenido tenga espacio real.
-    public static final int ANCHO_TARJETA_PRODUCTO = 420;
+    public static final int ANCHO_TARJETA_PRODUCTO = 720;
 
-    public static final int ALTO_TARJETA_PRODUCTO = 230;
+    public static final int ALTO_TARJETA_PRODUCTO = 270;
 
     public static final int PADDING_TARJETA = 24;
 

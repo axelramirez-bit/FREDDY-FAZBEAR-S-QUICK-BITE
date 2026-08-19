@@ -472,6 +472,76 @@ VALUES
 (8, NULL, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, TRUE, TRUE);
 
 -- ------------------------------------------------------------
+-- imagen de producto
+-- BUG QUE ESTO CORRIGE: el INSERT INTO producto de arriba nunca
+-- llenaba la columna 'imagen', así que TODOS los productos
+-- quedaban con imagen = NULL. UtilImagenes.producto(null,...)
+-- siempre cae en la imagen genérica de respaldo
+-- (Comidarealista.png), sin importar qué archivos existan en
+-- Resources/Productos. Por eso el catálogo del Cliente mostraba
+-- la misma imagen genérica en TODAS las tarjetas: no era un bug
+-- de la vista ni del DAO (ProductoDAOImpl.mapear ya asigna bien
+-- rs.getString("imagen")), sino que la base de datos nunca pedía
+-- ninguna imagen en particular. Se actualiza aquí el nombre exacto
+-- de archivo (sin extensión, UtilImagenes agrega '.png') para cada
+-- producto que sí tiene una imagen disponible en Resources/Productos.
+-- Los productos sin archivo correspondiente quedan con imagen NULL
+-- y usan el respaldo genérico a propósito (no falta un archivo real).
+UPDATE producto SET imagen = 'Desayuno Fazbear Clasico' WHERE nombre = 'Desayuno Fazbear Clásico';
+UPDATE producto SET imagen = 'Pancakes Freddy' WHERE nombre = 'Pancakes Freddy';
+UPDATE producto SET imagen = 'Omelette Rockstar' WHERE nombre = 'Omelette Rockstar';
+UPDATE producto SET imagen = 'Sandwich Morning Bite' WHERE nombre = 'Sándwich Morning Bite';
+UPDATE producto SET imagen = 'Waffle Golden Bear' WHERE nombre = 'Waffle golden bear';
+UPDATE producto SET imagen = 'Burrito Despertador' WHERE nombre = 'Burrito Despertador';
+UPDATE producto SET imagen = 'Croissant Supremo' WHERE nombre = 'Croissant Supremo';
+UPDATE producto SET imagen = 'Combo Buenos Dias' WHERE nombre = 'Combo Buenos días';
+UPDATE producto SET imagen = 'Freddy Burger Deluxe' WHERE nombre = 'Freddy Burger Deluxe';
+UPDATE producto SET imagen = 'Bonnie BBQ Burger' WHERE nombre = 'Bonnie BBQ Burger';
+UPDATE producto SET imagen = 'Chica Chicken Burger' WHERE nombre = 'Chica Chicken Burger';
+UPDATE producto SET imagen = 'Foxy Triple Burger' WHERE nombre = 'Foxy Triple Burger';
+UPDATE producto SET imagen = 'Pizza Party Personal' WHERE nombre = 'Pizza Party Personal';
+UPDATE producto SET imagen = 'Wrap Fazbear' WHERE nombre = 'Wrap Fazbear';
+UPDATE producto SET imagen = 'Combo Fazbear Supremo' WHERE nombre = 'Combo Fazbear Supremo';
+UPDATE producto SET imagen = 'Chicken Tenders Basket' WHERE nombre = 'Chicken Tenders Basket';
+UPDATE producto SET imagen = 'Brownie Freddy' WHERE nombre = 'Brownie Freddy';
+UPDATE producto SET imagen = 'Sundae Fazbear' WHERE nombre = 'Sundae Fazbear';
+UPDATE producto SET imagen = 'Pastel Golden' WHERE nombre = 'Pastel Golden';
+UPDATE producto SET imagen = 'Cheesecake Puppet' WHERE nombre = 'Cheesecake Puppet';
+UPDATE producto SET imagen = 'Galletas Animatronic' WHERE nombre = 'Galletas Animatronic';
+UPDATE producto SET imagen = 'Mini Donuts' WHERE nombre = 'Mini donuts';
+UPDATE producto SET imagen = 'Banana Split Freddy' WHERE nombre = 'Banana Split Freddy';
+UPDATE producto SET imagen = 'Volcan de Chocolate' WHERE nombre = 'Volcán de chocolate';
+UPDATE producto SET imagen = 'Espresso Fazbear' WHERE nombre = 'Espresso Fazbear';
+UPDATE producto SET imagen = 'Cappuccino Freddy' WHERE nombre = 'Cappuccino Freddy';
+UPDATE producto SET imagen = 'Latte Vanilla' WHERE nombre = 'Latte Vainilla';
+UPDATE producto SET imagen = 'Mocha Chica' WHERE nombre = 'Mocha Chica';
+UPDATE producto SET imagen = 'Chocolate Caliente' WHERE nombre = 'Chocolate Caliente';
+UPDATE producto SET imagen = 'Frappe Cookies' WHERE nombre = 'Frappé Cookies';
+UPDATE producto SET imagen = 'Te Helado Limon' WHERE nombre = 'Té Helado Limón';
+UPDATE producto SET imagen = 'Muffin Arandanos' WHERE nombre = 'Muffin Arándanos';
+UPDATE producto SET imagen = 'Refresco Mediano' WHERE nombre = 'Refresco Mediano';
+UPDATE producto SET imagen = 'Refresco Grande' WHERE nombre = 'Refresco Grande';
+UPDATE producto SET imagen = 'Limonada Natural' WHERE nombre = 'Limonada natural';
+UPDATE producto SET imagen = 'Jugo de Naranja' WHERE nombre = 'Jugo de naranja';
+UPDATE producto SET imagen = 'Malteada Chocolate' WHERE nombre = 'Malteada Chocolate';
+UPDATE producto SET imagen = 'Malteada Fresa' WHERE nombre = 'Malteada Fresa';
+UPDATE producto SET imagen = 'Agua Embotellada' WHERE nombre = 'Agua Embotellada';
+UPDATE producto SET imagen = 'Smoothie Tropical' WHERE nombre = 'Smoothie Tropical';
+UPDATE producto SET imagen = 'Malteada Fresa' WHERE nombre = 'Malteada de Fresa';
+UPDATE producto SET imagen = 'Papas Clasicas' WHERE nombre = 'Papas Clásicas';
+UPDATE producto SET imagen = 'Papas con Queso' WHERE nombre = 'Papas con Queso';
+UPDATE producto SET imagen = 'Aros de cebolla' WHERE nombre = 'Aros de Cebolla';
+UPDATE producto SET imagen = 'Nuggets (6 piezas)' WHERE nombre = 'Nuggets (6 piezas)';
+UPDATE producto SET imagen = 'Mozzarella Sticks' WHERE nombre = 'Mozzarella Sticks';
+UPDATE producto SET imagen = 'Alitas BBQ' WHERE nombre = 'Alitas BBQ';
+UPDATE producto SET imagen = 'Nachos Supreme' WHERE nombre = 'Nachos Supreme';
+UPDATE producto SET imagen = 'Papas Fazbear' WHERE nombre = 'Papas Fazbear';
+UPDATE producto SET imagen = 'Cajita Freddy Burger' WHERE nombre = 'Cajita Freddy Burger';
+UPDATE producto SET imagen = 'Cajita Nuggets' WHERE nombre = 'Cajita Nuggets';
+UPDATE producto SET imagen = 'Cajita Mini Pizza' WHERE nombre = 'Cajita Mini Pizza';
+UPDATE producto SET imagen = 'Cajita Fazbear Deluxe' WHERE nombre = 'Cajita Fazbear Deluxe';
+
+-- ------------------------------------------------------------
 -- producto_categoria
 -- Cada producto conserva, como mínimo, su categoría principal
 -- también dentro de la tabla intermedia N:M, para que las
@@ -523,3 +593,67 @@ SELECT id_producto, id_categoria FROM producto;
 -- GROUP BY c.nombre
 -- ORDER BY c.nombre;
 
+-- ===============================================================
+-- FREDDY-FAZBEAR'S QUICK BITE
+-- ---------------------------------------------------------------
+-- Crea las cuentas de Administrador de los 4 contribuidores del
+-- repositorio (identificados por su historial de commits en git):
+--
+--   Axel Ramirez     - axelramirez@emilianisomascos.edu.gt
+--   Melany Mejía     - melanymejia@emilianisomascos.edu.gt
+--   Diego Quisqué    - diegoquisque@emilianisomascos.edu.gt
+--   Cristhian Pocon  - cristhianpocon@emilianisomascos.edu.gt
+--
+-- Contraseña para las 4 cuentas: admin8181920
+--
+-- La contraseña NO se guarda en texto plano: cada hash de abajo se
+-- generó con el mismo algoritmo que usa la app (BCrypt.hashpw con
+-- salt aleatorio, ver Utils/Encriptador.java) y ya se verificó con
+-- BCrypt.checkpw() que "admin8181920" abre cada uno de los 4
+-- hashes. Cada hash es distinto entre sí (salt aleatorio distinto)
+-- aunque la contraseña real sea la misma para las 4 cuentas.
+--
+-- Requiere que ya se haya corrido FreddyQuickBite.sql (usa el
+-- id_rol de 'Administrador' por nombre, no un número fijo, para
+-- no depender del orden en que se insertó la tabla rol).
+--
+-- Usa INSERT IGNORE: si vuelves a correr este script no falla por
+-- el UNIQUE de correo, simplemente no duplica las cuentas que ya
+-- existan.
+-- ===============================================================
+
+USE FreddyQuickBite;
+
+INSERT IGNORE INTO usuario
+    (id_rol, nombre, apellido, correo, telefono, password, estado)
+VALUES
+    (
+        (SELECT id_rol FROM rol WHERE nombre = 'Administrador'),
+        'Axel', 'Ramirez', 'axelramirez@emilianisomascos.edu.gt', NULL,
+        '$2a$10$EhVVoNTKyHAOGM2.ksv9meisk26REoVO2BaX0XZNO2Ue9Q1LGZC4u',
+        TRUE
+    ),
+    (
+        (SELECT id_rol FROM rol WHERE nombre = 'Administrador'),
+        'Melany', 'Mejía', 'melanymejia@emilianisomascos.edu.gt', NULL,
+        '$2a$10$Sa7iNXPxRaaCAMFIo2JZGuMc2JOWbikuxRSP.7dH3Q5zks1UTHPP2',
+        TRUE
+    ),
+    (
+        (SELECT id_rol FROM rol WHERE nombre = 'Administrador'),
+        'Diego', 'Quisqué', 'diegoquisque@emilianisomascos.edu.gt', NULL,
+        '$2a$10$h2Xg0TSROZJ9rgMs8dDPhepehLIOaniTmU74OQqTFS.kzWhxr8uSy',
+        TRUE
+    ),
+    (
+        (SELECT id_rol FROM rol WHERE nombre = 'Administrador'),
+        'Cristhian', 'Pocon', 'cristhianpocon@emilianisomascos.edu.gt', NULL,
+        '$2a$10$McDF0IbbjhCblMB9UQZXW.96ezbv0B0y1j0Z24jn22bJv4hnUyZd6',
+        TRUE
+    );
+
+-- Verificación rápida: debe mostrar las 4 cuentas con rol Administrador.
+SELECT u.id_usuario, u.nombre, u.apellido, u.correo, r.nombre AS rol
+FROM usuario u
+JOIN rol r ON r.id_rol = u.id_rol
+WHERE r.nombre = 'Administrador';
