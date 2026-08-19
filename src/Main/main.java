@@ -4,35 +4,59 @@ package Main;
 import Config.Conexion;
 import Config.Configuracion;
 import View.Bienvenida.Bienvenida;
+import View.Splash.SplashScreen;
 import View.Utils.AdministradorTema;
+import javax.swing.SwingUtilities;
 
 
 public class main {
 
 
     public static void main(String[] args) {
-        AdministradorTema.inicializar();
-        new Bienvenida().setVisible(true);
-        System.out.println(
-                Configuracion.getUsuario()
-        );
 
-        System.out.println(
-                Configuracion.getPassword()
-        );
+        SwingUtilities.invokeLater(() -> {
 
-        System.out.println(
-                Configuracion.getUrl()
-        );
-        Conexion conexion = Conexion.getInstancia();
+            // El tema se aplica antes de crear cualquier ventana,
+            // incluida la pantalla de carga.
+            AdministradorTema.inicializar();
 
-        if (conexion.estaConectado()) {
+            SplashScreen splash = new SplashScreen();
 
-            System.out.println("La conexión funciona correctamente.");
+            splash.iniciarCarga(
+                    // ── Tareas reales de inicialización ───────
+                    // Se ejecutan en segundo plano mientras se
+                    // anima la pantalla de carga, para no
+                    // congelar la animación.
+                    () -> {
+                        System.out.println(
+                                Configuracion.getUsuario()
+                        );
 
-        }
+                        System.out.println(
+                                Configuracion.getPassword()
+                        );
 
-        conexion.cerrarConexion();
+                        System.out.println(
+                                Configuracion.getUrl()
+                        );
+
+                        Conexion conexion = Conexion.getInstancia();
+
+                        if (conexion.estaConectado()) {
+
+                            System.out.println("La conexión funciona correctamente.");
+
+                        }
+
+                        conexion.cerrarConexion();
+                    },
+                    // ── Al terminar la carga ──────────────────
+                    // Se ejecuta en el hilo de Swing: abre la
+                    // ventana de Bienvenida.
+                    () -> new Bienvenida().setVisible(true)
+            );
+        });
+
         Runtime.getRuntime()
                 .addShutdownHook(
                         new Thread(() -> {

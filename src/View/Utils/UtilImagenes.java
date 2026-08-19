@@ -11,12 +11,12 @@ import javax.swing.ImageIcon;
  *
  */
 public final class UtilImagenes {
-private static final String RUTA_ICONOS = "/Resources/Iconos/";
-private static final String RUTA_IMAGENES = "/Resources/Imagenes/";
-private static final String RUTA_PRODUCTOS = "/Resources/Productos/";
-private static final String EXTENSION = ".png";
-    private UtilImagenes() {
-    }
+
+    private static final String RUTA_ICONOS = "/Resources/Iconos/";
+    private static final String RUTA_IMAGENES = "/Resources/Imagenes/";
+    private static final String RUTA_PRODUCTOS = "/Resources/Productos/";
+    private static final String RUTA_BARRA_CARGA = "/Resources/BarraCarga/";
+    private static final String EXTENSION = ".png";
 
     // ==========================================================
     // CARGAR IMAGEN
@@ -58,8 +58,7 @@ private static final String EXTENSION = ".png";
         ImageIcon icono = cargarImagen(ruta);
 
         if (icono.getIconWidth() <= 0) {
-            // Imagen no encontrada: se devuelve un ImageIcon vacío
-            // en vez de tronar con NullPointerException.
+            // Imagen no encontrada
             return icono;
         }
 
@@ -71,108 +70,143 @@ private static final String EXTENSION = ".png";
         return new ImageIcon(imagen);
     }
 
-public static ImageIcon icono(String nombre) {
+    // ==========================================================
+    // ICONOS
+    // ==========================================================
 
-    return cargarImagen(
-            RUTA_ICONOS + nombre + EXTENSION);
-}
+    public static ImageIcon icono(String nombre) {
 
-public static ImageIcon icono(
-        String nombre,
-        int tamaño) {
+        return cargarImagen(
+                RUTA_ICONOS + nombre + EXTENSION);
+    }
 
-    return cargarImagen(
-            RUTA_ICONOS + nombre + EXTENSION,
-            tamaño,
-            tamaño);
-}
+    public static ImageIcon icono(
+            String nombre,
+            int tamaño) {
 
-public static ImageIcon icono(
-        String nombre,
-        int ancho,
-        int alto) {
+        return cargarImagen(
+                RUTA_ICONOS + nombre + EXTENSION,
+                tamaño,
+                tamaño);
+    }
 
-    return cargarImagen(
-            RUTA_ICONOS + nombre + EXTENSION,
-            ancho,
-            alto);
-}
+    public static ImageIcon icono(
+            String nombre,
+            int ancho,
+            int alto) {
+
+        return cargarImagen(
+                RUTA_ICONOS + nombre + EXTENSION,
+                ancho,
+                alto);
+    }
+
+    // ==========================================================
+    // BARRA DE CARGA
+    // ==========================================================
+
+    /**
+     * Carga una imagen de la animación de la barra de carga.
+     *
+     * @param numero Número del frame.
+     * @return ImageIcon del frame.
+     */
+    public static ImageIcon cargando(int numero) {
+
+        return cargarImagen(
+                RUTA_BARRA_CARGA + numero + EXTENSION);
+    }
 
     // ==========================================================
     // PRODUCTOS
     // ==========================================================
+
     /**
      * Carga una imagen de producto.
      *
      * @param nombre Nombre de la imagen.
      * @return ImageIcon
      */
-public static ImageIcon producto(String nombre) {
+    public static ImageIcon producto(String nombre) {
 
-    if (nombre == null || nombre.isBlank()) {
-        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+        if (nombre == null || nombre.isBlank()) {
+            return cargarImagen(
+                    RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+        }
+
+        ImageIcon icono = cargarImagen(
+                RUTA_PRODUCTOS + nombre + EXTENSION);
+
+        if (icono.getIconWidth() <= 0) {
+
+            return cargarImagen(
+                    RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+        }
+
+        return icono;
     }
 
-    ImageIcon icono = cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION);
+    public static ImageIcon producto(
+            String nombre,
+            int ancho,
+            int alto) {
 
-    if (icono.getIconWidth() <= 0) {
-        // El producto tiene nombre de imagen pero el archivo no
-        // existe en Resources/Productos (nombre desactualizado o
-        // archivo faltante) -> imagen genérica de respaldo, en vez
-        // de dejar la tarjeta en blanco.
-        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION);
+        if (nombre == null || nombre.isBlank()) {
+
+            return cargarImagen(
+                    RUTA_IMAGENES + "Comidarealista" + EXTENSION,
+                    ancho,
+                    alto);
+        }
+
+        ImageIcon icono = cargarImagen(
+                RUTA_PRODUCTOS + nombre + EXTENSION);
+
+        if (icono.getIconWidth() <= 0) {
+
+            return cargarImagen(
+                    RUTA_IMAGENES + "Comidarealista" + EXTENSION,
+                    ancho,
+                    alto);
+        }
+
+        return cargarImagen(
+                RUTA_PRODUCTOS + nombre + EXTENSION,
+                ancho,
+                alto);
     }
-
-    return icono;
-}
-
-public static ImageIcon producto(
-        String nombre,
-        int ancho,
-        int alto) {
-
-    if (nombre == null || nombre.isBlank()) {
-        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION, ancho, alto);
-    }
-
-    ImageIcon icono = cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION);
-
-    if (icono.getIconWidth() <= 0) {
-        return cargarImagen(RUTA_IMAGENES + "Comidarealista" + EXTENSION, ancho, alto);
-    }
-
-    return cargarImagen(RUTA_PRODUCTOS + nombre + EXTENSION, ancho, alto);
-}
 
     // ==========================================================
     // IMÁGENES GENERALES
     // ==========================================================
+
     /**
      * Carga una imagen de la carpeta Imagenes.
      *
      * @param nombre Nombre de la imagen.
      * @return ImageIcon
      */
-public static ImageIcon imagen(String nombre) {
+    public static ImageIcon imagen(String nombre) {
 
-    return cargarImagen(
-            RUTA_IMAGENES + nombre + EXTENSION);
-}
+        return cargarImagen(
+                RUTA_IMAGENES + nombre + EXTENSION);
+    }
 
-public static ImageIcon imagen(
-        String nombre,
-        int ancho,
-        int alto) {
+    public static ImageIcon imagen(
+            String nombre,
+            int ancho,
+            int alto) {
 
-    return cargarImagen(
-            RUTA_IMAGENES + nombre + EXTENSION,
-            ancho,
-            alto);
-}
+        return cargarImagen(
+                RUTA_IMAGENES + nombre + EXTENSION,
+                ancho,
+                alto);
+    }
 
     // ==========================================================
     // LOGOTIPO
     // ==========================================================
+
     /**
      * Devuelve el logotipo principal del sistema.
      *
@@ -186,12 +220,15 @@ public static ImageIcon imagen(
                 UIConstants.TAMAÑO_LOGO);
     }
 
+    // ==========================================================
+    // IMAGEN DE PRODUCTO
+    // ==========================================================
+
     public static ImageIcon imagenProducto(
-        String nombre,
-        int ancho,
-        int alto) {
+            String nombre,
+            int ancho,
+            int alto) {
 
-    return producto(nombre, ancho, alto);
-
-}
+        return producto(nombre, ancho, alto);
+    }
 }
