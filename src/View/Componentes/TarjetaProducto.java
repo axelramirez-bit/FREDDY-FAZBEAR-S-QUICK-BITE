@@ -149,6 +149,23 @@ public class TarjetaProducto extends PanelRedondeado {
         JLabel lblNombre = FabricaEtiquetas.crearTitulo(producto.getNombre());
         lblNombre.setAlignmentX(LEFT_ALIGNMENT);
 
+        // BUG QUE ESTO CORRIGE: FabricaEtiquetas.crearTitulo() aplica
+        // AdministradorTema.fuenteTituloNegrita(), que es la fuente de
+        // TÍTULO DE SECCIÓN (UIConstants.TAMANO_TITULO_SECCION = 40px,
+        // pensada para encabezados de página como "Desayunos" o
+        // "Combos"), no para el nombre dentro de una tarjeta. Con un
+        // nombre de producto en 40px, la etiqueta por sí sola ya ocupa
+        // buena parte de los ~230px de alto de la tarjeta, empujando
+        // todo lo que va debajo (descripción, precio, el selector de
+        // cantidad "-"/"+" y el botón "Agregar al carrito") fuera del
+        // área visible de la tarjeta — esa era la causa real de que el
+        // selector de cantidad "no apareciera". Ya existía en el
+        // proyecto AdministradorTema.fuenteTituloProducto(), que usa
+        // UIConstants.TAMANO_TITULO_PRODUCTO = 19px (el tamaño pensado
+        // específicamente para esto, ver su comentario: "Granizado de
+        // Arándano"); solo faltaba usarla aquí en vez de la de sección.
+        lblNombre.setFont(AdministradorTema.fuenteTituloProducto());
+
         // ANTES: JLabel con "<html><body style='width:210px'>...".
         // BUG QUE ESTO CORRIGE: ese 210px estaba escrito a mano para
         // el ancho fijo que tenía la tarjeta en ese momento. Ahora la
