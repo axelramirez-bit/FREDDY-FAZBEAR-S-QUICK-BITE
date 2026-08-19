@@ -4,7 +4,6 @@ package Main;
 import Config.Conexion;
 import Config.Configuracion;
 import View.Bienvenida.Bienvenida;
-import View.Cliente.DashboardCliente;
 import View.Utils.AdministradorTema;
 
 
