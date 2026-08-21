@@ -3,14 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/Main/main.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Componentes/RejillaResponsiva.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Componentes/TarjetaProducto.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/Panels/PanelCarrito.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Componentes/SelectorCantidad.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/Base/PanelProductos.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Utils/UIConstants.java</file>
-            <file>file:/C:/Users/Computacion/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Cliente/DashboardCliente.java</file>
+            <file>file:/C:/Users/HP/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Administrador/Panels/PanelVentas.java</file>
+            <file>file:/C:/Users/HP/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/Service/Interfaz/IVentasService.java</file>
+            <file>file:/C:/Users/HP/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Administrador/Panels/PanelReportes.java</file>
+            <file>file:/C:/Users/HP/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/config.properties</file>
+            <file>file:/C:/Users/HP/Desktop/FREDDY-FAZBEAR-S-QUICK-BITE/src/View/Administrador/DashboardAdministrador.java</file>
         </group>
     </open-files>
 </project-private>
