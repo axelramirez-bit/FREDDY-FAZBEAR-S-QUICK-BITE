@@ -29,22 +29,7 @@ import javax.swing.Timer;
  *
  * Usa las 6 imágenes de la carpeta "Resources/BarraCarga"
  * (1.png ... 6.png), que ya incluyen su propio dibujo de fondo,
- * texto y barra de progreso. La clase simplemente va alternando
- * esas imágenes en orden para simular el avance de la carga,
- * mientras en segundo plano se ejecutan las tareas reales de
- * inicialización (tema, conexión a la base de datos, etc.).
- *
- * Al ser una ventana sin decoración (undecorated), incluye sus
- * propios botones de minimizar y cerrar, imitando los controles
- * normales de una ventana de Windows.
- *
- * Uso típico (desde Main):
- *
- *     SplashScreen splash = new SplashScreen();
- *     splash.iniciarCarga(
- *             () -> { / tareas reales de inicialización / },
- *             () -> new Bienvenida().setVisible(true)
- *     );
+ * texto y barra de progreso. 
  * ===============================================================
  */
 public class SplashScreen extends JFrame {

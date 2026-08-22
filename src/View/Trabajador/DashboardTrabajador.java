@@ -3,6 +3,7 @@ package View.Trabajador;
 import Base.DashboardBase;
 import Base.OpcionesTrabajador;
 import Base.Rol;
+import View.Cliente.DashboardCliente;
 import View.Trabajador.Panels.PanelHistorial;
 import View.Trabajador.Panels.PanelInicio;
 import View.Trabajador.Panels.PanelPedidosEnPreparacion;
@@ -63,6 +64,21 @@ public class DashboardTrabajador extends DashboardBase {
     @Override
     protected String vistaInicial() {
         return OpcionesTrabajador.INICIO.getIdVista();
+    }
+
+    /**
+     * ===============================================================
+     * Espejo de DashboardCliente.onConfiguracion(): el botón que antes
+     * abría "Configuración" ahora regresa a la ventana de catálogo +
+     * carrito, para que el Cajero pueda seguir tomando pedidos sin
+     * cerrar sesión.
+     * ===============================================================
+     */
+    @Override
+    public void onConfiguracion() {
+        DashboardCliente dashboard = new DashboardCliente();
+        dashboard.setVisible(true);
+        dispose();
     }
 
     // ==========================================================

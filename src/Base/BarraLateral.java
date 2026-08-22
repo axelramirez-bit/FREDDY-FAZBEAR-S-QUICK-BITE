@@ -232,9 +232,9 @@ public class BarraLateral extends JPanel {
         );
 
         ItemMenu itemConfiguracion = new ItemMenu(
-                "Configuración",
+                textoOpcionEspecial(),
                 IdVistaEspecial.CONFIGURACION,
-                "icon_configuracion"
+                iconoOpcionEspecial()
         );
 
         itemConfiguracion.setItemMenuListener(
@@ -260,6 +260,48 @@ public class BarraLateral extends JPanel {
         panel.add(itemCerrarSesion);
 
         return panel;
+    }
+
+    // ==========================================================
+    // TEXTO/ÍCONO DEL BOTÓN ESPECIAL (antes siempre "Configuración")
+    //
+    // Con el modelo de 2 actores, el mismo Cajero opera tanto la
+    // ventana de catálogo+carrito (rol CLIENTE) como la de gestión
+    // de pedidos (rol TRABAJADOR), y este botón —que antes abría
+    // una "Configuración" sin panel propio— ahora es el atajo para
+    // saltar de una ventana a la otra (ver
+    // DashboardCliente/DashboardTrabajador.onConfiguracion()).
+    // Administrador no tiene ese salto, así que conserva el texto
+    // y el ícono originales sin ningún cambio.
+    // ==========================================================
+    private String textoOpcionEspecial() {
+
+        switch (rol) {
+
+            case CLIENTE:
+                return "Gestionar pedidos";
+
+            case TRABAJADOR:
+                return "Punto de venta";
+
+            default:
+                return "Configuración";
+        }
+    }
+
+    private String iconoOpcionEspecial() {
+
+        switch (rol) {
+
+            case CLIENTE:
+                return "icon_pedidos";
+
+            case TRABAJADOR:
+                return "icon_carrito";
+
+            default:
+                return "icon_configuracion";
+        }
     }
 
     // ==========================================================

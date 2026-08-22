@@ -13,6 +13,7 @@ import View.Cliente.Panels.PanelInicio;
 import View.Cliente.Panels.PanelMcCafe;
 import View.Cliente.Panels.PanelPostres;
 import View.Cliente.Panels.PanelPromociones;
+import View.Trabajador.DashboardTrabajador;
 
 import javax.swing.SwingUtilities;
 
@@ -51,6 +52,25 @@ public class DashboardCliente extends DashboardBase {
     @Override
     protected String vistaInicial() {
         return "INICIO";
+    }
+
+    /**
+     * ===============================================================
+     * Con el modelo de 2 actores, el mismo Cajero opera esta ventana
+     * (catálogo + carrito, para armar el pedido) y la ventana de
+     * Trabajador (gestionar el estado del pedido). El botón que antes
+     * abría "Configuración" (que nunca tuvo panel propio) ahora es el
+     * atajo para saltar de una ventana a la otra sin cerrar sesión.
+     *
+     * No se toca DashboardBase ni BarraLateral: onConfiguracion() ya
+     * estaba pensado para que cada DashboardX lo redefina.
+     * ===============================================================
+     */
+    @Override
+    public void onConfiguracion() {
+        DashboardTrabajador dashboard = new DashboardTrabajador();
+        dashboard.setVisible(true);
+        dispose();
     }
 
 
