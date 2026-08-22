@@ -1,6 +1,7 @@
 package DAO.Implement;
 
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.IProductoCategoriaDAO;
 import DAO.Interfaz.IProductoDAO;
 import Model.Categoria;
@@ -55,7 +56,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -101,7 +102,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -122,7 +123,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -178,7 +179,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
 
         }
 
@@ -201,7 +202,7 @@ public class ProductoDAOImpl implements IProductoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
 
         }
 

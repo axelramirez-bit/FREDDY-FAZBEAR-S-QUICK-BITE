@@ -1,6 +1,7 @@
 package DAO.Implement;
  
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.ICategoriaDAO;
 import Model.Categoria;
  
@@ -30,7 +31,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             return ps.executeUpdate() > 0;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
  
@@ -55,7 +56,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             return ps.executeUpdate() > 0;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -74,7 +75,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             return ps.executeUpdate() > 0;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -97,7 +98,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             }
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
  
         return null;
@@ -119,7 +120,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             }
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
  
         return categorias;
@@ -142,7 +143,7 @@ public class CategoriaDAOImpl implements ICategoriaDAO {
             }
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
  
         return categorias;

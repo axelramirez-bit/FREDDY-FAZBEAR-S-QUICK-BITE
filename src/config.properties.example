@@ -1,0 +1,25 @@
+# ===============================================================
+# Plantilla de configuración. Copiar como "config.properties"
+# (mismo folder) y poner ahí los valores reales de tu máquina.
+#
+# config.properties NO se sube a git (ver .gitignore) porque
+# contiene la contraseña de la base de datos. config.properties.example
+# sí se sube, para que cualquiera que clone el repo sepa qué
+# variables necesita definir.
+# ===============================================================
+
+db.host=localhost
+db.port=3306
+db.name=FreddyQuickBite
+db.user=root
+db.password=CAMBIA_ESTO
+
+app.name=Freddy Fazbear's Quick Bite
+app.version=1.0.0
+app.empresa=Freddy Fazbear's Quick Bite
+
+ui.theme=light
+ui.language=es
+ui.fullscreen=false
+
+log.level=INFO

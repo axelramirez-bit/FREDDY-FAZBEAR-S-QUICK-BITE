@@ -1,6 +1,7 @@
 package DAO.Implement;
 
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.IPromocionDAO;
 import Model.Promocion;
 
@@ -35,7 +36,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -69,7 +70,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -90,7 +91,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }
@@ -127,7 +128,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
 
         }
 
@@ -164,7 +165,7 @@ public class PromocionDAOImpl implements IPromocionDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
 
         }
 

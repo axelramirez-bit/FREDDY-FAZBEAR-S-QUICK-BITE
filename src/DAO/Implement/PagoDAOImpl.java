@@ -1,6 +1,7 @@
 package DAO.Implement;
 
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.IPagoDAO;
 import Model.EstadoPago;
 import Model.MetodoPago;
@@ -53,7 +54,7 @@ public class PagoDAOImpl implements IPagoDAO {
             return creado;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -76,7 +77,7 @@ public class PagoDAOImpl implements IPagoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
 
         return null;
@@ -100,7 +101,7 @@ public class PagoDAOImpl implements IPagoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
 
         return null;
@@ -122,7 +123,7 @@ public class PagoDAOImpl implements IPagoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
 
         return pagos;
@@ -148,7 +149,7 @@ public class PagoDAOImpl implements IPagoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
 
         return pagos;
@@ -176,7 +177,7 @@ public class PagoDAOImpl implements IPagoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }

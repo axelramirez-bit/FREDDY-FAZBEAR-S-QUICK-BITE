@@ -1,6 +1,7 @@
 package DAO.Implement;
 
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.IUsuarioDAO;
 import Model.Rol;
 import Model.Usuario;
@@ -37,7 +38,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -65,7 +66,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -81,7 +82,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -105,7 +106,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
         return null;
     }
@@ -127,7 +128,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
         return lista;
     }
@@ -163,7 +164,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
         return null;
     }

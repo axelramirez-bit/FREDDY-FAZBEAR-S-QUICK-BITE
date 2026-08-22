@@ -22,6 +22,8 @@ import Service.Interfaz.IFacturaService;
 import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
 
+import Utils.AppLogger;
+
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -43,6 +45,7 @@ import java.time.LocalDateTime;
  *   3) INSERT factura                         (FacturaService)
  *   4) Generar el PDF                         (GeneradorFacturaPdf)
  *   5) Vaciar el carrito                      (CarritoService)
+ *   6) Enviar la factura por correo, opcional (GeneradorFacturaPdf)
  *
  * DEPENDENCIAS QUE NO CONTROLA ESTA CLASE (DAO):
  *  - PedidoDAOImpl.insertar() debe devolver el id generado
@@ -207,12 +210,45 @@ public class PedidoController {
         try {
             pdfFactura = generadorFacturaPdf.generarPdf(factura);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "No se pudo generar el PDF de la factura", e);
             // El pedido/pago/factura ya quedaron guardados; solo falló el PDF.
             return ResultadoConfirmacion.exitoSinPdf(pedido, factura);
         }
 
-        return ResultadoConfirmacion.ok(pedido, factura, pdfFactura);
+        // ---------- 9. Enviar la factura por correo (opcional) ----------
+        // Corrección: este paso existía en Service.Implement.GeneradorFacturaPdf
+        // (enviarPorCorreo / generarYEnviar) pero ningún Controller ni
+        // View lo llamaba, así que la funcionalidad estaba implementada
+        // pero inalcanzable.
+        //
+        // Es "best-effort": si el cliente no tiene correo registrado,
+        // o si falla el envío (SMTP caído, credenciales no configuradas,
+        // etc.), NO se revierte ni se marca como error el pedido — el
+        // caso de uso lo define como opcional ("4.3 Enviar factura por
+        // correo (opcional)"), igual que ya se hacía con el PDF arriba.
+        ResultadoConfirmacion resultado = ResultadoConfirmacion.ok(pedido, factura, pdfFactura);
+
+        String correoCliente = cliente.getCorreo();
+
+        if (correoCliente != null && !correoCliente.isBlank()) {
+            try {
+                generadorFacturaPdf.enviarPorCorreo(pdfFactura, correoCliente);
+                resultado.setCorreoEnviado(true);
+
+            } catch (Exception e) {
+                AppLogger.error(getClass(),
+                        "No se pudo enviar la factura por correo a " + correoCliente, e);
+                resultado.setCorreoEnviado(false);
+                resultado.setMensajeCorreo(
+                        "No se pudo enviar la factura por correo. "
+                        + "El PDF sigue disponible para descarga manual.");
+            }
+        } else {
+            resultado.setCorreoEnviado(false);
+            resultado.setMensajeCorreo("El cliente no tiene un correo registrado.");
+        }
+
+        return resultado;
     }
 
     /**
@@ -227,6 +263,12 @@ public class PedidoController {
         private final Pedido pedido;
         private final Factura factura;
         private final File pdfFactura;
+
+        // Estado del envío de correo (opcional, paso 9). No son "final"
+        // porque se conocen después de construir el resultado: primero
+        // se arma con ok(...) y luego se intenta el envío.
+        private boolean correoEnviado;
+        private String mensajeCorreo;
 
         private ResultadoConfirmacion(boolean exito, String mensajeError,
                                        Pedido pedido, Factura factura, File pdfFactura) {
@@ -269,6 +311,22 @@ public class PedidoController {
 
         public File getPdfFactura() {
             return pdfFactura;
+        }
+
+        public boolean isCorreoEnviado() {
+            return correoEnviado;
+        }
+
+        void setCorreoEnviado(boolean correoEnviado) {
+            this.correoEnviado = correoEnviado;
+        }
+
+        public String getMensajeCorreo() {
+            return mensajeCorreo;
+        }
+
+        void setMensajeCorreo(String mensajeCorreo) {
+            this.mensajeCorreo = mensajeCorreo;
         }
     }
 }

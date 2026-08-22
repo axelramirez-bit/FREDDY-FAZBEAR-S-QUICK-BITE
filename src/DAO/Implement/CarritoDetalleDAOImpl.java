@@ -1,6 +1,7 @@
 package DAO.Implement;
  
 import Config.Conexion;
+import Utils.AppLogger;
 import DAO.Interfaz.ICarritoDetalleDAO;
 import Model.Carrito;
 import Model.CarritoDetalle;
@@ -44,7 +45,7 @@ public class CarritoDetalleDAOImpl implements ICarritoDetalleDAO {
             return creado;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -63,7 +64,7 @@ public class CarritoDetalleDAOImpl implements ICarritoDetalleDAO {
             return ps.executeUpdate() > 0;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -81,7 +82,7 @@ public class CarritoDetalleDAOImpl implements ICarritoDetalleDAO {
             return ps.executeUpdate() > 0;
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }
     }
@@ -115,7 +116,7 @@ public class CarritoDetalleDAOImpl implements ICarritoDetalleDAO {
             }
  
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
         }
  
         return detalles;
