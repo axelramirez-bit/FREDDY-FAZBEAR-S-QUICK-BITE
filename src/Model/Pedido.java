@@ -27,7 +27,16 @@ public class Pedido {
     private BigDecimal descuento;
     
     private BigDecimal total;
-    
+
+    // Costo de envío cuando tipoEntrega = DOMICILIO. Q0 para los
+    // demás tipos de entrega.
+    private BigDecimal costoEnvio;
+
+    // Solo se usan cuando tipoEntrega = DOMICILIO. Para los otros
+    // tipos de entrega quedan en null.
+    private String direccionEntrega;
+
+    private String referenciaEntrega;
 
  // Composición
     private final List<DetallePedido> detalles;
@@ -37,6 +46,7 @@ public class Pedido {
     this.estado = EstadoPedido.PENDIENTE;
     this.fecha = LocalDateTime.now();
     this.detalles = new ArrayList<>();
+    this.costoEnvio = BigDecimal.ZERO;
 
 }
 
@@ -68,6 +78,32 @@ public class Pedido {
         this.descuento = descuento;
         this.total = total;
         this.detalles = detalles;
+        this.costoEnvio = BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCostoEnvio() {
+        return costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
+    }
+
+    public void setCostoEnvio(BigDecimal costoEnvio) {
+        this.costoEnvio = costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
+        recalcularTotales();
+    }
+
+    public String getDireccionEntrega() {
+        return direccionEntrega;
+    }
+
+    public void setDireccionEntrega(String direccionEntrega) {
+        this.direccionEntrega = direccionEntrega;
+    }
+
+    public String getReferenciaEntrega() {
+        return referenciaEntrega;
+    }
+
+    public void setReferenciaEntrega(String referenciaEntrega) {
+        this.referenciaEntrega = referenciaEntrega;
     }
 
 
@@ -229,7 +265,8 @@ public void recalcularTotales() {
     }
     
     BigDecimal desc = (descuento != null) ? descuento : BigDecimal.ZERO;
-    total = subtotal.subtract(desc);
+    BigDecimal envio = (costoEnvio != null) ? costoEnvio : BigDecimal.ZERO;
+    total = subtotal.subtract(desc).add(envio);
 }
 
 public boolean estaEntregado() {

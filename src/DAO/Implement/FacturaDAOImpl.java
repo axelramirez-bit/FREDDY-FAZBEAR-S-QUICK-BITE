@@ -26,8 +26,8 @@ public class FacturaDAOImpl implements IFacturaDAO {
     public boolean guardar(Factura factura) {
 
         String sql = "INSERT INTO factura(id_pedido, numero_factura, fecha, nit, "
-                + "nombre_cliente, direccion, subtotal, descuento, iva, total) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "nombre_cliente, direccion, subtotal, descuento, iva, total, costo_envio) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Corrección: antes se recalculaba el IVA aquí mismo con una
         // constante propia (IVA = 0.12) en vez de usar el valor que
@@ -64,6 +64,7 @@ public class FacturaDAOImpl implements IFacturaDAO {
             ps.setBigDecimal(8, factura.getDescuento());
             ps.setBigDecimal(9, iva);
             ps.setBigDecimal(10, factura.getTotal());
+            ps.setBigDecimal(11, factura.getCostoEnvio());
 
             boolean creada = ps.executeUpdate() > 0;
 
@@ -209,7 +210,7 @@ public class FacturaDAOImpl implements IFacturaDAO {
         // crearla, usando el Usuario que ya estaba en memoria).
         // También se agrega f.nit, que antes no se seleccionaba.
         return "SELECT f.id_factura, f.id_pedido, f.numero_factura, f.fecha, f.nit, "
-                + "f.nombre_cliente, f.direccion, f.subtotal, f.descuento, f.iva, f.total, "
+                + "f.nombre_cliente, f.direccion, f.subtotal, f.descuento, f.iva, f.total, f.costo_envio, "
                 + "p.id_usuario, u.correo AS correo_cliente "
                 + "FROM factura f "
                 + "JOIN pedido p ON f.id_pedido = p.id_pedido "
@@ -247,6 +248,7 @@ public class FacturaDAOImpl implements IFacturaDAO {
         // quedaba con iva = 0 aunque la columna sí tuviera el valor
         // correcto guardado.
         factura.setIva(rs.getBigDecimal("iva"));
+        factura.setCostoEnvio(rs.getBigDecimal("costo_envio"));
 
         return factura;
     }

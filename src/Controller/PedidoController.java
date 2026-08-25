@@ -61,6 +61,11 @@ import java.time.LocalDateTime;
  */
 public class PedidoController {
 
+    // Debe coincidir con Factura.TASA_IVA (0.12). Se declara aparte
+    // porque esa constante es privada en Factura y aquí hace falta
+    // ANTES de construir la Factura, para validar el efectivo.
+    private static final BigDecimal TASA_IVA = new BigDecimal("0.12");
+
     private final ICarritoService carritoService;
     private final IPedidoService pedidoService;
     private final IPagoService pagoService;
@@ -92,15 +97,23 @@ public class PedidoController {
      * Punto de entrada único del Paso 3 -> Paso 4 del wizard.
      * Se llama cuando el cliente presiona "Confirmar pedido".
      *
-     * @param carrito        carrito activo del cliente (Paso 1)
-     * @param tipoEntrega    elegido en el Paso 2
-     * @param metodoPago     elegido en el Paso 2
-     * @param montoRecibido  solo se valida si metodoPago = EFECTIVO
+     * @param carrito           carrito activo del cliente (Paso 1)
+     * @param tipoEntrega       elegido en el Paso 2
+     * @param metodoPago        elegido en el Paso 2
+     * @param montoRecibido     solo se valida si metodoPago = EFECTIVO
+     * @param costoEnvio        Q0 salvo que tipoEntrega = DOMICILIO
+     * @param direccionEntrega  solo aplica si tipoEntrega = DOMICILIO
+     * @param referenciaEntrega solo aplica si tipoEntrega = DOMICILIO (opcional)
+     * @param nit               NIT del cliente para la factura ("CF"/null = consumidor final)
      */
     public ResultadoConfirmacion confirmarPedido(Carrito carrito,
                                                   TipoEntrega tipoEntrega,
                                                   MetodoPago metodoPago,
-                                                  BigDecimal montoRecibido) {
+                                                  BigDecimal montoRecibido,
+                                                  BigDecimal costoEnvio,
+                                                  String direccionEntrega,
+                                                  String referenciaEntrega,
+                                                  String nit) {
 
         // ---------- 1. Validaciones de entrada ----------
         if (carrito == null || carrito.estaVacio()) {
@@ -115,6 +128,15 @@ public class PedidoController {
             return ResultadoConfirmacion.error("Debes elegir tipo de entrega y método de pago.");
         }
 
+        if (tipoEntrega == TipoEntrega.DOMICILIO
+                && (direccionEntrega == null || direccionEntrega.isBlank())) {
+            return ResultadoConfirmacion.error("Debes indicar la dirección de entrega.");
+        }
+
+        BigDecimal envio = (tipoEntrega == TipoEntrega.DOMICILIO && costoEnvio != null)
+                ? costoEnvio
+                : BigDecimal.ZERO;
+
         Usuario cliente = carrito.getUsuario();
 
         // ---------- 2. Armar el Pedido a partir del Carrito (aún nada en BD) ----------
@@ -122,6 +144,12 @@ public class PedidoController {
         pedido.setUsuario(cliente);
         pedido.setTipoEntrega(tipoEntrega);
         pedido.setDescuento(BigDecimal.ZERO); // TODO: aplicar Promocion aquí si corresponde
+        pedido.setCostoEnvio(envio);
+
+        if (tipoEntrega == TipoEntrega.DOMICILIO) {
+            pedido.setDireccionEntrega(direccionEntrega);
+            pedido.setReferenciaEntrega(referenciaEntrega);
+        }
 
         for (CarritoDetalle detalleCarrito : carrito.getDetalles()) {
             pedido.agregarDetalle(
@@ -135,10 +163,21 @@ public class PedidoController {
         }
 
         // ---------- 3. Validar el monto si el pago es en efectivo ----------
+        // El total que realmente se cobra incluye IVA (12%, calculado
+        // sobre subtotal - descuento) más el envío. pedido.getTotal()
+        // NO lleva IVA (ver Pedido.recalcularTotales(): es una cifra
+        // "pre-impuesto" que solo usa Factura para construir su
+        // propio total) — comparar el efectivo contra ese valor sin
+        // IVA cobraría de menos, así que aquí se calcula el total
+        // real a pagar con la misma fórmula que usará la Factura.
+        BigDecimal base = pedido.getSubtotal().subtract(pedido.getDescuento());
+        BigDecimal iva = base.multiply(TASA_IVA);
+        BigDecimal totalAPagar = base.add(iva).add(envio);
+
         if (metodoPago == MetodoPago.EFECTIVO) {
-            if (montoRecibido == null || montoRecibido.compareTo(pedido.getTotal()) < 0) {
+            if (montoRecibido == null || montoRecibido.compareTo(totalAPagar) < 0) {
                 return ResultadoConfirmacion.error(
-                        "El monto recibido (Q" + montoRecibido + ") es menor al total (Q" + pedido.getTotal() + ")."
+                        "El monto recibido (Q" + montoRecibido + ") es menor al total (Q" + totalAPagar + ")."
                 );
             }
         }
@@ -175,9 +214,18 @@ public class PedidoController {
         // a partir de DetallePedido solo para dibujar el PDF.
         Factura factura = new Factura(pedido, cliente);
         factura.setMetodoPago(metodoPago);
-        factura.setDireccion(
-                tipoEntrega == TipoEntrega.PARA_LLEVAR ? "Para llevar" : "Comer en restaurante"
-        );
+        factura.setCostoEnvio(envio);
+        factura.setNit(nit == null || nit.isBlank() ? "CF" : nit.trim());
+
+        String direccionFactura = switch (tipoEntrega) {
+            case PARA_LLEVAR -> "Para llevar";
+            case COMER_EN_RESTAURANTE -> "Comer en restaurante";
+            case DOMICILIO -> direccionEntrega
+                    + (referenciaEntrega != null && !referenciaEntrega.isBlank()
+                            ? " — Ref: " + referenciaEntrega
+                            : "");
+        };
+        factura.setDireccion(direccionFactura);
         // Se usa el número de orden del pedido en vez de generarNumeroFactura(),
         // porque ese método arma el número con idFactura y todavía no existe
         // (la factura no se ha insertado). Así evitamos esa dependencia circular.

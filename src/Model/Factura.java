@@ -34,7 +34,12 @@ public class Factura {
         new BigDecimal("0.12");
     
     private String  nit;
-    
+
+    // Costo de envío a domicilio (Q0 si no aplica). Se suma al total
+    // DESPUÉS del IVA — el envío no lleva impuesto, igual que en el
+    // Pedido de origen.
+    private BigDecimal costoEnvio;
+
     private List<DetalleFactura> detalles;
     
     
@@ -51,6 +56,8 @@ public Factura() {
     this.iva = BigDecimal.ZERO;
 
     this.total = BigDecimal.ZERO;
+
+    this.costoEnvio = BigDecimal.ZERO;
 }
 public Factura(
         Pedido pedido,
@@ -76,6 +83,15 @@ public Factura(
         this.iva = iva;
         this.nit = nit;
         this.detalles = new ArrayList<>();
+        this.costoEnvio = BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCostoEnvio() {
+        return costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
+    }
+
+    public void setCostoEnvio(BigDecimal costoEnvio) {
+        this.costoEnvio = costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
     }
 
     public List<DetalleFactura> getDetalles() {
@@ -269,7 +285,9 @@ public BigDecimal calcularTotal() {
 
     calcularIva();
 
-    total = base.add(iva);
+    BigDecimal envio = costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
+
+    total = base.add(iva).add(envio);
 
     return total;
 }

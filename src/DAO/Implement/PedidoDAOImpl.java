@@ -2,6 +2,7 @@ package DAO.Implement;
 
 import Config.Conexion;
 import DAO.Interfaz.IPedidoDAO;
+import Model.DetallePedido;
 import Model.EstadoPedido;
 import Model.Pedido;
 import Model.TipoEntrega;
@@ -11,22 +12,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PedidoDAOImpl implements IPedidoDAO {
 
+    // Corrección: buscarPorId()/listar() armaban el Pedido con
+    // `new Pedido()` (detalles = lista vacía interna) y nunca la
+    // llenaban, así que TODO Pedido leído de la BD volvía con
+    // getDetalles() vacío aunque sí tuviera productos en
+    // detalle_pedido. Eso rompía en silencio: "Unidades vendidas" y
+    // "Ventas por categoría" del Dashboard, y "Top productos" /
+    // "Unidades vendidas" del nuevo módulo de Ventas (siempre en 0 o
+    // vacíos), porque ambos leen los pedidos con
+    // IPedidoService.listarPedidos() y recorren pedido.getDetalles().
+    // Se soluciona cargando los detalles reales con DetallePedidoDAOImpl
+    // y pasándolos al Pedido a través del constructor que sí los acepta.
+    private final DetallePedidoDAOImpl detallePedidoDAO = new DetallePedidoDAOImpl();
+
     @Override
     public boolean insertar(Pedido pedido) {
 
         String sql = "INSERT INTO pedido "
                 + "(numero_orden,id_usuario,fecha,tipo_entrega,estado,"
-                + "subtotal,descuento,total) "
-                + "VALUES (?,?,?,?,?,?,?,?)";
+                + "subtotal,descuento,total,costo_envio,direccion_entrega,referencia_entrega) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
+        // RETURN_GENERATED_KEYS: sin esto, pedido.getIdPedido() se
+        // queda en 0 después de insertar, y el Pago/Factura que se
+        // guardan justo después (ver PedidoController) no pueden
+        // enlazar la FK id_pedido correctamente.
         try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, pedido.getNumeroOrden());
             ps.setInt(2, pedido.getIdUsuario().getIdUsuario());
@@ -36,8 +55,21 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
             ps.setBigDecimal(8, pedido.getTotal());
+            ps.setBigDecimal(9, pedido.getCostoEnvio());
+            ps.setString(10, pedido.getDireccionEntrega());
+            ps.setString(11, pedido.getReferenciaEntrega());
 
-            return ps.executeUpdate() > 0;
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        pedido.setIdPedido(rs.getInt(1));
+                    }
+                }
+            }
+
+            return filas > 0;
 
         } catch (SQLException e) {
 
@@ -59,7 +91,10 @@ public class PedidoDAOImpl implements IPedidoDAO {
                 + "estado=?,"
                 + "subtotal=?,"
                 + "descuento=?,"
-                + "total=? "
+                + "total=?,"
+                + "costo_envio=?,"
+                + "direccion_entrega=?,"
+                + "referencia_entrega=? "
                 + "WHERE id_pedido=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
@@ -73,7 +108,10 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
             ps.setBigDecimal(8, pedido.getTotal());
-            ps.setInt(9, pedido.getIdPedido());
+            ps.setBigDecimal(9, pedido.getCostoEnvio());
+            ps.setString(10, pedido.getDireccionEntrega());
+            ps.setString(11, pedido.getReferenciaEntrega());
+            ps.setInt(12, pedido.getIdPedido());
 
             return ps.executeUpdate() > 0;
 
@@ -121,24 +159,33 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
             if (rs.next()) {
 
-                Pedido pedido = new Pedido();
-
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(rs.getInt("id_usuario"));
 
-                pedido.setIdPedido(rs.getInt("id_pedido"));
-                pedido.setNumeroOrden(rs.getString("numero_orden"));
-                pedido.setIdUsuario(usuario);
-                pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
-                pedido.setTipoEntrega(
-                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_"))
+                // Los detalles se cargan ANTES de construir el Pedido:
+                // Pedido.detalles es `final`, así que la única forma de
+                // que el objeto termine con sus líneas reales es
+                // pasárselas al constructor que las acepta (no hay
+                // setDetalles()).
+                List<DetallePedido> detalles = detallePedidoDAO.listarPorPedido(idPedido);
+
+                Pedido pedido = new Pedido(
+                        rs.getInt("id_pedido"),
+                        rs.getString("numero_orden"),
+                        usuario,
+                        rs.getTimestamp("fecha").toLocalDateTime(),
+                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_")),
+                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase()),
+                        null,
+                        rs.getBigDecimal("subtotal"),
+                        rs.getBigDecimal("descuento"),
+                        rs.getBigDecimal("total"),
+                        detalles
                 );
-                pedido.setEstado(
-                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase())
-                );
-                pedido.setSubtotal(rs.getBigDecimal("subtotal"));
-                pedido.setDescuento(rs.getBigDecimal("descuento"));
-                pedido.setTotal(rs.getBigDecimal("total"));
+
+                pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
+                pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
+                pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
 
                 return pedido;
 
@@ -167,24 +214,30 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
             while (rs.next()) {
 
-                Pedido pedido = new Pedido();
-
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(rs.getInt("id_usuario"));
 
-                pedido.setIdPedido(rs.getInt("id_pedido"));
-                pedido.setNumeroOrden(rs.getString("numero_orden"));
-                pedido.setIdUsuario(usuario);
-                pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
-                pedido.setTipoEntrega(
-                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_"))
+                int idPedido = rs.getInt("id_pedido");
+
+                List<DetallePedido> detalles = detallePedidoDAO.listarPorPedido(idPedido);
+
+                Pedido pedido = new Pedido(
+                        idPedido,
+                        rs.getString("numero_orden"),
+                        usuario,
+                        rs.getTimestamp("fecha").toLocalDateTime(),
+                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_")),
+                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase()),
+                        null,
+                        rs.getBigDecimal("subtotal"),
+                        rs.getBigDecimal("descuento"),
+                        rs.getBigDecimal("total"),
+                        detalles
                 );
-                pedido.setEstado(
-                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase())
-                );
-                pedido.setSubtotal(rs.getBigDecimal("subtotal"));
-                pedido.setDescuento(rs.getBigDecimal("descuento"));
-                pedido.setTotal(rs.getBigDecimal("total"));
+
+                pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
+                pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
+                pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
 
                 lista.add(pedido);
 

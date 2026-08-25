@@ -163,11 +163,14 @@ CREATE TABLE pedido (
     id_usuario    INT NOT NULL,
     id_carrito    INT NULL UNIQUE,
     fecha          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    tipo_entrega ENUM('Comer en restaurante','Para llevar'),
+    tipo_entrega ENUM('Comer en restaurante','Para llevar','Domicilio'),
     estado         ENUM('Pendiente','Preparacion','Listo','Entregado','Cancelado') DEFAULT 'Pendiente',
     subtotal       DECIMAL(10,2) NOT NULL DEFAULT 0,
     descuento      DECIMAL(10,2) NOT NULL DEFAULT 0,
     total          DECIMAL(10,2) NOT NULL DEFAULT 0,
+    costo_envio        DECIMAL(10,2) NOT NULL DEFAULT 0,
+    direccion_entrega  VARCHAR(200) NULL,
+    referencia_entrega VARCHAR(200) NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
     FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito),
     CONSTRAINT chk_pedido_montos CHECK (subtotal >= 0 AND descuento >= 0 AND total >= 0)
@@ -221,6 +224,7 @@ CREATE TABLE factura (
     descuento        DECIMAL(10,2) DEFAULT 0,
     iva              DECIMAL(10,2) NOT NULL,
     total            DECIMAL(10,2) NOT NULL,
+    costo_envio      DECIMAL(10,2) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
     CONSTRAINT chk_factura_montos CHECK (subtotal >= 0 AND descuento >= 0 AND iva >= 0 AND total >= 0)
 );
