@@ -19,9 +19,9 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
     @Override
     public boolean insertar(Usuario usuario) {
         String sql = "INSERT INTO usuario "
-                + "(id_rol, nombre, apellido, correo, telefono, password, "
+                + "(id_rol, nombre, apellido, correo, telefono, turno, password, "
                 + "fecha_nacimiento, estado) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -31,9 +31,10 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             ps.setString(3, usuario.getApellido());
             ps.setString(4, usuario.getCorreo());
             ps.setString(5, usuario.getTelefono());
-            ps.setString(6, usuario.getPassword()); // Ya viene encriptado con BCrypt desde el Service
-            ps.setDate(7, Date.valueOf(usuario.getFechaNacimiento()));
-            ps.setBoolean(8, usuario.isEstado());
+            ps.setString(6, usuario.getTurno()); // null para Cliente/Administrador, válido para Trabajador
+            ps.setString(7, usuario.getPassword()); // Ya viene encriptado con BCrypt desde el Service
+            ps.setDate(8, Date.valueOf(usuario.getFechaNacimiento()));
+            ps.setBoolean(9, usuario.isEstado());
 
             return ps.executeUpdate() > 0;
 
@@ -46,7 +47,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
     @Override
     public boolean actualizar(Usuario usuario) {
         String sql = "UPDATE usuario SET "
-                + "id_rol=?, nombre=?, apellido=?, correo=?, telefono=?, "
+                + "id_rol=?, nombre=?, apellido=?, correo=?, telefono=?, turno=?, "
                 + "password=?, fecha_nacimiento=?, estado=? "
                 + "WHERE id_usuario=?";
 
@@ -58,10 +59,11 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             ps.setString(3, usuario.getApellido());
             ps.setString(4, usuario.getCorreo());
             ps.setString(5, usuario.getTelefono());
-            ps.setString(6, usuario.getPassword());
-            ps.setDate(7, Date.valueOf(usuario.getFechaNacimiento()));
-            ps.setBoolean(8, usuario.isEstado());
-            ps.setInt(9, usuario.getIdUsuario());
+            ps.setString(6, usuario.getTurno());
+            ps.setString(7, usuario.getPassword());
+            ps.setDate(8, Date.valueOf(usuario.getFechaNacimiento()));
+            ps.setBoolean(9, usuario.isEstado());
+            ps.setInt(10, usuario.getIdUsuario());
 
             return ps.executeUpdate() > 0;
 
@@ -185,6 +187,7 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
         usuario.setApellido(rs.getString("apellido"));
         usuario.setCorreo(rs.getString("correo"));
         usuario.setTelefono(rs.getString("telefono"));
+        usuario.setTurno(rs.getString("turno")); // viene null si no aplica (Cliente/Administrador)
         usuario.setPassword(rs.getString("password")); // Trae el hash BCrypt
         
         // Corrección: Traer fecha y estado que faltaban en tu código original

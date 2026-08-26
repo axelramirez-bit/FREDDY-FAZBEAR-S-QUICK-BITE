@@ -161,6 +161,45 @@ public final class FabricaGraficas {
     }
 
     // ==========================================================
+    // DONUT — igual que la circular, pero con hueco en el centro
+    // (ej. "Pedidos por Estado" en el boceto del Dashboard)
+    // ==========================================================
+
+    public static ChartPanel crearGraficaDonut(String titulo, Map<String, ? extends Number> datos) {
+
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+
+        for (Map.Entry<String, ? extends Number> entrada : datos.entrySet()) {
+            dataset.setValue(entrada.getKey(), entrada.getValue());
+        }
+
+        JFreeChart chart = ChartFactory.createRingChart(titulo, dataset, false, true, false);
+
+        org.jfree.chart.plot.RingPlot plot = (org.jfree.chart.plot.RingPlot) chart.getPlot();
+
+        int i = 0;
+        for (Object clave : dataset.getKeys()) {
+            plot.setSectionPaint((String) clave, PALETA[i % PALETA.length]);
+            i++;
+        }
+
+        plot.setBackgroundPaint(null);
+        plot.setOutlineVisible(false);
+        plot.setLabelFont(AdministradorTema.fuentePequeña());
+        plot.setLabelBackgroundPaint(PaletaColores.TARJETA);
+        plot.setLabelOutlinePaint(null);
+        plot.setShadowPaint(null);
+        plot.setSimpleLabels(true);
+        plot.setSectionDepth(0.35); // grosor del anillo — más chico = anillo más delgado
+        plot.setSeparatorsVisible(false);
+
+        chart.getTitle().setFont(AdministradorTema.fuenteMedianaNegrita());
+        chart.setBackgroundPaint(null);
+
+        return empacar(chart);
+    }
+
+    // ==========================================================
     // ESTILO COMPARTIDO
     // ==========================================================
 

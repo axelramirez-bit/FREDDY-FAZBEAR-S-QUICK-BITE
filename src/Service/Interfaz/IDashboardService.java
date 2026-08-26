@@ -29,6 +29,9 @@ public interface IDashboardService {
     /** Los N productos con más unidades vendidas, ya ordenados de mayor a menor. */
     Map<String, Integer> productosMasVendidos(int cantidadTop);
 
+    /** Ingresos (Q) generados por cada producto — para la columna "Ingresos" del Top 5. */
+    Map<String, BigDecimal> ingresosPorProducto();
+
     /** Cuántos pedidos hay en cada EstadoPedido (incluye los que están en 0). */
     Map<EstadoPedido, Long> pedidosPorEstado();
 

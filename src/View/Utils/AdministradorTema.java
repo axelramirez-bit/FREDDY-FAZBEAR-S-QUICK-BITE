@@ -105,6 +105,50 @@ public final class AdministradorTema {
         return PaletaColores.ACENTO;
     }
 
+    // ==========================================================
+    // COLORES DE ESTADO (badges de EtiquetaEstado)
+    // ==========================================================
+
+    public static Color colorEstadoExito() {
+        return PaletaColores.ESTADO_EXITO;
+    }
+
+    public static Color colorEstadoExitoFondo() {
+        return PaletaColores.ESTADO_EXITO_FONDO;
+    }
+
+    public static Color colorEstadoAdvertencia() {
+        return PaletaColores.ESTADO_ADVERTENCIA;
+    }
+
+    public static Color colorEstadoAdvertenciaFondo() {
+        return PaletaColores.ESTADO_ADVERTENCIA_FONDO;
+    }
+
+    public static Color colorEstadoPeligro() {
+        return PaletaColores.ESTADO_PELIGRO;
+    }
+
+    public static Color colorEstadoPeligroFondo() {
+        return PaletaColores.ESTADO_PELIGRO_FONDO;
+    }
+
+    public static Color colorEstadoInfo() {
+        return PaletaColores.ESTADO_INFO;
+    }
+
+    public static Color colorEstadoInfoFondo() {
+        return PaletaColores.ESTADO_INFO_FONDO;
+    }
+
+    public static Color colorEstadoNeutro() {
+        return PaletaColores.ESTADO_NEUTRO;
+    }
+
+    public static Color colorEstadoNeutroFondo() {
+        return PaletaColores.ESTADO_NEUTRO_FONDO;
+    }
+
     public static Color colorBorde() {
         return PaletaColores.BORDE;
     }

@@ -62,4 +62,44 @@ public final class PaletaColores {
 
     /** Texto sobre fondo rojo. */
     public static final Color TEXTO_BLANCO = Color.WHITE;
+
+    // ==========================================================
+    // COLORES DE ESTADO (badges: Pendiente, Listo, Cancelado...)
+    //
+    // Estos son ADEMÁS de ACENTO/PRINCIPAL, no un reemplazo — se
+    // agregan porque una tabla con 4-5 estados distintos (Pedidos,
+    // Pagos, Promociones, Inventario) necesita más de un color
+    // "positivo" y uno "negativo" para que cada estado se
+    // distinga del resto de un vistazo.
+    // ==========================================================
+
+    /** Estado positivo/activo (Listo, Activa, Pagado, Disponible). */
+    public static final Color ESTADO_EXITO = new Color(0x2E7D32);
+
+    /** Fondo suave para el badge de éxito. */
+    public static final Color ESTADO_EXITO_FONDO = new Color(0xE3F1E4);
+
+    /** Estado de advertencia/en proceso (Preparación, Stock Bajo, Pendiente de pago). */
+    public static final Color ESTADO_ADVERTENCIA = new Color(0xB8860B);
+
+    /** Fondo suave para el badge de advertencia. */
+    public static final Color ESTADO_ADVERTENCIA_FONDO = new Color(0xFCF1D6);
+
+    /** Estado negativo (Cancelado, Rechazado, Agotado, Vencida). */
+    public static final Color ESTADO_PELIGRO = new Color(0xC62828);
+
+    /** Fondo suave para el badge de peligro. */
+    public static final Color ESTADO_PELIGRO_FONDO = new Color(0xFAE1E1);
+
+    /** Estado informativo/neutro (Programada, Pendiente inicial, Nuevo). */
+    public static final Color ESTADO_INFO = new Color(0x1565C0);
+
+    /** Fondo suave para el badge informativo. */
+    public static final Color ESTADO_INFO_FONDO = new Color(0xE1EBFA);
+
+    /** Estado apagado/sin actividad (Inactivo, Entregado ya cerrado). */
+    public static final Color ESTADO_NEUTRO = new Color(0x616161);
+
+    /** Fondo suave para el badge neutro. */
+    public static final Color ESTADO_NEUTRO_FONDO = new Color(0xEAEAEA);
 }

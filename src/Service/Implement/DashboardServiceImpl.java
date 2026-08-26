@@ -117,6 +117,25 @@ public class DashboardServiceImpl implements IDashboardService {
     }
 
     @Override
+    public Map<String, BigDecimal> ingresosPorProducto() {
+
+        Map<String, BigDecimal> ingresos = new LinkedHashMap<>();
+
+        for (Pedido pedido : pedidosValidos()) {
+            for (DetallePedido detalle : pedido.getDetalles()) {
+
+                String nombre = detalle.getProducto().getNombre();
+
+                BigDecimal acumulado = ingresos.getOrDefault(nombre, BigDecimal.ZERO);
+
+                ingresos.put(nombre, acumulado.add(detalle.getSubtotal()));
+            }
+        }
+
+        return ingresos;
+    }
+
+    @Override
     public Map<EstadoPedido, Long> pedidosPorEstado() {
 
         Map<EstadoPedido, Long> conteos = new LinkedHashMap<>();

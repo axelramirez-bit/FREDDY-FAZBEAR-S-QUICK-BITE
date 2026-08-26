@@ -1,4 +1,3 @@
-
 package Model;
 
 import java.time.LocalDate;
@@ -18,6 +17,14 @@ public class Usuario {
     private String correo;
     
     private String telefono;
+
+    /**
+     * Solo aplica para Trabajador. Queda en null para Cliente y
+     * Administrador — no le pongas un valor por defecto, es
+     * información real de horario, no un dato decorativo.
+     * Valores esperados: "Mañana", "Tarde", "Noche".
+     */
+    private String turno;
 
     private String password;
 
@@ -90,6 +97,10 @@ public class Usuario {
         return telefono;
     }
 
+    public String getTurno() {
+        return turno;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -137,6 +148,10 @@ public class Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
     }
 
     public void setPassword(String password) {
