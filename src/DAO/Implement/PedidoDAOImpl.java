@@ -252,5 +252,21 @@ public class PedidoDAOImpl implements IPedidoDAO {
         return lista;
 
     }
+    
+    private String tipoEntregaToDb(TipoEntrega tipo) {
+    switch (tipo) {
+        case COMER_EN_RESTAURANTE:
+            return "Comer en restaurante";
+        case PARA_LLEVAR:
+            return "Para llevar";
+        case DOMICILIO:
+            // La BD todavía no tiene este valor en el ENUM de tipo_entrega
+            // (ver FreddyQuickBite.sql). Si vas a usar entregas a domicilio,
+            // hace falta un ALTER TABLE para agregarlo (ver nota abajo).
+            return "Domicilio";
+        default:
+            throw new IllegalArgumentException("Tipo de entrega no reconocido: " + tipo);
+    }
+}
 
 }

@@ -341,7 +341,6 @@ public class Login extends JFrame {
         String nombreRol = usuario.getRol().getNombre();
         SwingUtilities.invokeLater(() -> {
             switch (nombreRol) {
-                case "Cliente":       new DashboardCliente().setVisible(true);       break;
                 case "Trabajador":    new DashboardTrabajador().setVisible(true);    break;
                 case "Administrador": new DashboardAdministrador().setVisible(true); break;
                 default:

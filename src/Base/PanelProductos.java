@@ -1,6 +1,5 @@
 package Base;
 
-
 import Model.Carrito;
 import Model.CarritoDetalle;
 import Model.Categoria;
@@ -31,57 +30,44 @@ import java.util.stream.Collectors;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Panel genérico de catálogo: pinta un grid de TarjetaProducto a
- * partir de una lista de Producto filtrada.
+ * --------------------------------------------------------------- Panel
+ * genérico de catálogo: pinta un grid de TarjetaProducto a partir de una lista
+ * de Producto filtrada.
  *
- * ES UNA SOLA CLASE para todas las categorías del Cliente
- * (Desayunos, Almuerzos, Postres, McCafé, Bebidas, Antojos,
- * Cajita Feliz) y también para Combos y Promociones. Las clases
- * que hoy existen como placeholder (PanelDesayunos, PanelBebidas,
- * etc.) dejan de tener contenido propio: solo instancian esta
- * clase con el filtro correcto.
+ * ES UNA SOLA CLASE para todas las categorías del Cliente (Desayunos,
+ * Almuerzos, Postres, McCafé, Bebidas, Antojos, Cajita Feliz) y también para
+ * Combos y Promociones. Las clases que hoy existen como placeholder
+ * (PanelDesayunos, PanelBebidas, etc.) dejan de tener contenido propio: solo
+ * instancian esta clase con el filtro correcto.
  *
  * Ejemplo de uso dentro de PanelDesayunos:
  *
- *     public class PanelDesayunos extends PanelProductos {
- *         public PanelDesayunos() {
- *             super(producto -> producto.getCategoria() != null
- *                     && "Desayunos".equalsIgnoreCase(
- *                             producto.getCategoria().getNombre()));
- *         }
- *     }
+ * public class PanelDesayunos extends PanelProductos { public PanelDesayunos()
+ * { super(producto -> producto.getCategoria() != null &&
+ * "Desayunos".equalsIgnoreCase( producto.getCategoria().getNombre())); } }
  *
  * Ejemplo para Combos (filtra por nombre de categoría "Combos"):
  *
- *     public class PanelCombos extends PanelProductos {
- *         public PanelCombos() {
- *             super(producto -> producto.getCategoria() != null
- *                     && "Combos".equalsIgnoreCase(
- *                             producto.getCategoria().getNombre()));
- *         }
- *     }
+ * public class PanelCombos extends PanelProductos { public PanelCombos() {
+ * super(producto -> producto.getCategoria() != null &&
+ * "Combos".equalsIgnoreCase( producto.getCategoria().getNombre())); } }
  *
- * Ejemplo para Promociones (no depende de categoría, sino de si
- * el producto tiene promoción activa):
+ * Ejemplo para Promociones (no depende de categoría, sino de si el producto
+ * tiene promoción activa):
  *
- *     public class PanelPromociones extends PanelProductos {
- *         public PanelPromociones() {
- *             super(Producto::tienePromocion);
- *         }
- *     }
+ * public class PanelPromociones extends PanelProductos { public
+ * PanelPromociones() { super(Producto::tienePromocion); } }
  *
- * Constructor alterno recibiendo directamente una Categoria (para
- * cuando el equipo agregue categorías dinámicas desde
- * Administrador y ya no haga falta escribir el nombre a mano):
+ * Constructor alterno recibiendo directamente una Categoria (para cuando el
+ * equipo agregue categorías dinámicas desde Administrador y ya no haga falta
+ * escribir el nombre a mano):
  *
- *     new PanelProductos(categoriaSeleccionada);
+ * new PanelProductos(categoriaSeleccionada);
  *
- * AVISO: IProductoService todavía no tiene listarPorCategoria().
- * Este panel filtra en memoria sobre listarProductosDisponibles()
- * mientras esa consulta no exista en Service/DAO. Cuando se
- * agregue, cambiar cargarProductos() para usarla directamente y
- * evitar traer todo el catálogo cada vez.
+ * AVISO: IProductoService todavía no tiene listarPorCategoria(). Este panel
+ * filtra en memoria sobre listarProductosDisponibles() mientras esa consulta no
+ * exista en Service/DAO. Cuando se agregue, cambiar cargarProductos() para
+ * usarla directamente y evitar traer todo el catálogo cada vez.
  * ===============================================================
  */
 public class PanelProductos extends PanelFondo {
@@ -127,7 +113,6 @@ public class PanelProductos extends PanelFondo {
     // ==========================================================
     // ESTRUCTURA
     // ==========================================================
-
     private void configurarPanel() {
 
         setOpaque(false);
@@ -183,12 +168,11 @@ public class PanelProductos extends PanelFondo {
     // ==========================================================
     // CARGA DE PRODUCTOS
     // ==========================================================
-
     /**
-     * Vuelve a traer los productos disponibles y repinta el grid.
-     * Público para que Administrador pueda llamarlo desde otro
-     * panel si necesita refrescar el catálogo del Cliente tras
-     * un cambio (por ejemplo, al agregar un producto nuevo).
+     * Vuelve a traer los productos disponibles y repinta el grid. Público para
+     * que Administrador pueda llamarlo desde otro panel si necesita refrescar
+     * el catálogo del Cliente tras un cambio (por ejemplo, al agregar un
+     * producto nuevo).
      */
     public void cargarProductos() {
 
@@ -202,13 +186,13 @@ public class PanelProductos extends PanelFondo {
     }
 
     /**
-     * Filtra por texto (nombre de producto) sobre la lista que ya pasó
-     * el filtro de categoría/promoción, reutilizando el servicio
-     * ServicioBusqueda que ya existía pero no estaba conectado a
-     * ninguna vista. No vuelve a consultar la base de datos.
+     * Filtra por texto (nombre de producto) sobre la lista que ya pasó el
+     * filtro de categoría/promoción, reutilizando el servicio ServicioBusqueda
+     * que ya existía pero no estaba conectado a ninguna vista. No vuelve a
+     * consultar la base de datos.
      *
-     * @param texto Texto escrito en la barra de búsqueda. Vacío o null
-     *              muestra de nuevo todos los productos del filtro.
+     * @param texto Texto escrito en la barra de búsqueda. Vacío o null muestra
+     * de nuevo todos los productos del filtro.
      */
     public void aplicarBusqueda(String texto) {
 
@@ -237,7 +221,6 @@ public class PanelProductos extends PanelFondo {
     // ==========================================================
     // CARRITO
     // ==========================================================
-
     private void alAgregarAlCarrito(Producto producto, int cantidad) {
 
         if (Sesion.getInstancia().getUsuario() == null) {
@@ -254,13 +237,13 @@ public class PanelProductos extends PanelFondo {
 
         int idUsuario = Sesion.getInstancia().getUsuario().getIdUsuario();
 
-        Carrito carrito = carritoService.buscarPorUsuario(idUsuario);
+        Carrito carrito = carritoService.obtenerOCrearCarritoActivo(idUsuario);
 
         if (carrito == null) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "No se encontró un carrito activo para tu usuario.",
+                    "No se pudo crear el carrito para tu usuario.",
                     "Carrito no disponible",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -290,8 +273,8 @@ public class PanelProductos extends PanelFondo {
             return;
         }
 
-        SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(
+        SwingUtilities.invokeLater(()
+                -> JOptionPane.showMessageDialog(
                         this,
                         producto.getNombre() + " se agregó al carrito.",
                         "Producto agregado",
@@ -303,18 +286,16 @@ public class PanelProductos extends PanelFondo {
     // ==========================================================
     // GRID CON SCROLL VERTICAL CORRECTO
     // ==========================================================
-
     /**
-     * JPanel que SÍ se ajusta correctamente al ancho de un
-     * JScrollPane. Un JPanel normal no implementa Scrollable, así que
-     * el JScrollPane no lo obliga a ajustarse al ancho del viewport
-     * y su layout termina calculando el tamaño como si tuviera
-     * ancho infinito (el bug que hacía que Inicio se viera como una
-     * fila cortada de tarjetas sin texto, o todas amontonadas en una
-     * sola fila). Con getScrollableTracksViewportWidth() == true, el
-     * panel siempre toma el ancho disponible del viewport; el layout
-     * real (GridLayout de 2 columnas) se encarga de partir ese ancho
-     * en dos y solo queda scroll vertical.
+     * JPanel que SÍ se ajusta correctamente al ancho de un JScrollPane. Un
+     * JPanel normal no implementa Scrollable, así que el JScrollPane no lo
+     * obliga a ajustarse al ancho del viewport y su layout termina calculando
+     * el tamaño como si tuviera ancho infinito (el bug que hacía que Inicio se
+     * viera como una fila cortada de tarjetas sin texto, o todas amontonadas en
+     * una sola fila). Con getScrollableTracksViewportWidth() == true, el panel
+     * siempre toma el ancho disponible del viewport; el layout real (GridLayout
+     * de 2 columnas) se encarga de partir ese ancho en dos y solo queda scroll
+     * vertical.
      */
     private static class PanelGridDesplazable extends JPanel implements Scrollable {
 

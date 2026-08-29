@@ -48,6 +48,7 @@ CREATE TABLE usuario (
     apellido              VARCHAR(50) NOT NULL,
     correo                VARCHAR(100) NOT NULL UNIQUE,
     telefono              VARCHAR(20),
+    turno                 VARCHAR(50),
     password              VARCHAR(255) NOT NULL,
     fecha_nacimiento     DATE,
     estado                BOOLEAN DEFAULT TRUE,
@@ -328,8 +329,7 @@ GROUP BY DATE(p.fecha);
 -- ------------------------------------------------------------
 INSERT INTO rol (nombre, descripcion) VALUES
 ('Administrador', 'Control total'),
-('Trabajador', 'Gestiona pedidos'),
-('Cliente', 'Realiza compras');
+('Trabajador', 'Gestiona pedidos');
 
 -- ------------------------------------------------------------
 -- categoria
@@ -655,9 +655,30 @@ VALUES
         '$2a$10$McDF0IbbjhCblMB9UQZXW.96ezbv0B0y1j0Z24jn22bJv4hnUyZd6',
         TRUE
     );
+    
+INSERT INTO usuario (id_rol, nombre, apellido, correo, telefono, turno, password, fecha_nacimiento, estado)
+VALUES (
+  (SELECT id_rol FROM rol WHERE nombre = 'Trabajador'),
+  'Prueba', 'Trabajador',
+  'trabajador.prueba@freddyquickbite.com',
+  '00000000',
+  'Mañana',
+  '$2a$12$..ycxI7W0J6T1Ym3ogkcKuZ4vD/NeoCGtbwGH.mNGc2tKEOZ.XYtG',
+  '2000-01-01',
+  TRUE
+);
 
 -- Verificación rápida: debe mostrar las 4 cuentas con rol Administrador.
 SELECT u.id_usuario, u.nombre, u.apellido, u.correo, r.nombre AS rol
 FROM usuario u
 JOIN rol r ON r.id_rol = u.id_rol
 WHERE r.nombre = 'Administrador';
+
+-- Verificacion de la cuenta de trabajador
+SELECT u.id_usuario, u.correo, r.nombre AS rol
+FROM usuario u JOIN rol r ON r.id_rol = u.id_rol
+WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';
+
+SELECT u.id_usuario, u.correo, r.nombre AS rol
+FROM usuario u JOIN rol r ON r.id_rol = u.id_rol
+WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';

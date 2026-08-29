@@ -30,15 +30,17 @@ import java.math.BigDecimal;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Contenedor del wizard de compra del Cliente:
+ * --------------------------------------------------------------- Contenedor
+ * del wizard de compra del Cliente:
  *
- *   (1) Carrito -> (2) Entrega y Pago -> (3) Confirmacion -> (4) Factura
+ * (1) Carrito -> (2) Entrega y Pago -> (3) Confirmacion -> (4) Factura
  * ===============================================================
  */
 public class PanelCarrito extends PanelFondo {
 
-    /** Costo fijo de envio a domicilio. Q0 para los demas tipos de entrega. */
+    /**
+     * Costo fijo de envio a domicilio. Q0 para los demas tipos de entrega.
+     */
     public static final BigDecimal COSTO_ENVIO_DOMICILIO = new BigDecimal("15.00");
 
     private final ICarritoService carritoService = new CarritoServiceImpl();
@@ -137,7 +139,9 @@ public class PanelCarrito extends PanelFondo {
         mostrar("PASO4", 4);
     }
 
-    /** Boton "Volver al inicio" del Paso 4. */
+    /**
+     * Boton "Volver al inicio" del Paso 4.
+     */
     public void volverAInicio() {
 
         Window ventana = SwingUtilities.getWindowAncestor(this);
@@ -158,15 +162,20 @@ public class PanelCarrito extends PanelFondo {
     // ==========================================================
     private void cargarCarritoDesdeBD() {
 
-        Usuario usuario = Sesion.getInstancia().getUsuario();
+    Usuario usuario = Sesion.getInstancia().getUsuario();
 
-        if (usuario == null) {
-            carrito = null;
-            return;
-        }
-
-        carrito = carritoService.buscarPorUsuario(usuario.getIdUsuario());
+    if (usuario == null) {
+        carrito = null;
+        return;
     }
+
+    carrito = carritoService.obtenerOCrearCarritoActivo(usuario.getIdUsuario());
+
+    if (carrito != null) {
+        carrito.getDetalles().clear();
+        carrito.getDetalles().addAll(carritoService.obtenerDetalles(carrito.getIdCarrito()));
+    }
+}
 
     public Carrito getCarrito() {
         return carrito;
@@ -207,7 +216,9 @@ public class PanelCarrito extends PanelFondo {
         }
     }
 
-    /** Subtotal + IVA (12%), SIN envio.*/
+    /**
+     * Subtotal + IVA (12%), SIN envio.
+     */
     public BigDecimal calcularSubtotalConIva() {
 
         if (carrito == null) {
@@ -220,7 +231,9 @@ public class PanelCarrito extends PanelFondo {
         return subtotal.add(iva);
     }
 
-    /** Subtotal + IVA (12%) + envio (si aplica Domicilio). Total real a pagar. */
+    /**
+     * Subtotal + IVA (12%) + envio (si aplica Domicilio). Total real a pagar.
+     */
     public BigDecimal calcularTotalAPagar() {
         return calcularSubtotalConIva().add(getCostoEnvio());
     }
@@ -323,8 +336,8 @@ public class PanelCarrito extends PanelFondo {
 
     /**
      * Valida los datos minimos del Paso 2 antes de dejar avanzar a
-     * Confirmacion. Devuelve null si todo esta bien, o el mensaje de
-     * error a mostrar si falta algo.
+     * Confirmacion. Devuelve null si todo esta bien, o el mensaje de error a
+     * mostrar si falta algo.
      */
     public String validarPaso2() {
 

@@ -6,6 +6,7 @@ import Model.Carrito;
 import Model.CarritoDetalle;
 import Model.EstadoCarrito;
 import Service.Interfaz.ICarritoService;
+import Model.Usuario;
 
 import java.util.List;
 
@@ -15,6 +16,33 @@ public class CarritoServiceImpl implements ICarritoService {
 
     public CarritoServiceImpl() {
         this.carritoDAO = new CarritoDAOImpl();
+    }
+
+    @Override
+    public Carrito obtenerOCrearCarritoActivo(int idUsuario) {
+
+        if (idUsuario <= 0) {
+            return null;
+        }
+
+        Carrito carrito = carritoDAO.buscarPorUsuario(idUsuario);
+
+        if (carrito != null) {
+            return carrito;
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setIdUsuario(idUsuario);
+
+        Carrito nuevoCarrito = new Carrito(usuario);
+
+        boolean creado = carritoDAO.crear(nuevoCarrito);
+
+        if (!creado) {
+            return null;
+        }
+
+        return carritoDAO.buscarPorUsuario(idUsuario);
     }
 
     @Override

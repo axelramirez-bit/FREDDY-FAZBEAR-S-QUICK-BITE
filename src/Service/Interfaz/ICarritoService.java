@@ -6,17 +6,19 @@ import Model.CarritoDetalle;
 import Model.EstadoCarrito;
 
 public interface ICarritoService {
-    
+
     boolean crear(Carrito carrito);
 
     Carrito buscarPorId(int idCarrito);
 
     Carrito buscarPorUsuario(int idUsuario);
 
+    Carrito obtenerOCrearCarritoActivo(int idUsuario);
+
     boolean actualizarEstado(int idCarrito, EstadoCarrito estado);
 
     boolean vaciarCarrito(int idCarrito);
 
     List<CarritoDetalle> obtenerDetalles(int idCarrito);
-    
+
 }
