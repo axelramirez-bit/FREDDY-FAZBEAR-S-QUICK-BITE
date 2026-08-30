@@ -1,19 +1,19 @@
-package View.Cliente;
+package View.Autoservicio;
 
 import Base.DashboardBase;
 import Base.Rol;
-import View.Cliente.Panels.PanelAlmuerzos;
-import View.Cliente.Panels.PanelAntojos;
-import View.Cliente.Panels.PanelBebidas;
-import View.Cliente.Panels.PanelCajitaFeliz;
-import View.Cliente.Panels.PanelCarrito;
-import View.Cliente.Panels.PanelCombos;
-import View.Cliente.Panels.PanelDesayunos;
-import View.Cliente.Panels.PanelInicio;
-import View.Cliente.Panels.PanelMcCafe;
-import View.Cliente.Panels.PanelPostres;
-import View.Cliente.Panels.PanelPromociones;
-import View.Trabajador.DashboardTrabajador;
+import View.Autoservicio.Panels.PanelAlmuerzos;
+import View.Autoservicio.Panels.PanelAntojos;
+import View.Autoservicio.Panels.PanelBebidas;
+import View.Autoservicio.Panels.PanelCajitaFeliz;
+import View.Autoservicio.Panels.PanelCarrito;
+import View.Autoservicio.Panels.PanelCombos;
+import View.Autoservicio.Panels.PanelDesayunos;
+import View.Autoservicio.Panels.PanelInicio;
+import View.Autoservicio.Panels.PanelMcCafe;
+import View.Autoservicio.Panels.PanelPostres;
+import View.Autoservicio.Panels.PanelPromociones;
+import View.PedidosProceso.PedidosProceso;
 
 import javax.swing.SwingUtilities;
 
@@ -26,9 +26,9 @@ import javax.swing.SwingUtilities;
  * DashboardBase.
  * ===============================================================
  */
-public class DashboardCliente extends DashboardBase {
+public class Autoservicio extends DashboardBase {
 
-    public DashboardCliente() {
+    public Autoservicio() {
         super(Rol.CLIENTE, "Freddy Fazbear's Quick Bite - Cliente");
     }
 
@@ -68,7 +68,7 @@ public class DashboardCliente extends DashboardBase {
      */
     @Override
     public void onConfiguracion() {
-        DashboardTrabajador dashboard = new DashboardTrabajador();
+        PedidosProceso dashboard = new PedidosProceso();
         dashboard.setVisible(true);
         dispose();
     }
@@ -90,7 +90,7 @@ public class DashboardCliente extends DashboardBase {
 
   public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            DashboardCliente dashboard = new DashboardCliente();
+            Autoservicio dashboard = new Autoservicio();
             dashboard.setVisible(true);
         });
     }

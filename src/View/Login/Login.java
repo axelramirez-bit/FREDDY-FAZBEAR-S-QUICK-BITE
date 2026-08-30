@@ -5,9 +5,9 @@ import Service.Implement.UsuarioServiceImpl;
 import Service.Interfaz.IUsuarioService;
 import Utils.Sesion;
 import View.Administrador.DashboardAdministrador;
-import View.Cliente.DashboardCliente;
+import View.Autoservicio.Autoservicio;
 import View.Registro.Registro;
-import View.Trabajador.DashboardTrabajador;
+import View.PedidosProceso.PedidosProceso;
 import View.Utils.UtilPantalla;
 
 import javax.swing.*;
@@ -341,7 +341,7 @@ public class Login extends JFrame {
         String nombreRol = usuario.getRol().getNombre();
         SwingUtilities.invokeLater(() -> {
             switch (nombreRol) {
-                case "Trabajador":    new DashboardTrabajador().setVisible(true);    break;
+                case "Trabajador":    new PedidosProceso().setVisible(true);    break;
                 case "Administrador": new DashboardAdministrador().setVisible(true); break;
                 default:
                     JOptionPane.showMessageDialog(this, "Rol no reconocido: " + nombreRol, "Error", JOptionPane.ERROR_MESSAGE);

@@ -1,4 +1,4 @@
-package View.Trabajador.Panels;
+package View.PedidosProceso.Panels;
 
 import Base.PanelListaPedidos;
 import Model.EstadoPedido;

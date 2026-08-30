@@ -1,4 +1,4 @@
-package View.Cliente.Panels;
+package View.Autoservicio.Panels;
 
 import Base.DashboardBase;
 import Controller.PedidoController;

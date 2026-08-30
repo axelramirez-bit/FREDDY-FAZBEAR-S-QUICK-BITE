@@ -4,7 +4,7 @@ package Main;
 import Config.Conexion;
 import Config.Configuracion;
 import Utils.AppLogger;
-import View.Bienvenida.Bienvenida;
+import View.Login.Login;
 import View.Splash.SplashScreen;
 import View.Utils.AdministradorTema;
 import javax.swing.SwingUtilities;
@@ -59,7 +59,7 @@ public class main {
                     // ── Al terminar la carga ──────────────────
                     // Se ejecuta en el hilo de Swing: abre la
                     // ventana de Bienvenida.
-                    () -> new Bienvenida().setVisible(true)
+                    () -> new Login().setVisible(true)
             );
         });
 

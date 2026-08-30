@@ -2,7 +2,7 @@ package View.Cliente.Panels.Carrito;
 
 import Model.Carrito;
 import Model.CarritoDetalle;
-import View.Cliente.Panels.PanelCarrito;
+import View.Autoservicio.Panels.PanelCarrito;
 import View.Componentes.PanelRedondeado;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;

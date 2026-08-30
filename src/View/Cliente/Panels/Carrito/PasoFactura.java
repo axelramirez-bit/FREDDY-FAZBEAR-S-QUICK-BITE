@@ -3,7 +3,7 @@ package View.Cliente.Panels.Carrito;
 import Controller.PedidoController.ResultadoConfirmacion;
 import Model.DetalleFactura;
 import Model.Factura;
-import View.Cliente.Panels.PanelCarrito;
+import View.Autoservicio.Panels.PanelCarrito;
 import View.Componentes.PanelRedondeado;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;

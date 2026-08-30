@@ -4,7 +4,7 @@ import Model.Carrito;
 import Model.CarritoDetalle;
 import Model.MetodoPago;
 import Model.TipoEntrega;
-import View.Cliente.Panels.PanelCarrito;
+import View.Autoservicio.Panels.PanelCarrito;
 import View.Componentes.PanelRedondeado;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;

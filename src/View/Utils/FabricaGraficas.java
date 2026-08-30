@@ -154,7 +154,6 @@ public final class FabricaGraficas {
         plot.setShadowPaint(null);
         plot.setSimpleLabels(true);
 
-        chart.getTitle().setFont(AdministradorTema.fuenteMedianaNegrita());
         chart.setBackgroundPaint(null);
 
         return empacar(chart);
@@ -193,7 +192,6 @@ public final class FabricaGraficas {
         plot.setSectionDepth(0.35); // grosor del anillo — más chico = anillo más delgado
         plot.setSeparatorsVisible(false);
 
-        chart.getTitle().setFont(AdministradorTema.fuenteMedianaNegrita());
         chart.setBackgroundPaint(null);
 
         return empacar(chart);
@@ -223,10 +221,17 @@ public final class FabricaGraficas {
         plot.getRenderer().setDefaultItemLabelFont(fuenteEjes);
     }
 
+    private static void aplicarTituloSiExiste(JFreeChart chart) {
+
+        if (chart.getTitle() != null) {
+            chart.getTitle().setFont(AdministradorTema.fuenteMedianaNegrita());
+        }
+    }
+
     private static ChartPanel empacar(JFreeChart chart) {
 
         chart.setBackgroundPaint(null);
-        chart.getTitle().setFont(AdministradorTema.fuenteMedianaNegrita());
+        aplicarTituloSiExiste(chart);
         chart.removeLegend();
 
         ChartPanel panel = new ChartPanel(chart);

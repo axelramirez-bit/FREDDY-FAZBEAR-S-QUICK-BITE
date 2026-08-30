@@ -1,14 +1,14 @@
-package View.Trabajador;
+package View.PedidosProceso;
 
 import Base.DashboardBase;
 import Base.OpcionesTrabajador;
 import Base.Rol;
-import View.Cliente.DashboardCliente;
-import View.Trabajador.Panels.PanelHistorial;
-import View.Trabajador.Panels.PanelInicio;
-import View.Trabajador.Panels.PanelPedidosEnPreparacion;
-import View.Trabajador.Panels.PanelPedidosListos;
-import View.Trabajador.Panels.PanelPedidosPendientes;
+import View.Autoservicio.Autoservicio;
+import View.PedidosProceso.Panels.PanelHistorial;
+import View.PedidosProceso.Panels.PanelInicio;
+import View.PedidosProceso.Panels.PanelPedidosEnPreparacion;
+import View.PedidosProceso.Panels.PanelPedidosListos;
+import View.PedidosProceso.Panels.PanelPedidosPendientes;
 
 import javax.swing.SwingUtilities;
 
@@ -26,9 +26,9 @@ import javax.swing.SwingUtilities;
  * es exactamente el bug que tenía la versión anterior.
  * ===============================================================
  */
-public class DashboardTrabajador extends DashboardBase {
+public class PedidosProceso extends DashboardBase {
 
-    public DashboardTrabajador() {
+    public PedidosProceso() {
         super(Rol.TRABAJADOR, "Freddy Fazbear's Quick Bite - Trabajador");
     }
 
@@ -76,7 +76,7 @@ public class DashboardTrabajador extends DashboardBase {
      */
     @Override
     public void onConfiguracion() {
-        DashboardCliente dashboard = new DashboardCliente();
+        Autoservicio dashboard = new Autoservicio();
         dashboard.setVisible(true);
         dispose();
     }
@@ -86,7 +86,7 @@ public class DashboardTrabajador extends DashboardBase {
     // ==========================================================
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            DashboardTrabajador dashboard = new DashboardTrabajador();
+            PedidosProceso dashboard = new PedidosProceso();
             dashboard.setVisible(true);
         });
     }
