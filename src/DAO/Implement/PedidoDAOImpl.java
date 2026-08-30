@@ -44,13 +44,12 @@ public class PedidoDAOImpl implements IPedidoDAO {
         // queda en 0 después de insertar, y el Pago/Factura que se
         // guardan justo después (ver PedidoController) no pueden
         // enlazar la FK id_pedido correctamente.
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, pedido.getNumeroOrden());
             ps.setInt(2, pedido.getIdUsuario().getIdUsuario());
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
-            ps.setString(4, pedido.getTipoEntrega().name());
+            ps.setString(4, tipoEntregaToDb(pedido.getTipoEntrega()));
             ps.setString(5, pedido.getEstado().name());
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
@@ -97,13 +96,12 @@ public class PedidoDAOImpl implements IPedidoDAO {
                 + "referencia_entrega=? "
                 + "WHERE id_pedido=?";
 
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, pedido.getNumeroOrden());
             ps.setInt(2, pedido.getIdUsuario().getIdUsuario());
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
-            ps.setString(4, pedido.getTipoEntrega().name());
+            ps.setString(4, tipoEntregaToDb(pedido.getTipoEntrega()));
             ps.setString(5, pedido.getEstado().name());
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
@@ -129,8 +127,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         String sql = "DELETE FROM pedido WHERE id_pedido=?";
 
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idPedido);
 
@@ -150,8 +147,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         String sql = "SELECT * FROM pedido WHERE id_pedido=?";
 
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idPedido);
 
@@ -208,9 +204,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         String sql = "SELECT * FROM pedido";
 
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
 
@@ -252,21 +246,18 @@ public class PedidoDAOImpl implements IPedidoDAO {
         return lista;
 
     }
-    
+
     private String tipoEntregaToDb(TipoEntrega tipo) {
-    switch (tipo) {
-        case COMER_EN_RESTAURANTE:
-            return "Comer en restaurante";
-        case PARA_LLEVAR:
-            return "Para llevar";
-        case DOMICILIO:
-            // La BD todavía no tiene este valor en el ENUM de tipo_entrega
-            // (ver FreddyQuickBite.sql). Si vas a usar entregas a domicilio,
-            // hace falta un ALTER TABLE para agregarlo (ver nota abajo).
-            return "Domicilio";
-        default:
-            throw new IllegalArgumentException("Tipo de entrega no reconocido: " + tipo);
+        switch (tipo) {
+            case COMER_EN_RESTAURANTE:
+                return "Comer en restaurante";
+            case PARA_LLEVAR:
+                return "Para llevar";
+            case DOMICILIO:
+                return "Domicilio";
+            default:
+                throw new IllegalArgumentException("Tipo de entrega no reconocido: " + tipo);
+        }
     }
-}
 
 }
