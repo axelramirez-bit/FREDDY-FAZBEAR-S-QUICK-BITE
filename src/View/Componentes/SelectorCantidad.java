@@ -74,22 +74,7 @@ public class SelectorCantidad extends PanelRedondeado {
 
         setLayout(new GridLayout(1, 3));
 
-        // BUG REAL QUE ESTO CORRIGE (confirmado renderizando el
-        // componente): EstilosComponentes.aplicarEstiloTarjeta(this)
-        // le ponía a este selector el borde/padding pensado para
-        // tarjetas grandes (AdministradorTema.bordeTarjeta() =
-        // UIConstants.ESPACIADO_GRANDE = 24px POR LADO, o sea 48px
-        // de padding vertical). El selector completo mide solo
-        // ALTO_SELECTOR_CANTIDAD = 38px de alto: el padding por sí
-        // solo ya era más grande que todo el componente. El
-        // GridLayout(1,3) terminaba repartiendo un alto NEGATIVO
-        // entre los 3 hijos (botón "-", número, botón "+"), por eso
-        // no se veía nada dentro del selector — no era un bug del
-        // propio SelectorCantidad ni de TarjetaProducto, era este
-        // borde de más. Un control compacto como este no necesita
-        // padding interno: PanelRedondeado ya dibuja su forma con
-        // esquinas redondeadas en paintComponent().
-        setBorder(FabricaBordes.vacio());
+        EstilosComponentes.aplicarEstiloTarjeta(this);
 
         EstilosComponentes.aplicarTamaño(
                 this,

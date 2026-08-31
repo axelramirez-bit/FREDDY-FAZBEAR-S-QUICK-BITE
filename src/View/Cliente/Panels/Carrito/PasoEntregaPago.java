@@ -20,12 +20,13 @@ import java.math.BigDecimal;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * --------------------------------------------------------------- Paso 2 del
- * wizard: "Entrega y Pago".
+ * ---------------------------------------------------------------
+ * Paso 2 del wizard: "Entrega y Pago".
  *
- * Columna izquierda : Tipo de entrega + Direccion de entrega (solo si eligio
- * Domicilio). Columna central : Metodo de pago + Datos de facturacion. Columna
- * derecha : "Tu pedido" (resumen con envio incluido).
+ * Columna izquierda : Tipo de entrega + Direccion de entrega
+ *                      (solo si eligio Domicilio).
+ * Columna central   : Metodo de pago + Datos de facturacion.
+ * Columna derecha   : "Tu pedido" (resumen con envio incluido).
  * ===============================================================
  */
 public class PasoEntregaPago extends JPanel {
@@ -36,6 +37,12 @@ public class PasoEntregaPago extends JPanel {
     private final ButtonGroup grupoEntrega = new ButtonGroup();
     private JRadioButton rbRestaurante;
     private JRadioButton rbLlevar;
+    private JRadioButton rbDomicilio;
+
+    private JPanel panelDireccion;
+    private JTextField campoDireccion;
+    private JTextField campoReferencia;
+    private JTextField campoTelefono;
 
     // ---- Metodo de pago ----
     private final ButtonGroup grupoPago = new ButtonGroup();
@@ -107,22 +114,56 @@ public class PasoEntregaPago extends JPanel {
 
         rbRestaurante = opcionEntrega("Comer en restaurante", "Sin costo adicional");
         rbLlevar = opcionEntrega("Para llevar", "Sin costo adicional");
+        rbDomicilio = opcionEntrega(
+                "Domicilio",
+                "Costo de envío: " + FormateadorMoneda.formatear(PanelCarrito.COSTO_ENVIO_DOMICILIO)
+        );
 
         grupoEntrega.add(rbRestaurante);
         grupoEntrega.add(rbLlevar);
+        grupoEntrega.add(rbDomicilio);
         rbRestaurante.setSelected(true);
 
         tarjeta.add(rbRestaurante);
         tarjeta.add(Box.createVerticalStrut(6));
         tarjeta.add(rbLlevar);
+        tarjeta.add(Box.createVerticalStrut(6));
+        tarjeta.add(rbDomicilio);
 
-        java.awt.event.ActionListener alCambiarEntrega = e -> actualizarResumen();
+        java.awt.event.ActionListener alCambiarEntrega = e -> {
+            actualizarVisibilidadDireccion();
+            actualizarResumen();
+        };
         rbRestaurante.addActionListener(alCambiarEntrega);
         rbLlevar.addActionListener(alCambiarEntrega);
+        rbDomicilio.addActionListener(alCambiarEntrega);
 
         columna.add(tarjeta);
+        columna.add(Box.createVerticalStrut(AdministradorTema.espacioMediano()));
+        columna.add(construirTarjetaDireccion());
 
         return columna;
+    }
+
+    private JPanel construirTarjetaDireccion() {
+
+        panelDireccion = tarjeta();
+        panelDireccion.add(subtitulo("Dirección de entrega"));
+        panelDireccion.add(Box.createVerticalStrut(10));
+
+        campoDireccion = campoConEtiqueta(panelDireccion, "Dirección");
+        campoReferencia = campoConEtiqueta(panelDireccion, "Referencia (opcional)");
+        campoTelefono = campoConEtiqueta(panelDireccion, "Teléfono de contacto");
+
+        panelDireccion.setVisible(false);
+
+        return panelDireccion;
+    }
+
+    private void actualizarVisibilidadDireccion() {
+        panelDireccion.setVisible(rbDomicilio.isSelected());
+        revalidate();
+        repaint();
     }
 
     // ==========================================================
@@ -168,8 +209,8 @@ public class PasoEntregaPago extends JPanel {
         chkConsumidorFinal.setOpaque(false);
         chkConsumidorFinal.setSelected(true);
         chkConsumidorFinal.setAlignmentX(LEFT_ALIGNMENT);
-        chkConsumidorFinal.addActionListener(e
-                -> campoNit.setEnabled(!chkConsumidorFinal.isSelected())
+        chkConsumidorFinal.addActionListener(e ->
+                campoNit.setEnabled(!chkConsumidorFinal.isSelected())
         );
         campoNit.setEnabled(false);
 
@@ -264,7 +305,9 @@ public class PasoEntregaPago extends JPanel {
 
     private void guardarSeleccionEnPadre() {
 
-        if (rbLlevar.isSelected()) {
+        if (rbDomicilio.isSelected()) {
+            padre.setTipoEntrega(TipoEntrega.DOMICILIO);
+        } else if (rbLlevar.isSelected()) {
             padre.setTipoEntrega(TipoEntrega.PARA_LLEVAR);
         } else {
             padre.setTipoEntrega(TipoEntrega.COMER_EN_RESTAURANTE);
@@ -277,6 +320,9 @@ public class PasoEntregaPago extends JPanel {
         } else {
             padre.setMetodoPago(MetodoPago.EFECTIVO);
         }
+
+        padre.setDireccionEntrega(textoDe(campoDireccion));
+        padre.setReferenciaEntrega(textoDe(campoReferencia));
 
         padre.setNombreCliente(textoDe(campoNombre));
         padre.setCorreoCliente(textoDe(campoCorreo));
@@ -297,6 +343,7 @@ public class PasoEntregaPago extends JPanel {
         campoNombre.setText(padre.getNombreCliente() != null ? padre.getNombreCliente() : "");
         campoCorreo.setText(padre.getCorreoCliente() != null ? padre.getCorreoCliente() : "");
 
+        actualizarVisibilidadDireccion();
         actualizarResumen();
     }
 
@@ -334,7 +381,7 @@ public class PasoEntregaPago extends JPanel {
 
         BigDecimal subtotal = carrito != null ? carrito.calcularTotal() : BigDecimal.ZERO;
         BigDecimal iva = subtotal.multiply(new BigDecimal("0.12"));
-        BigDecimal envio = BigDecimal.ZERO;
+        BigDecimal envio = rbDomicilio.isSelected() ? PanelCarrito.COSTO_ENVIO_DOMICILIO : BigDecimal.ZERO;
         BigDecimal total = subtotal.add(iva).add(envio);
 
         lblSubtotal.setText(FormateadorMoneda.formatear(subtotal));
@@ -366,7 +413,7 @@ public class PasoEntregaPago extends JPanel {
 
         JRadioButton radio = new JRadioButton(
                 "<html><b>" + titulo + "</b><br><span style='font-size:85%;color:#777777;'>"
-                + detalle + "</span></html>"
+                        + detalle + "</span></html>"
         );
         radio.setOpaque(false);
         radio.setAlignmentX(LEFT_ALIGNMENT);

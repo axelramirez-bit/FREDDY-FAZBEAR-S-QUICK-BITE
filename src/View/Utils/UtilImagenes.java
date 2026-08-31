@@ -1,8 +1,6 @@
 package View.Utils;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.swing.ImageIcon;
 
@@ -232,70 +230,5 @@ public final class UtilImagenes {
             int alto) {
 
         return producto(nombre, ancho, alto);
-    }
-
-    // ==========================================================
-    // IMAGEN DE PRODUCTO CUADRADA (SIN DEFORMAR)
-    // ==========================================================
-
-    /**
-     * Carga una imagen de producto y la recorta al centro en forma
-     * cuadrada ANTES de escalarla.
-     *
-     * BUG QUE ESTO CORRIGE: cargarImagen(ruta, ancho, alto) usa
-     * getScaledInstance(ancho, alto), que ESTIRA la imagen al
-     * tamaño exacto pedido sin respetar su proporción original. Si
-     * la foto no es cuadrada (la mayoría de fotos reales no lo
-     * son), el resultado sale deformado dentro del marco cuadrado
-     * de la tarjeta. Este método recorta primero un cuadrado del
-     * centro de la imagen (el lado más corto define el tamaño del
-     * recorte) y solo entonces escala, así el resultado siempre es
-     * cuadrado y nunca se ve "achatado".
-     *
-     * @param nombre Nombre de la imagen (sin extensión).
-     * @param tamaño Ancho y alto final deseado (el resultado es
-     * siempre cuadrado, tamaño x tamaño).
-     * @return ImageIcon cuadrado, recortado al centro.
-     */
-    public static ImageIcon imagenProductoCuadrada(
-            String nombre,
-            int tamaño) {
-
-        ImageIcon original = producto(nombre);
-
-        if (original.getIconWidth() <= 0) {
-            return original;
-        }
-
-        Image imagenBase = original.getImage();
-
-        int anchoOriginal = original.getIconWidth();
-        int altoOriginal = original.getIconHeight();
-        int lado = Math.min(anchoOriginal, altoOriginal);
-
-        int x = (anchoOriginal - lado) / 2;
-        int y = (altoOriginal - lado) / 2;
-
-        BufferedImage recorte = new BufferedImage(
-                lado,
-                lado,
-                BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2 = recorte.createGraphics();
-
-        g2.drawImage(
-                imagenBase,
-                0, 0, lado, lado,
-                x, y, x + lado, y + lado,
-                null);
-
-        g2.dispose();
-
-        Image escalada = recorte.getScaledInstance(
-                tamaño,
-                tamaño,
-                Image.SCALE_SMOOTH);
-
-        return new ImageIcon(escalada);
     }
 }

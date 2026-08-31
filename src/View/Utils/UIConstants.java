@@ -310,16 +310,7 @@ public final class UIConstants {
     // un poco la imagen para que el contenido tenga espacio real.
     public static final int ANCHO_TARJETA_PRODUCTO = 720;
 
-    // ANTES: 220px. BUG QUE ESTO CORRIGE: con nombre + descripción
-    // (2 líneas) + precio/badge de descuento + fila de Cantidad +
-    // botón "Agregar al carrito", el contenido real necesita ~250-
-    // 260px. Con 220px fijos, el BoxLayout de TarjetaProducto no
-    // tenía a dónde reducir ese sobrante y lo último (el selector
-    // de cantidad) quedaba cortado/invisible. Se sube a 280px con
-    // margen real para que quepa todo, incluyendo el caso con
-    // promoción (badge + precio tachado + precio final en la misma
-    // fila, sin altura extra).
-    public static final int ALTO_TARJETA_PRODUCTO = 220;
+    public static final int ALTO_TARJETA_PRODUCTO = 270;
 
     public static final int PADDING_TARJETA = 24;
 
