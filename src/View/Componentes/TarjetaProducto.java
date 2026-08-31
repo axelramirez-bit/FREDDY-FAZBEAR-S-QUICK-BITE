@@ -17,7 +17,9 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.font.TextAttribute;
 import java.math.RoundingMode;
+import java.util.Map;
 
 /**
  * ===============================================================
@@ -126,18 +128,33 @@ public class TarjetaProducto extends PanelRedondeado {
         marco.setPreferredSize(new Dimension(ancho, alto));
         marco.setLayout(new BorderLayout());
 
+        // BUG QUE ESTO CORRIGE: imagenProducto(ancho, alto) estiraba
+        // la foto (getScaledInstance sin respetar proporción) y,
+        // además, marco quedaba deformado porque BorderLayout.WEST
+        // SIEMPRE estira su hijo a todo el alto del contenedor,
+        // ignorando marco.setPreferredSize(). imagenProductoCuadrada()
+        // resuelve la deformación de la foto; el envoltorio de abajo
+        // resuelve la deformación del marco.
         JLabel lblImagen = new JLabel(
-                UtilImagenes.imagenProducto(
+                UtilImagenes.imagenProductoCuadrada(
                         producto.getImagenPrincipal(),
-                        ancho - UIConstants.ESPACIO_SUBTITULO,
-                        alto - UIConstants.ESPACIO_SUBTITULO
+                        ancho - UIConstants.ESPACIO_SUBTITULO
                 )
         );
         lblImagen.setHorizontalAlignment(JLabel.CENTER);
 
         marco.add(lblImagen, BorderLayout.CENTER);
 
-        return marco;
+        // Envoltorio con FlowLayout: a diferencia de BorderLayout,
+        // FlowLayout SÍ respeta el preferredSize de marco y lo centra
+        // verticalmente dentro del alto real de la tarjeta, en vez de
+        // estirarlo. Así el marco se ve cuadrado sin importar el alto
+        // de la tarjeta.
+        JPanel envoltorio = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        envoltorio.setOpaque(false);
+        envoltorio.add(marco);
+
+        return envoltorio;
     }
 
     private JPanel crearPanelContenido() {
@@ -180,6 +197,14 @@ public class TarjetaProducto extends PanelRedondeado {
         // etiqueta normal (sin borde, sin fondo, no editable) pero el
         // texto se adapta solo.
         JTextArea lblDescripcion = new JTextArea(producto.getDescripcion());
+        // BUG QUE ESTO CORRIGE: sin rows fijas, el alto que BoxLayout
+        // le reservaba a la descripción variaba según el texto de
+        // cada producto, haciendo impredecible cuánto espacio le
+        // quedaba al selector de cantidad y al botón. Con 2 líneas
+        // fijas, el alto de la tarjeta (ALTO_TARJETA_PRODUCTO) queda
+        // garantizado para TODOS los productos, sin importar qué tan
+        // larga sea la descripción.
+        lblDescripcion.setRows(2);
         lblDescripcion.setFont(AdministradorTema.fuenteNormal());
         lblDescripcion.setForeground(AdministradorTema.colorTexto());
         lblDescripcion.setLineWrap(true);
@@ -196,18 +221,65 @@ public class TarjetaProducto extends PanelRedondeado {
                 Integer.MAX_VALUE
         ));
 
-        JLabel lblPrecio = FabricaEtiquetas.crearSubtitulo(formatearPrecio());
-        lblPrecio.setForeground(AdministradorTema.colorPrincipal());
-        lblPrecio.setAlignmentX(LEFT_ALIGNMENT);
+        JPanel filaPrecio = crearFilaPrecio();
+        filaPrecio.setAlignmentX(LEFT_ALIGNMENT);
 
         panel.add(lblNombre);
         panel.add(Box.createRigidArea(new Dimension(0, UIConstants.ESPACIO_SUBTITULO)));
         panel.add(lblDescripcion);
         panel.add(Box.createRigidArea(new Dimension(0, UIConstants.ESPACIO_SUBTITULO)));
-        panel.add(lblPrecio);
+        panel.add(filaPrecio);
         panel.add(Box.createRigidArea(new Dimension(0, UIConstants.ESPACIO_TITULO)));
 
         return panel;
+    }
+
+    // ==========================================================
+    // PRECIO / PROMOCIÓN
+    // ==========================================================
+
+    /**
+     * Fila de precio, en UNA sola línea de alto en ambos casos, para
+     * no pedirle a la tarjeta espacio vertical extra:
+     *
+     * • Sin promoción vigente: solo el precio normal (como antes).
+     * • Con promoción vigente: badge "-X%" (reutiliza
+     * EtiquetaEstado.peligro(), ya existente en el proyecto) +
+     * precio original tachado + precio final destacado.
+     *
+     * Usa Producto.tienePromocion() / getPrecioFinal(), que ya
+     * existían en el Model y no estaban conectados a ninguna vista.
+     */
+    private JPanel crearFilaPrecio() {
+
+        JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT, UIConstants.ESPACIO_SUBTITULO, 0));
+        fila.setOpaque(false);
+
+        if (producto.tienePromocion()) {
+
+            int porcentaje = producto.getPromocion().getDescuento().intValue();
+            fila.add(EtiquetaEstado.peligro("-" + porcentaje + "%"));
+
+            JLabel lblAnterior = FabricaEtiquetas.crearTexto(
+                    "Q" + producto.getPrecio().setScale(2, RoundingMode.HALF_UP));
+            lblAnterior.setForeground(AdministradorTema.colorTexto());
+            lblAnterior.setFont(lblAnterior.getFont().deriveFont(
+                    Map.of(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON)));
+            fila.add(lblAnterior);
+
+            JLabel lblFinal = FabricaEtiquetas.crearSubtitulo(
+                    "Q" + producto.getPrecioFinal().setScale(2, RoundingMode.HALF_UP));
+            lblFinal.setForeground(AdministradorTema.colorPrincipal());
+            fila.add(lblFinal);
+
+        } else {
+
+            JLabel lblPrecio = FabricaEtiquetas.crearSubtitulo(formatearPrecio());
+            lblPrecio.setForeground(AdministradorTema.colorPrincipal());
+            fila.add(lblPrecio);
+        }
+
+        return fila;
     }
 
     private SelectorCantidad crearSelectorCantidad() {
