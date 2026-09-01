@@ -74,7 +74,22 @@ public class SelectorCantidad extends PanelRedondeado {
 
         setLayout(new GridLayout(1, 3));
 
-        EstilosComponentes.aplicarEstiloTarjeta(this);
+        // BUG REAL QUE ESTO CORRIGE (confirmado renderizando el
+        // componente): EstilosComponentes.aplicarEstiloTarjeta(this)
+        // le ponía a este selector el borde/padding pensado para
+        // tarjetas grandes (AdministradorTema.bordeTarjeta() =
+        // UIConstants.ESPACIADO_GRANDE = 24px POR LADO, o sea 48px
+        // de padding vertical). El selector completo mide solo
+        // ALTO_SELECTOR_CANTIDAD = 38px de alto: el padding por sí
+        // solo ya era más grande que todo el componente. El
+        // GridLayout(1,3) terminaba repartiendo un alto NEGATIVO
+        // entre los 3 hijos (botón "-", número, botón "+"), por eso
+        // no se veía nada dentro del selector — no era un bug del
+        // propio SelectorCantidad ni de TarjetaProducto, era este
+        // borde de más. Un control compacto como este no necesita
+        // padding interno: PanelRedondeado ya dibuja su forma con
+        // esquinas redondeadas en paintComponent().
+        setBorder(FabricaBordes.vacio());
 
         EstilosComponentes.aplicarTamaño(
                 this,
@@ -107,6 +122,19 @@ public class SelectorCantidad extends PanelRedondeado {
                 btnMenos,
                 AdministradorTema.anchoBotonCantidad(),
                 AdministradorTema.altoBotonCantidad());
+
+        // BUG REAL QUE ESTO CORRIGE (confirmado renderizando el
+        // componente): FabricaBotones.crearSecundario() aplica
+        // FabricaBordes.boton() = 15px de padding POR LADO (30px en
+        // total), pensado para botones normales como "Agregar al
+        // carrito" (mucho más anchos). Este botón se encoge después
+        // a 28x28 con aplicarTamaño(): con 30px de padding metidos en
+        // un botón de 28px de ancho, no queda espacio para dibujar
+        // el "-", así que Swing lo recorta y pinta "..." en su
+        // lugar. Se le quita el padding para botones compactos como
+        // este; con la letra centrada por el propio JButton alcanza
+        // de sobra en 28x28.
+        btnMenos.setBorder(BorderFactory.createEmptyBorder());
 
         btnMenos.addActionListener(e -> disminuir());
 
@@ -143,6 +171,10 @@ public class SelectorCantidad extends PanelRedondeado {
         btnMas,
         AdministradorTema.anchoBotonCantidad(),
         AdministradorTema.altoBotonCantidad());
+
+        // Mismo bug que btnMenos, ver comentario en crearBotonMenos().
+        btnMas.setBorder(BorderFactory.createEmptyBorder());
+
         btnMas.addActionListener(e -> aumentar());
 
         add(btnMas);

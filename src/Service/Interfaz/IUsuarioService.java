@@ -12,6 +12,11 @@ public interface IUsuarioService {
 
     boolean eliminarUsuario(int idUsuario);
 
+    // Caso de uso 2.4: desactivar (estado=false) siempre es posible.
+    boolean desactivarUsuario(int idUsuario);
+
+    boolean activarUsuario(int idUsuario);
+
     Usuario obtenerUsuarioPorId(int idUsuario);
 
     List<Usuario> listarUsuarios();

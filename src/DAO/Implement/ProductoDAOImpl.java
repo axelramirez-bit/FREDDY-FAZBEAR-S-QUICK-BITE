@@ -124,6 +124,40 @@ public class ProductoDAOImpl implements IProductoDAO {
         } catch (SQLException e) {
 
             AppLogger.error(getClass(), "Error de acceso a datos", e);
+
+            // Mismo criterio que UsuarioDAOImpl: si el producto ya
+            // aparece en detalle_pedido (fue vendido alguna vez),
+            // la BD rechaza el DELETE por la FK. Se distingue ese
+            // caso del resto para que la UI pueda sugerir
+            // "Desactivar" en vez de un error genérico.
+            if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1451) {
+                throw new IllegalStateException(
+                        "No se puede eliminar: el producto ya fue vendido "
+                        + "en algún pedido. Usa \"Desactivar\" en su lugar.", e);
+            }
+
+            return false;
+
+        }
+
+    }
+
+    @Override
+    public boolean cambiarEstado(int idProducto, boolean estado) {
+
+        String sql = "UPDATE producto SET estado=? WHERE id_producto=?";
+
+        try (Connection con = Conexion.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBoolean(1, estado);
+            ps.setInt(2, idProducto);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
 
         }

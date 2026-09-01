@@ -12,11 +12,11 @@ import Service.Implement.CarritoServiceImpl;
 import Service.Interfaz.ICarritoDetalleService;
 import Service.Interfaz.ICarritoService;
 import Utils.Sesion;
-import View.Cliente.Panels.Carrito.PasoConfirmacion;
-import View.Cliente.Panels.Carrito.PasoEntregaPago;
-import View.Cliente.Panels.Carrito.PasoFactura;
-import View.Cliente.Panels.Carrito.PasoRevisarCarrito;
-import View.Cliente.Panels.Carrito.StepperCarrito;
+import View.Autoservicio.Panels.Carrito.PasoConfirmacion;
+import View.Autoservicio.Panels.Carrito.PasoEntregaPago;
+import View.Autoservicio.Panels.Carrito.PasoFactura;
+import View.Autoservicio.Panels.Carrito.PasoRevisarCarrito;
+import View.Autoservicio.Panels.Carrito.StepperCarrito;
 import View.Componentes.PanelFondo;
 
 import javax.swing.JOptionPane;

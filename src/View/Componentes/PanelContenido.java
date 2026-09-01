@@ -29,9 +29,9 @@ public class PanelContenido extends JPanel {
 
     }
 
-    public void agregarVista(String id, JPanel panel){
+    public void agregarVista(String id, java.awt.Component componente){
 
-        add(panel,id);
+        add(componente, id);
 
     }
 

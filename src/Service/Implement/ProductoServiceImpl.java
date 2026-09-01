@@ -74,6 +74,26 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     @Override
+    public boolean desactivarProducto(int idProducto) {
+
+        if (idProducto <= 0) {
+            return false;
+        }
+
+        return productoDAO.cambiarEstado(idProducto, false);
+    }
+
+    @Override
+    public boolean activarProducto(int idProducto) {
+
+        if (idProducto <= 0) {
+            return false;
+        }
+
+        return productoDAO.cambiarEstado(idProducto, true);
+    }
+
+    @Override
     public Producto obtenerProductoPorId(int idProducto) {
 
         if (idProducto <= 0) {

@@ -148,7 +148,17 @@ public class PedidoDAOImpl implements IPedidoDAO {
     @Override
     public Pedido buscarPorId(int idPedido) {
 
-        String sql = "SELECT * FROM pedido WHERE id_pedido=?";
+        // Corrección: antes era "SELECT * FROM pedido" y el Usuario
+        // del pedido solo traía el id (setIdUsuario), nunca nombre
+        // ni apellido. Como Usuario.getNombreCompleto() concatena
+        // nombre+apellido, la columna "Cliente" salía en blanco en
+        // TODAS las tablas de pedidos (Trabajador y Administrador).
+        // Se agrega JOIN con usuario para traer los datos reales.
+        String sql = "SELECT p.*, u.nombre AS u_nombre, u.apellido AS u_apellido, "
+                + "u.correo AS u_correo "
+                + "FROM pedido p "
+                + "JOIN usuario u ON u.id_usuario = p.id_usuario "
+                + "WHERE p.id_pedido=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -161,6 +171,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNombre(rs.getString("u_nombre"));
+                usuario.setApellido(rs.getString("u_apellido"));
+                usuario.setCorreo(rs.getString("u_correo"));
 
                 // Los detalles se cargan ANTES de construir el Pedido:
                 // Pedido.detalles es `final`, así que la única forma de
@@ -206,7 +219,14 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         List<Pedido> lista = new ArrayList<>();
 
-        String sql = "SELECT * FROM pedido";
+        // Mismo fix que en buscarPorId(): se agrega el JOIN para
+        // traer nombre/apellido del cliente y que las listas de
+        // pedidos (Trabajador y Administrador) no salgan con la
+        // columna "Cliente" vacía.
+        String sql = "SELECT p.*, u.nombre AS u_nombre, u.apellido AS u_apellido, "
+                + "u.correo AS u_correo "
+                + "FROM pedido p "
+                + "JOIN usuario u ON u.id_usuario = p.id_usuario";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -216,6 +236,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNombre(rs.getString("u_nombre"));
+                usuario.setApellido(rs.getString("u_apellido"));
+                usuario.setCorreo(rs.getString("u_correo"));
 
                 int idPedido = rs.getInt("id_pedido");
 

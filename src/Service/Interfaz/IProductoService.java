@@ -12,6 +12,11 @@ public interface IProductoService {
 
     boolean eliminarProducto(int idProducto);
 
+    // Caso de uso "Desactivar producto": siempre posible.
+    boolean desactivarProducto(int idProducto);
+
+    boolean activarProducto(int idProducto);
+
     Producto obtenerProductoPorId(int idProducto);
 
     List<Producto> listarProductos();

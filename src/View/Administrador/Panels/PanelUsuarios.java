@@ -139,14 +139,20 @@ public class PanelUsuarios extends PanelFondo {
         ladoDerecho.setOpaque(false);
 
         JButton btnEditar = FabricaBotones.crearSecundario("Editar");
+        // Caso de uso 2.4: "Desactivar" siempre es posible (a
+        // diferencia de "Eliminar", que la BD puede bloquear).
+        // El texto cambia según el estado del usuario seleccionado.
+        JButton btnEstado = FabricaBotones.crearSecundario("Desactivar");
         JButton btnEliminar = FabricaBotones.crearSecundario("Eliminar");
         JButton btnNuevo = FabricaBotones.crearPrimario("Nuevo Usuario");
 
         btnEditar.addActionListener(e -> editarSeleccionado());
+        btnEstado.addActionListener(e -> cambiarEstadoSeleccionado());
         btnEliminar.addActionListener(e -> eliminarSeleccionado());
         btnNuevo.addActionListener(e -> abrirFormulario(null));
 
         ladoDerecho.add(btnEditar);
+        ladoDerecho.add(btnEstado);
         ladoDerecho.add(btnEliminar);
         ladoDerecho.add(btnNuevo);
 
@@ -288,10 +294,60 @@ public class PanelUsuarios extends PanelFondo {
             return;
         }
 
-        boolean eliminado = usuarioService.eliminarUsuario(usuario.getIdUsuario());
+        try {
+            boolean eliminado = usuarioService.eliminarUsuario(usuario.getIdUsuario());
 
-        if (!eliminado) {
-            JOptionPane.showMessageDialog(this, "No se pudo eliminar el usuario.",
+            if (!eliminado) {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar el usuario.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+        } catch (IllegalStateException ex) {
+            // El usuario ya procesó pedidos: la BD bloqueó el
+            // DELETE por la FK pedido.id_usuario. Se informa la
+            // causa real, en vez de un error genérico.
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "No se puede eliminar", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        cargarDatos();
+    }
+
+    /**
+     * Caso de uso 2.4 "Desactivar usuario": alterna estado=true/false
+     * según el estado actual del usuario seleccionado. Siempre es
+     * posible porque solo actualiza el flag, sin tocar la FK.
+     */
+    private void cambiarEstadoSeleccionado() {
+
+        Usuario usuario = obtenerSeleccionado();
+
+        if (usuario == null) {
+            return;
+        }
+
+        boolean nuevoEstado = !usuario.isEstado();
+        String accion = nuevoEstado ? "activar" : "desactivar";
+
+        int confirmacion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que deseas " + accion + " a " + usuario.getNombreCompleto() + "?",
+                "Confirmar",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        boolean actualizado = nuevoEstado
+                ? usuarioService.activarUsuario(usuario.getIdUsuario())
+                : usuarioService.desactivarUsuario(usuario.getIdUsuario());
+
+        if (!actualizado) {
+            JOptionPane.showMessageDialog(this, "No se pudo " + accion + " el usuario.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

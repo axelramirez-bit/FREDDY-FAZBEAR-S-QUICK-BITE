@@ -84,6 +84,40 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
+            // Corrección: antes cualquier fallo (incluido el choque
+            // con la FK pedido.id_usuario cuando el usuario ya
+            // procesó pedidos) se tragaba como un "false" genérico,
+            // y la UI mostraba "No se pudo eliminar el usuario" sin
+            // explicar la causa real. El código SQLState 23000
+            // (o 1451 de MySQL) identifica ese choque específico,
+            // así que se relanza como excepción de negocio para que
+            // la vista pueda sugerir "Desactivar" en su lugar.
+            AppLogger.error(getClass(), "Error de acceso a datos", e);
+
+            if ("23000".equals(e.getSQLState()) || e.getErrorCode() == 1451) {
+                throw new IllegalStateException(
+                        "No se puede eliminar: el usuario ya tiene pedidos "
+                        + "asociados. Usa \"Desactivar\" en su lugar.", e);
+            }
+
+            return false;
+        }
+    }
+
+    @Override
+    public boolean cambiarEstado(int idUsuario, boolean estado) {
+        // Caso de uso 2.4 "Desactivar usuario": siempre posible,
+        // solo actualiza el flag `estado`, no toca las FK.
+        String sql = "UPDATE usuario SET estado=? WHERE id_usuario=?";
+
+        try (Connection con = Conexion.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBoolean(1, estado);
+            ps.setInt(2, idUsuario);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
             AppLogger.error(getClass(), "Error de acceso a datos", e);
             return false;
         }

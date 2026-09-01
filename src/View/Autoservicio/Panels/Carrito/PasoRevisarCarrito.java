@@ -1,4 +1,4 @@
-package View.Cliente.Panels.Carrito;
+package View.Autoservicio.Panels.Carrito;
 
 import Model.Carrito;
 import Model.CarritoDetalle;

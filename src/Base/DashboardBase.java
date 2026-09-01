@@ -141,8 +141,8 @@ public abstract class DashboardBase extends JFrame implements BarraLateralListen
      * (Si en el futuro vuelve ControlNavegacion, este es el único
      * método que cambiaría de implementación.)
      */
-    protected void registrarVista(String idVista, JPanel panel) {
-        panelContenido.agregarVista(idVista, panel);
+    protected void registrarVista(String idVista, java.awt.Component componente) {
+        panelContenido.agregarVista(idVista, componente);
     }
 
     /**

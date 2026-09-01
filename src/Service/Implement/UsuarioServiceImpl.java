@@ -61,6 +61,26 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    public boolean desactivarUsuario(int idUsuario) {
+
+        if (idUsuario <= 0) {
+            return false;
+        }
+
+        return usuarioDAO.cambiarEstado(idUsuario, false);
+    }
+
+    @Override
+    public boolean activarUsuario(int idUsuario) {
+
+        if (idUsuario <= 0) {
+            return false;
+        }
+
+        return usuarioDAO.cambiarEstado(idUsuario, true);
+    }
+
+    @Override
     public Usuario obtenerUsuarioPorId(int idUsuario) {
 
         if (idUsuario <= 0) {

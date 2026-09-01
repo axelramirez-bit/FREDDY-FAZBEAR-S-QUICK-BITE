@@ -1,4 +1,4 @@
-package View.Cliente.Panels.Carrito;
+package View.Autoservicio.Panels.Carrito;
 
 import Controller.PedidoController.ResultadoConfirmacion;
 import Model.DetalleFactura;

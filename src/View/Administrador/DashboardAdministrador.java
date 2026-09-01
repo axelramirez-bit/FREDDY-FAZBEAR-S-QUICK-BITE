@@ -13,6 +13,7 @@ import View.Administrador.Panels.PanelReportes;
 import View.Administrador.Panels.PanelTrabajadores;
 import View.Administrador.Panels.PanelUsuarios;
 import View.Administrador.Panels.PanelVentas;
+import View.Utils.FabricaScroll;
 
 import javax.swing.SwingUtilities;
 
@@ -22,14 +23,12 @@ import javax.swing.SwingUtilities;
  * ---------------------------------------------------------------
  * Dashboard del Administrador.
  *
- * AJUSTA LOS IMPORTS si tus paneles de Administrador viven en un
- * paquete distinto o tienen otro nombre de clase — los nombres de
- * abajo (PanelDashboard, PanelUsuarios, etc.) son mi mejor
- * suposición siguiendo la misma convención que ya usaste en
- * Trabajador (View.<Rol>.Panels.PanelX). Lo que NO debes cambiar
- * es el patrón de tomar el idVista siempre desde
- * OpcionesAdministrador.X.getIdVista() — eso es lo que evita el
- * bug de Strings desalineados que tenía DashboardTrabajador.
+ * Cada panel se registra envuelto en FabricaScroll.crearPanel(...)
+ * para que, si el contenido (tarjetas KPI + tabla + notas) es más
+ * alto que la ventana, aparezca una barra de scroll vertical en
+ * vez de recortarse. El scroll horizontal queda deshabilitado
+ * (VELOCIDAD_SCROLL/estilo ya definido en EstilosComponentes) para
+ * no romper el diseño responsivo de cada panel.
  * ===============================================================
  */
 public class DashboardAdministrador extends DashboardBase {
@@ -43,52 +42,52 @@ public class DashboardAdministrador extends DashboardBase {
 
         registrarVista(
                 OpcionesAdministrador.DASHBOARD.getIdVista(),
-                new PanelDashboard()
+                FabricaScroll.crearPanel(new PanelDashboard())
         );
 
         registrarVista(
                 OpcionesAdministrador.USUARIOS.getIdVista(),
-                new PanelUsuarios()
+                FabricaScroll.crearPanel(new PanelUsuarios())
         );
 
         registrarVista(
                 OpcionesAdministrador.TRABAJADORES.getIdVista(),
-                new PanelTrabajadores()
+                FabricaScroll.crearPanel(new PanelTrabajadores())
         );
 
         registrarVista(
                 OpcionesAdministrador.PRODUCTOS.getIdVista(),
-                new PanelProductos()
+                FabricaScroll.crearPanel(new PanelProductos())
         );
 
         registrarVista(
                 OpcionesAdministrador.CATEGORIAS.getIdVista(),
-                new PanelCategorias()
+                FabricaScroll.crearPanel(new PanelCategorias())
         );
 
         registrarVista(
                 OpcionesAdministrador.PROMOCIONES.getIdVista(),
-                new PanelPromociones()
+                FabricaScroll.crearPanel(new PanelPromociones())
         );
 
         registrarVista(
                 OpcionesAdministrador.PEDIDOS.getIdVista(),
-                new PanelPedidos()
+                FabricaScroll.crearPanel(new PanelPedidos())
         );
 
         registrarVista(
                 OpcionesAdministrador.PAGOS.getIdVista(),
-                new PanelPagos()
+                FabricaScroll.crearPanel(new PanelPagos())
         );
 
         registrarVista(
                 OpcionesAdministrador.VENTAS.getIdVista(),
-                new PanelVentas()
+                FabricaScroll.crearPanel(new PanelVentas())
         );
 
         registrarVista(
                 OpcionesAdministrador.REPORTES.getIdVista(),
-                new PanelReportes()
+                FabricaScroll.crearPanel(new PanelReportes())
         );
     }
 

@@ -11,6 +11,11 @@ public interface IUsuarioDAO {
 
     boolean eliminar(int id);
 
+    // Caso de uso 2.4: "Desactivar usuario" siempre debe ser
+    // posible (a diferencia de eliminar, que la BD bloquea si el
+    // usuario ya procesó pedidos por la FK pedido.id_usuario).
+    boolean cambiarEstado(int idUsuario, boolean estado);
+
     Usuario buscarPorId(int id);
 
     Usuario iniciarSesion(String correo, String contraseña);
