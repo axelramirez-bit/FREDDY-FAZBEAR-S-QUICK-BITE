@@ -50,7 +50,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setString(1, pedido.getNumeroOrden());
             ps.setInt(2, pedido.getIdUsuario().getIdUsuario());
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
-            ps.setString(4, pedido.getTipoEntrega().name());
+            ps.setString(4, tipoEntregaToDb(pedido.getTipoEntrega()));
             ps.setString(5, pedido.getEstado().name());
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
@@ -103,7 +103,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setString(1, pedido.getNumeroOrden());
             ps.setInt(2, pedido.getIdUsuario().getIdUsuario());
             ps.setTimestamp(3, Timestamp.valueOf(pedido.getFecha()));
-            ps.setString(4, pedido.getTipoEntrega().name());
+            ps.setString(4, tipoEntregaToDb(pedido.getTipoEntrega()));
             ps.setString(5, pedido.getEstado().name());
             ps.setBigDecimal(6, pedido.getSubtotal());
             ps.setBigDecimal(7, pedido.getDescuento());
