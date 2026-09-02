@@ -236,7 +236,7 @@ public class PagoDAOImpl implements IPagoDAO {
             case TARJETA:
                 return "Tarjeta";
             case TRANSFERENCIA:
-                return "TRANSFERENCIA";
+                return "Transferencia";
             default:
                 throw new IllegalArgumentException("Método de pago no reconocido: " + metodo);
         }
@@ -248,7 +248,7 @@ public class PagoDAOImpl implements IPagoDAO {
                 return MetodoPago.EFECTIVO;
             case "Tarjeta":
                 return MetodoPago.TARJETA;
-            case "TRANSFERENCIA":
+            case "Transferencia":
                 return MetodoPago.TRANSFERENCIA;
             default:
                 throw new IllegalArgumentException("Método de pago no reconocido: " + metodo);

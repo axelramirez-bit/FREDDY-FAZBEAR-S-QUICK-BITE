@@ -7,6 +7,7 @@ import Model.EstadoPedido;
 import Model.Pedido;
 import Model.TipoEntrega;
 import Model.Usuario;
+import Utils.AppLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,7 +74,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(PedidoDAOImpl.class,
+                    "No se pudo insertar el pedido " + pedido.getNumeroOrden(), e);
             return false;
 
         }
@@ -117,7 +119,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(PedidoDAOImpl.class,
+                    "No se pudo actualizar el pedido #" + pedido.getIdPedido(), e);
             return false;
 
         }
@@ -138,7 +141,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(PedidoDAOImpl.class,
+                    "No se pudo eliminar el pedido #" + idPedido, e);
             return false;
 
         }
@@ -206,7 +210,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(PedidoDAOImpl.class,
+                    "No se pudo buscar el pedido #" + idPedido, e);
 
         }
 
@@ -268,7 +273,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+            AppLogger.error(PedidoDAOImpl.class,
+                    "No se pudo listar los pedidos.", e);
 
         }
 

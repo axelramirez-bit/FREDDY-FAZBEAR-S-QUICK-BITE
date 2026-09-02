@@ -27,7 +27,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
@@ -206,11 +205,9 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
         boolean actualizado = pedidoService.actualizarPedido(pedido);
 
         if (!actualizado) {
-            JOptionPane.showMessageDialog(
+            FabricaDialogos.error(
                     this,
-                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + ".",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
+                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + "."
             );
             return;
         }

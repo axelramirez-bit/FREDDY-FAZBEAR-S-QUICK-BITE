@@ -27,7 +27,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
@@ -179,14 +178,12 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
     // ==========================================================
     private void confirmarEntrega(Pedido pedido) {
 
-        int confirmacion = JOptionPane.showConfirmDialog(
+        boolean confirmado = FabricaDialogos.confirmar(
                 this,
-                "¿Confirmas la entrega del pedido #" + pedido.getIdPedido() + " al cliente?",
-                "Confirmar entrega",
-                JOptionPane.YES_NO_OPTION
+                "¿Confirmas la entrega del pedido #" + pedido.getIdPedido() + " al cliente?"
         );
 
-        if (confirmacion != JOptionPane.YES_OPTION) {
+        if (!confirmado) {
             return;
         }
 
@@ -195,11 +192,9 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
         boolean actualizado = pedidoService.actualizarPedido(pedido);
 
         if (!actualizado) {
-            JOptionPane.showMessageDialog(
+            FabricaDialogos.error(
                     this,
-                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + ".",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
+                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + "."
             );
             return;
         }

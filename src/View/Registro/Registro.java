@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import Model.Usuario;
 import Model.Rol;
 import Service.Implement.UsuarioServiceImpl;
+import Utils.AppLogger;
 
 public class Registro extends JFrame {
 
@@ -160,7 +161,8 @@ public class Registro extends JFrame {
                         JOptionPane.showMessageDialog(null, 
                             "Error: No se encontró la clase Login. Verifica el import.", 
                             "Error", JOptionPane.ERROR_MESSAGE);
-                        ex.printStackTrace();
+                        AppLogger.error(Registro.class,
+                                "No se pudo abrir Login desde Registro.", ex);
                     }
                 });
             }
@@ -529,7 +531,8 @@ public class Registro extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error(Registro.class,
+                    "No se pudo aplicar el Look&Feel del sistema.", e);
         }
 
         SwingUtilities.invokeLater(() -> {

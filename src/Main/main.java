@@ -7,6 +7,8 @@ import Utils.AppLogger;
 import View.Login.Login;
 import View.Splash.SplashScreen;
 import View.Utils.AdministradorTema;
+import View.Utils.ManejadorErroresGlobal;
+import java.awt.Toolkit;
 import javax.swing.SwingUtilities;
 
 
@@ -14,6 +16,15 @@ public class main {
 
 
     public static void main(String[] args) {
+
+        // Manejador central de excepciones: debe instalarse ANTES de
+        // crear cualquier ventana, para que cubra también los
+        // errores que ocurran en la pantalla de carga y en Login.
+        // Ver View.Utils.ManejadorErroresGlobal para el detalle de
+        // qué problema resuelve.
+        Toolkit.getDefaultToolkit()
+                .getSystemEventQueue()
+                .push(new ManejadorErroresGlobal());
 
         SwingUtilities.invokeLater(() -> {
 

@@ -13,10 +13,10 @@ import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
-import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
+import View.Utils.FabricaDialogos;
 import View.Utils.FabricaEtiquetas;
 import View.Utils.FabricaTablas;
 import View.Utils.PaletaColores;
@@ -58,7 +58,7 @@ import java.util.List;
  * tenga aquí es coherencia con ese diseño, no un olvido.
  * ===============================================================
  */
-public class PanelHistorial extends PanelFondo implements Refrescable {
+public class PanelHistorial extends PanelFondo {
 
     private static final int TAMANO_PAGINA = 5;
     private static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
@@ -244,7 +244,18 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
 
     public void cargarDatos() {
 
-        List<Pedido> todos = pedidoService.listarPedidos();
+        List<Pedido> todos;
+
+        try {
+            todos = pedidoService.listarPedidos();
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelHistorial.class,
+                    "No se pudo cargar el historial de pedidos. Verifica tu conexión e inténtalo de nuevo.",
+                    ex
+            );
+            return;
+        }
 
         historialCompleto = new ArrayList<>();
         for (Pedido p : todos) {

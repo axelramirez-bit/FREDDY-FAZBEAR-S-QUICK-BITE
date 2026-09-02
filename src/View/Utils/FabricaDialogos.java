@@ -1,5 +1,7 @@
 package View.Utils;
 
+import Utils.AppLogger;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -17,6 +19,7 @@ import javax.swing.*;
  * • Mensajes
  * • Errores
  * • Advertencias
+ * • Excepciones (loguea + muestra el error en un solo paso)
  *
  * ===============================================================
  */
@@ -95,6 +98,40 @@ public final class FabricaDialogos {
                 padre,
                 mensaje);
 
+    }
+
+    public static String solicitarTexto(
+            Component padre,
+            String mensaje,
+            String valorInicial) {
+
+        return JOptionPane.showInputDialog(
+                padre,
+                mensaje,
+                valorInicial);
+
+    }
+
+    // ==========================================================
+    // EXCEPCIONES
+    // ==========================================================
+
+    /**
+     * Registra la excepción con AppLogger (queda el stacktrace
+     * completo en el log, con fecha y clase de origen) y además
+     * muestra el mensaje al usuario en un diálogo de error — en un
+     * solo paso, para no repetir AppLogger.error(...) + error(...)
+     * en cada catch.
+     */
+    public static void excepcion(
+            Component padre,
+            Class<?> clase,
+            String mensaje,
+            Throwable causa) {
+
+        AppLogger.error(clase, mensaje, causa);
+
+        error(padre, mensaje);
     }
 
     // ==========================================================

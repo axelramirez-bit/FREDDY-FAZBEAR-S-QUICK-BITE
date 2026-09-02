@@ -9,6 +9,7 @@ import Model.DetallePedido;
 import Model.EstadoPedido;
 import Model.Pedido;
 import Service.Interfaz.IPedidoService;
+import Utils.AppLogger;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -91,10 +92,14 @@ public class PedidoServiceImpl implements IPedidoService {
             try {
                 con.rollback();
             } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+                AppLogger.error(PedidoServiceImpl.class,
+                        "Falló el rollback al registrar el pedido "
+                                + pedido.getNumeroOrden(), rollbackEx);
             }
 
-            e.printStackTrace();
+            AppLogger.error(PedidoServiceImpl.class,
+                    "No se pudo registrar el pedido " + pedido.getNumeroOrden()
+                            + " (revertido por transacción).", e);
             return false;
 
         } finally {
@@ -102,7 +107,8 @@ public class PedidoServiceImpl implements IPedidoService {
             try {
                 con.setAutoCommit(true);
             } catch (SQLException e) {
-                e.printStackTrace();
+                AppLogger.error(PedidoServiceImpl.class,
+                        "No se pudo restaurar autoCommit tras registrar pedido.", e);
             }
         }
 

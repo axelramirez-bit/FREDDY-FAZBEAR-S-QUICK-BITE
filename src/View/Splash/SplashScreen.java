@@ -1,7 +1,10 @@
 package View.Splash;
 
+import Config.ConexionException;
+import Utils.AppLogger;
 import View.Utils.CacheImagenes;
 import View.Utils.CargadorFuentes;
+import View.Utils.FabricaDialogos;
 import View.Utils.PaletaColores;
 
 import java.awt.BasicStroke;
@@ -619,15 +622,29 @@ public class SplashScreen extends JFrame {
         timerAnimacion.start();
 
         // ── Tareas reales de inicialización en segundo plano ──
+        // doInBackground() corre en un hilo aparte del EDT, así que
+        // ManejadorErroresGlobal (que solo vigila dispatchEvent())
+        // nunca ve lo que pase aquí adentro. Por eso este catch debe
+        // distinguir ConexionException explícitamente y avisar en
+        // done(), en vez de solo imprimir en consola y seguir como
+        // si nada — que era el bug original: la app llegaba a Login
+        // sin que nadie supiera que MySQL nunca respondió.
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
+
+            private boolean huboErrorConexion = false;
+
             @Override
             protected Void doInBackground() {
                 if (tareaFondo != null) {
                     try {
                         tareaFondo.run();
+                    } catch (ConexionException ex) {
+                        AppLogger.error(SplashScreen.class,
+                                "No se pudo conectar a la base de datos al iniciar.", ex);
+                        huboErrorConexion = true;
                     } catch (Exception ex) {
-                        System.err.println(
-                                "Error durante la carga inicial: " + ex.getMessage());
+                        AppLogger.error(SplashScreen.class,
+                                "Error durante la carga inicial.", ex);
                     }
                 }
                 return null;
@@ -636,6 +653,23 @@ public class SplashScreen extends JFrame {
             @Override
             protected void done() {
                 tareaTerminada = true;
+
+                if (huboErrorConexion) {
+                    // Se avisa pero NO se bloquea el arranque: se
+                    // deja seguir a Login para que, por ejemplo, el
+                    // Administrador pueda revisar Configuracion sin
+                    // quedar totalmente bloqueado. Cualquier acción
+                    // que sí necesite base de datos a partir de aquí
+                    // queda cubierta por ManejadorErroresGlobal.
+                    FabricaDialogos.advertencia(SplashScreen.this,
+                            "No se pudo conectar con la base de datos.\n"
+                                    + "Verifica que el servicio de MySQL esté "
+                                    + "encendido. Podrás seguir navegando, pero "
+                                    + "las acciones que necesiten datos (iniciar "
+                                    + "sesión, ver productos, registrar pedidos) "
+                                    + "no funcionarán hasta que la conexión se "
+                                    + "restablezca.");
+                }
             }
         };
         worker.execute();

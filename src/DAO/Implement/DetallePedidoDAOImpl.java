@@ -5,6 +5,7 @@ import DAO.Interfaz.IDetallePedidoDAO;
 import Model.DetallePedido;
 import Model.Pedido;
 import Model.Producto;
+import Utils.AppLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,7 +54,9 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             return filas > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo insertar el detalle del pedido #"
+                            + detalle.getPedido().getIdPedido(), e);
             return false;
         }
     }
@@ -74,7 +77,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo actualizar el detalle #" + detalle.getIdDetalle(), e);
             return false;
         }
     }
@@ -92,7 +96,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo eliminar el detalle #" + id, e);
             return false;
         }
     }
@@ -114,7 +119,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo buscar el detalle #" + id, e);
         }
 
         return null;
@@ -136,7 +142,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo listar los detalles de pedido.", e);
         }
 
         return lista;
@@ -186,7 +193,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error(DetallePedidoDAOImpl.class,
+                    "No se pudo listar los detalles del pedido #" + idPedido, e);
         }
 
         return lista;
