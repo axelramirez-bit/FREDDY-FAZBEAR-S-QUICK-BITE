@@ -11,10 +11,13 @@ import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
+import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
+import View.Utils.FabricaDialogos;
 import View.Utils.FabricaEtiquetas;
 import View.Utils.FabricaTablas;
 import View.Utils.PaletaColores;
@@ -44,8 +47,19 @@ import java.util.List;
  * FREDDY-FAZBEAR'S QUICK BITE
  * ---------------------------------------------------------------
  * Pantalla 2 del mockup: lista de pedidos PENDIENTE con búsqueda,
- * filtro por método de pago, orden y el botón "Atender" que avanza
- * el pedido a EN_PREPARACION.
+ * filtro por método de pago, orden y las acciones "Ver", "Atender"
+ * (PENDIENTE -> PREPARACION, caso de uso 6.1) y "Cancelar" (caso
+ * de uso 6.4).
+ *
+ * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo
+ * de la tabla se creaba con FabricaTablas.crearModeloSoloLectura(),
+ * que fuerza isCellEditable(...) = false para TODAS las celdas.
+ * JTable solo invoca al CellEditor de una columna cuando el modelo
+ * dice que esa celda es editable (JTable.editCellAt -> isCellEditable),
+ * así que aunque ColumnaAccionTabla pintaba el botón, un clic nunca
+ * llegaba a dispararlo: los botones se veían pero no hacían nada.
+ * Aquí el modelo se construye a mano y solo declara editables las
+ * columnas de acción, que es lo que realmente activa los botones.
  *
  * Sin paginación: la cantidad de pedidos pendientes a la vez es
  * naturalmente chica (son los que aún no se empiezan a preparar),
@@ -53,9 +67,13 @@ import java.util.List;
  * crece mucho, es la misma paginación que ya tiene PanelHistorial.
  * ===============================================================
  */
-public class PanelPedidosPendientes extends PanelFondo {
+public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
 
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm a");
+
+    private static final int COLUMNA_DETALLE = 6;
+    private static final int COLUMNA_ACCION = 7;
+    private static final int COLUMNA_CANCELAR = 8;
 
     private final IPedidoService pedidoService = new PedidoServiceImpl();
     private final IPagoService pagoService = new PagoServiceImpl();
@@ -132,15 +150,33 @@ public class PanelPedidosPendientes extends PanelFondo {
         JPanel contenedor = new JPanel(new BorderLayout(0, AdministradorTema.espacioPequeño()));
         contenedor.setOpaque(false);
 
-        modeloTabla = FabricaTablas.crearModeloSoloLectura(new Object[]{
-                "Pedido", "Cliente", "Tipo de entrega", "Hora", "Método de pago", "Tiempo de espera", "Acción"
-        });
+        Object[] columnas = {
+                "Pedido", "Cliente", "Tipo de entrega", "Hora", "Método de pago", "Tiempo de espera",
+                "Detalle", "Acción", "Cancelar"
+        };
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return columna == COLUMNA_DETALLE || columna == COLUMNA_ACCION || columna == COLUMNA_CANCELAR;
+            }
+        };
 
         tabla = FabricaTablas.crearTabla(modeloTabla);
 
         ColumnaAccionTabla.instalar(
-                tabla, 6, "Atender", PaletaColores.PRINCIPAL,
+                tabla, COLUMNA_DETALLE, "Ver", PaletaColores.SECUNDARIO,
+                fila -> verDetalle(pedidosVisibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_ACCION, "Atender", PaletaColores.PRINCIPAL,
                 fila -> atenderPedido(pedidosVisibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_CANCELAR, "Cancelar", PaletaColores.ESTADO_PELIGRO,
+                fila -> cancelarPedido(pedidosVisibles.get(fila))
         );
 
         contenedor.add(FabricaTablas.crearScrollTabla(tabla), BorderLayout.CENTER);
@@ -153,7 +189,15 @@ public class PanelPedidosPendientes extends PanelFondo {
     }
 
     // ==========================================================
-    // ACCIÓN: Atender (PENDIENTE -> PREPARACION)
+    // ACCIÓN: Ver detalle (caso de uso 2 — consultar pedidos)
+    // ==========================================================
+    private void verDetalle(Pedido pedido) {
+        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+        DialogoDetallePedido.mostrar(this, pedido, pago);
+    }
+
+    // ==========================================================
+    // ACCIÓN: Atender (PENDIENTE -> PREPARACION, caso 6.1)
     // ==========================================================
     private void atenderPedido(Pedido pedido) {
 
@@ -168,6 +212,32 @@ public class PanelPedidosPendientes extends PanelFondo {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+            return;
+        }
+
+        cargarDatos();
+    }
+
+    // ==========================================================
+    // ACCIÓN: Cancelar pedido (caso 6.4)
+    // ==========================================================
+    private void cancelarPedido(Pedido pedido) {
+
+        boolean confirma = FabricaDialogos.confirmar(
+                this,
+                "¿Cancelar el pedido #" + pedido.getIdPedido() + "? Esta acción no se puede deshacer."
+        );
+
+        if (!confirma) {
+            return;
+        }
+
+        pedido.cambiarEstado(EstadoPedido.CANCELADO);
+
+        boolean actualizado = pedidoService.actualizarPedido(pedido);
+
+        if (!actualizado) {
+            FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
             return;
         }
 
@@ -247,7 +317,9 @@ public class PanelPedidosPendientes extends PanelFondo {
                     pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_HORA) : "-",
                     pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
                     formatearEspera(pedido.getFecha()),
-                    "Atender"
+                    "Ver",
+                    "Atender",
+                    "Cancelar"
             });
         }
 

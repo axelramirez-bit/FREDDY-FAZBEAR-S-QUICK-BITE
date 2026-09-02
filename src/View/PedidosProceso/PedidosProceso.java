@@ -9,6 +9,7 @@ import View.PedidosProceso.Panels.PanelInicio;
 import View.PedidosProceso.Panels.PanelPedidosEnPreparacion;
 import View.PedidosProceso.Panels.PanelPedidosListos;
 import View.PedidosProceso.Panels.PanelPedidosPendientes;
+import View.PedidosProceso.Panels.PanelStock;
 
 import javax.swing.SwingUtilities;
 
@@ -35,9 +36,15 @@ public class PedidosProceso extends DashboardBase {
     @Override
     protected void registrarPaneles() {
 
+        // CORRECCIÓN: antes se registraba "new PanelInicio()" (constructor
+        // sin navegador), así que los botones de "Accesos rápidos" del
+        // panel de Inicio no tenían a dónde navegar y no hacían nada al
+        // presionarlos. Aquí se le pasa this::onOpcionSeleccionada (heredado
+        // de DashboardBase), que es exactamente el mismo método que usa
+        // BarraLateral para cambiar de vista.
         registrarVista(
                 OpcionesTrabajador.INICIO.getIdVista(),
-                new PanelInicio()
+                new PanelInicio(this::onOpcionSeleccionada)
         );
 
         registrarVista(
@@ -53,6 +60,11 @@ public class PedidosProceso extends DashboardBase {
         registrarVista(
                 OpcionesTrabajador.LISTOS.getIdVista(),
                 new PanelPedidosListos()
+        );
+
+        registrarVista(
+                OpcionesTrabajador.STOCK.getIdVista(),
+                new PanelStock()
         );
 
         registrarVista(

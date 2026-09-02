@@ -1,6 +1,5 @@
 package View.PedidosProceso.Panels;
 
-import Model.DetallePedido;
 import Model.EstadoPedido;
 import Model.MetodoPago;
 import Model.Pago;
@@ -12,7 +11,9 @@ import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
+import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -26,7 +27,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
@@ -58,7 +58,7 @@ import java.util.List;
  * tenga aquí es coherencia con ese diseño, no un olvido.
  * ===============================================================
  */
-public class PanelHistorial extends PanelFondo {
+public class PanelHistorial extends PanelFondo implements Refrescable {
 
     private static final int TAMANO_PAGINA = 5;
     private static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
@@ -161,16 +161,31 @@ public class PanelHistorial extends PanelFondo {
     // ==========================================================
     // TABLA
     // ==========================================================
+    // La columna "Acción" (índice 7) es la única editable: es lo
+    // que activa el CellEditor de ColumnaAccionTabla. Un modelo
+    // creado con FabricaTablas.crearModeloSoloLectura() forzaría
+    // isCellEditable(...) = false en TODAS las celdas, y entonces
+    // JTable nunca dispara el editor — el botón "Ver detalle" se
+    // vería pero un clic no haría nada.
+    private static final int COLUMNA_ACCION = 7;
+
     private JPanel crearPanelTabla() {
 
-        modeloTabla = FabricaTablas.crearModeloSoloLectura(new Object[]{
+        Object[] columnas = {
                 "Pedido", "Cliente", "Fecha", "Estado", "Tipo de entrega", "Método de pago", "Total", "Acción"
-        });
+        };
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return columna == COLUMNA_ACCION;
+            }
+        };
 
         var tabla = FabricaTablas.crearTabla(modeloTabla);
 
         ColumnaAccionTabla.instalar(
-                tabla, 7, "Ver detalle", PaletaColores.SECUNDARIO,
+                tabla, COLUMNA_ACCION, "Ver detalle", PaletaColores.SECUNDARIO,
                 fila -> mostrarDetalle(filasPaginaActual.get(fila))
         );
 
@@ -178,39 +193,8 @@ public class PanelHistorial extends PanelFondo {
     }
 
     private void mostrarDetalle(Pedido pedido) {
-
         Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
-
-        StringBuilder texto = new StringBuilder();
-        texto.append("Pedido #").append(pedido.getIdPedido()).append('\n');
-        texto.append("Cliente: ").append(pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-").append('\n');
-        texto.append("Fecha: ").append(pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_FECHA_HORA) : "-").append('\n');
-        texto.append("Estado: ").append(nombreLegible(pedido.getEstado())).append('\n');
-        texto.append("Tipo de entrega: ").append(nombreLegible(pedido.getTipoEntrega())).append('\n');
-        texto.append("Método de pago: ").append(pago != null ? nombreLegible(pago.getMetodoPago()) : "-").append('\n');
-        texto.append("Subtotal: Q").append(pedido.getSubtotal()).append('\n');
-        texto.append("Descuento: Q").append(pedido.getDescuento()).append('\n');
-        texto.append("Total: Q").append(pedido.getTotal()).append("\n\n");
-
-        List<DetallePedido> detalles = pedido.getDetalles();
-
-        if (detalles.isEmpty()) {
-            texto.append("(Sin detalle de productos registrado para este pedido.)");
-        } else {
-            texto.append("Productos:\n");
-            for (DetallePedido d : detalles) {
-                texto.append(" - ").append(d.getCantidad()).append(" x ")
-                        .append(d.getProducto() != null ? d.getProducto().getNombre() : "?")
-                        .append('\n');
-            }
-        }
-
-        JOptionPane.showMessageDialog(
-                this,
-                texto.toString(),
-                "Detalle del pedido #" + pedido.getIdPedido(),
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        DialogoDetallePedido.mostrar(this, pedido, pago);
     }
 
     // ==========================================================

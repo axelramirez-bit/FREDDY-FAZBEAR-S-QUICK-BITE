@@ -15,6 +15,7 @@ public enum OpcionesTrabajador implements OpcionMenu {
     PENDIENTES("Pedidos pendientes", "icon_pedidos", "PEDIDOS_PENDIENTES"),
     EN_PREPARACION("En preparación", "icon_enpreparacion", "EN_PREPARACION"),
     LISTOS("Pedidos listos", "icon_pedidoslistos", "PEDIDOS_LISTOS"),
+    STOCK("Stock de productos", "icon_comida", "STOCK_TRABAJADOR"),
     HISTORIAL("Historial", "icon_historial", "HISTORIAL_TRABAJADOR");
 
     private final String texto;

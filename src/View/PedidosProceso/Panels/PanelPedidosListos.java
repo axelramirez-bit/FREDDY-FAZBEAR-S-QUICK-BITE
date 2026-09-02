@@ -11,10 +11,13 @@ import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
+import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
+import View.Utils.FabricaDialogos;
 import View.Utils.FabricaEtiquetas;
 import View.Utils.FabricaTablas;
 import View.Utils.PaletaColores;
@@ -41,16 +44,29 @@ import java.util.List;
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
  * ---------------------------------------------------------------
- * Pantalla 4 del mockup: pedidos LISTO, con el botón "Entregar"
- * (LISTO -> ENTREGADO). Pide confirmación antes de entregar, igual
- * que el mensaje del mockup ("Confirma la entrega del pedido al
- * cliente"), porque es una acción que no se puede deshacer con un
- * botón — una vez entregado, solo Historial lo vuelve a mostrar.
+ * Pantalla 4 del mockup: pedidos LISTO, con "Ver" (caso 2),
+ * "Entregar" (LISTO -> ENTREGADO, caso 6.3) y "Cancelar" (caso
+ * 6.4, por si el cliente ya no lo recoge). "Entregar" sigue
+ * pidiendo confirmación porque es una acción que no se puede
+ * deshacer con un botón — una vez entregado, solo Historial lo
+ * vuelve a mostrar.
+ *
+ * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo
+ * de tabla se creaba con FabricaTablas.crearModeloSoloLectura(),
+ * que fuerza isCellEditable(...) = false para TODAS las celdas.
+ * JTable solo invoca al CellEditor de una columna cuando el modelo
+ * dice que esa celda es editable, así que los botones se veían
+ * pero un clic nunca los disparaba. Aquí el modelo se construye a
+ * mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
-public class PanelPedidosListos extends PanelFondo {
+public class PanelPedidosListos extends PanelFondo implements Refrescable {
 
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm a");
+
+    private static final int COLUMNA_DETALLE = 5;
+    private static final int COLUMNA_ACCION = 6;
+    private static final int COLUMNA_CANCELAR = 7;
 
     private final IPedidoService pedidoService = new PedidoServiceImpl();
     private final IPagoService pagoService = new PagoServiceImpl();
@@ -112,15 +128,33 @@ public class PanelPedidosListos extends PanelFondo {
         JPanel contenedor = new JPanel(new BorderLayout(0, AdministradorTema.espacioPequeño()));
         contenedor.setOpaque(false);
 
-        modeloTabla = FabricaTablas.crearModeloSoloLectura(new Object[]{
-                "Pedido", "Cliente", "Tipo de entrega", "Listo desde", "Método de pago", "Acción"
-        });
+        Object[] columnas = {
+                "Pedido", "Cliente", "Tipo de entrega", "Listo desde", "Método de pago",
+                "Detalle", "Acción", "Cancelar"
+        };
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return columna == COLUMNA_DETALLE || columna == COLUMNA_ACCION || columna == COLUMNA_CANCELAR;
+            }
+        };
 
         tabla = FabricaTablas.crearTabla(modeloTabla);
 
         ColumnaAccionTabla.instalar(
-                tabla, 5, "Entregar", PaletaColores.ACENTO,
+                tabla, COLUMNA_DETALLE, "Ver", PaletaColores.SECUNDARIO,
+                fila -> verDetalle(visibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_ACCION, "Entregar", PaletaColores.ACENTO,
                 fila -> confirmarEntrega(visibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_CANCELAR, "Cancelar", PaletaColores.ESTADO_PELIGRO,
+                fila -> cancelarPedido(visibles.get(fila))
         );
 
         contenedor.add(FabricaTablas.crearScrollTabla(tabla), BorderLayout.CENTER);
@@ -132,6 +166,17 @@ public class PanelPedidosListos extends PanelFondo {
         return contenedor;
     }
 
+    // ==========================================================
+    // ACCIÓN: Ver detalle (caso 2)
+    // ==========================================================
+    private void verDetalle(Pedido pedido) {
+        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+        DialogoDetallePedido.mostrar(this, pedido, pago);
+    }
+
+    // ==========================================================
+    // ACCIÓN: Entregar (LISTO -> ENTREGADO, caso 6.3)
+    // ==========================================================
     private void confirmarEntrega(Pedido pedido) {
 
         int confirmacion = JOptionPane.showConfirmDialog(
@@ -156,6 +201,33 @@ public class PanelPedidosListos extends PanelFondo {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+            return;
+        }
+
+        cargarDatos();
+    }
+
+    // ==========================================================
+    // ACCIÓN: Cancelar pedido (caso 6.4)
+    // ==========================================================
+    private void cancelarPedido(Pedido pedido) {
+
+        boolean confirma = FabricaDialogos.confirmar(
+                this,
+                "¿Cancelar el pedido #" + pedido.getIdPedido() + "? Ya está listo para entregar; "
+                        + "esta acción no se puede deshacer."
+        );
+
+        if (!confirma) {
+            return;
+        }
+
+        pedido.cambiarEstado(EstadoPedido.CANCELADO);
+
+        boolean actualizado = pedidoService.actualizarPedido(pedido);
+
+        if (!actualizado) {
+            FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
             return;
         }
 
@@ -218,7 +290,9 @@ public class PanelPedidosListos extends PanelFondo {
                     nombreLegible(pedido.getTipoEntrega()),
                     pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_HORA) : "-",
                     pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
-                    "Entregar"
+                    "Ver",
+                    "Entregar",
+                    "Cancelar"
             });
         }
 

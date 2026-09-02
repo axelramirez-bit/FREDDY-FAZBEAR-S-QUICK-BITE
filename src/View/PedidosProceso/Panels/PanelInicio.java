@@ -7,6 +7,7 @@ import Service.Implement.PedidoServiceImpl;
 import Service.Interfaz.IPedidoService;
 import View.Componentes.AlertaStockBajo;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Componentes.TarjetaKPI;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
  * número, cambien también el de allá.
  * ===============================================================
  */
-public class PanelInicio extends PanelFondo {
+public class PanelInicio extends PanelFondo implements Refrescable {
 
     private static final int MINUTOS_ESPERA_ALTA = 15;
 

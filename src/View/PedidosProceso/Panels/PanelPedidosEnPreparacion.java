@@ -1,18 +1,25 @@
 package View.PedidosProceso.Panels;
 
 import Model.EstadoPedido;
+import Model.Pago;
 import Model.Pedido;
 import Model.TipoEntrega;
+import Service.Implement.PagoServiceImpl;
 import Service.Implement.PedidoServiceImpl;
+import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
+import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
+import View.Utils.FabricaDialogos;
 import View.Utils.FabricaEtiquetas;
 import View.Utils.FabricaTablas;
+import View.Utils.PaletaColores;
 import View.Utils.UIConstants;
 
 import javax.swing.BorderFactory;
@@ -38,20 +45,29 @@ import java.util.List;
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
  * ---------------------------------------------------------------
- * Pantalla 3 del mockup: pedidos EN_PREPARACION.
+ * Pantalla 3 del mockup: pedidos EN_PREPARACION, con "Ver" (caso 2),
+ * "Marcar listo" (PREPARACION -> LISTO, caso 6.2) y "Cancelar"
+ * (caso 6.4, por si el pedido ya no se puede completar).
  *
- * CORRECCIÓN respecto al mockup original que se revisó: antes esta
- * pantalla solo tenía "Ver detalle" (obligaba a un clic extra para
- * llegar a la acción). Ahora tiene el botón directo "Marcar listo"
- * (PREPARACION -> LISTO), igual patrón de un clic que "Atender" y
- * "Entregar" en las otras pantallas.
+ * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo
+ * de tabla se creaba con FabricaTablas.crearModeloSoloLectura(),
+ * que fuerza isCellEditable(...) = false para TODAS las celdas.
+ * JTable solo invoca al CellEditor de una columna cuando el modelo
+ * dice que esa celda es editable, así que los botones se veían
+ * pero un clic nunca los disparaba. Aquí el modelo se construye a
+ * mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
-public class PanelPedidosEnPreparacion extends PanelFondo {
+public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable {
 
     private static final Color NARANJA_LISTO = new Color(0xE07C1A);
 
+    private static final int COLUMNA_DETALLE = 4;
+    private static final int COLUMNA_ACCION = 5;
+    private static final int COLUMNA_CANCELAR = 6;
+
     private final IPedidoService pedidoService = new PedidoServiceImpl();
+    private final IPagoService pagoService = new PagoServiceImpl();
 
     private BarraBusqueda barraBusqueda;
     private JComboBox<String> comboOrden;
@@ -110,15 +126,33 @@ public class PanelPedidosEnPreparacion extends PanelFondo {
         JPanel contenedor = new JPanel(new BorderLayout(0, AdministradorTema.espacioPequeño()));
         contenedor.setOpaque(false);
 
-        modeloTabla = FabricaTablas.crearModeloSoloLectura(new Object[]{
-                "Pedido", "Cliente", "Tipo de entrega", "Tiempo en preparación", "Acción"
-        });
+        Object[] columnas = {
+                "Pedido", "Cliente", "Tipo de entrega", "Tiempo en preparación",
+                "Detalle", "Acción", "Cancelar"
+        };
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return columna == COLUMNA_DETALLE || columna == COLUMNA_ACCION || columna == COLUMNA_CANCELAR;
+            }
+        };
 
         tabla = FabricaTablas.crearTabla(modeloTabla);
 
         ColumnaAccionTabla.instalar(
-                tabla, 4, "Marcar listo", NARANJA_LISTO,
+                tabla, COLUMNA_DETALLE, "Ver", PaletaColores.SECUNDARIO,
+                fila -> verDetalle(visibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_ACCION, "Marcar listo", NARANJA_LISTO,
                 fila -> marcarComoListo(visibles.get(fila))
+        );
+
+        ColumnaAccionTabla.instalar(
+                tabla, COLUMNA_CANCELAR, "Cancelar", PaletaColores.ESTADO_PELIGRO,
+                fila -> cancelarPedido(visibles.get(fila))
         );
 
         contenedor.add(FabricaTablas.crearScrollTabla(tabla), BorderLayout.CENTER);
@@ -130,6 +164,17 @@ public class PanelPedidosEnPreparacion extends PanelFondo {
         return contenedor;
     }
 
+    // ==========================================================
+    // ACCIÓN: Ver detalle (caso 2)
+    // ==========================================================
+    private void verDetalle(Pedido pedido) {
+        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+        DialogoDetallePedido.mostrar(this, pedido, pago);
+    }
+
+    // ==========================================================
+    // ACCIÓN: Marcar listo (PREPARACION -> LISTO, caso 6.2)
+    // ==========================================================
     private void marcarComoListo(Pedido pedido) {
 
         pedido.cambiarEstado(EstadoPedido.LISTO);
@@ -143,6 +188,33 @@ public class PanelPedidosEnPreparacion extends PanelFondo {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+            return;
+        }
+
+        cargarDatos();
+    }
+
+    // ==========================================================
+    // ACCIÓN: Cancelar pedido (caso 6.4)
+    // ==========================================================
+    private void cancelarPedido(Pedido pedido) {
+
+        boolean confirma = FabricaDialogos.confirmar(
+                this,
+                "¿Cancelar el pedido #" + pedido.getIdPedido() + "? Ya está en preparación; "
+                        + "esta acción no se puede deshacer."
+        );
+
+        if (!confirma) {
+            return;
+        }
+
+        pedido.cambiarEstado(EstadoPedido.CANCELADO);
+
+        boolean actualizado = pedidoService.actualizarPedido(pedido);
+
+        if (!actualizado) {
+            FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
             return;
         }
 
@@ -201,7 +273,9 @@ public class PanelPedidosEnPreparacion extends PanelFondo {
                     pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-",
                     nombreLegible(pedido.getTipoEntrega()),
                     formatearTiempo(pedido.getFecha()),
-                    "Marcar listo"
+                    "Ver",
+                    "Marcar listo",
+                    "Cancelar"
             });
         }
 
