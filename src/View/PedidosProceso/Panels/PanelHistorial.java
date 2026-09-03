@@ -14,6 +14,7 @@ import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -59,7 +60,7 @@ import java.util.List;
  * tenga aquí es coherencia con ese diseño, no un olvido.
  * ===============================================================
  */
-public class PanelHistorial extends PanelFondo {
+public class PanelHistorial extends PanelFondo implements Refrescable {
 
     private static final int TAMANO_PAGINA = 5;
     private static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");

@@ -56,7 +56,12 @@ import java.util.List;
 public class PanelProductos extends PanelFondo {
 
     private static final int COLUMNA_ESTADO = 5;
-    private static final int FILAS_POR_PAGINA = 7;
+
+    // Mismo criterio que PanelCategorias: antes 7 filas por página
+    // hacían que el filtro "Todas las categorías" pareciera no
+    // mostrar el catálogo completo. Se sube el límite y se deja que
+    // el scroll del dashboard (ya arreglado) maneje listas largas.
+    private static final int FILAS_POR_PAGINA = 500;
     private static final String TODAS_LAS_CATEGORIAS = "Todas las categorías";
 
     private final IProductoService productoService = new ProductoServiceImpl();

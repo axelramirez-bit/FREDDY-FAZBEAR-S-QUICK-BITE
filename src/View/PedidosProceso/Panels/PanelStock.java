@@ -6,6 +6,7 @@ import Service.Interfaz.IProductoService;
 import View.Componentes.AlertaStockBajo;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -60,7 +61,7 @@ import java.util.Set;
  * fila de alerta del Inicio y esta tabla nunca se desincronicen.
  * ===============================================================
  */
-public class PanelStock extends PanelFondo {
+public class PanelStock extends PanelFondo implements Refrescable {
 
     private static final int COLUMNA_ESTADO = 4;
 

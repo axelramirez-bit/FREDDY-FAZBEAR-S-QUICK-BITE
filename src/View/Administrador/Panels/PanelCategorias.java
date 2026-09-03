@@ -55,7 +55,15 @@ import java.util.List;
 public class PanelCategorias extends PanelFondo {
 
     private static final int COLUMNA_ESTADO = 3;
-    private static final int FILAS_POR_PAGINA = 7;
+
+    // ANTES: 7 filas por página, así que un catálogo de 9 categorías
+    // mostraba solo 7 y había que darle clic a "Siguiente" para ver
+    // el resto — el usuario lo veía como "no muestra todas". Con el
+    // scroll vertical del dashboard ya funcionando (ver FabricaScroll),
+    // no hace falta paginar listas de este tamaño: se sube el límite
+    // para que, en la práctica, todo el catálogo quepa en una sola
+    // "página" y la tabla simplemente crezca con scroll.
+    private static final int FILAS_POR_PAGINA = 500;
 
     private final ICategoriaService categoriaService = new CategoriaServiceImpl();
     private final IProductoService productoService = new ProductoServiceImpl();

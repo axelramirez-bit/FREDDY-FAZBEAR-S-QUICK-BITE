@@ -12,6 +12,7 @@ import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -56,7 +57,7 @@ import java.util.List;
  * mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
-public class PanelPedidosEnPreparacion extends PanelFondo {
+public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable {
 
     private static final Color NARANJA_LISTO = new Color(0xE07C1A);
 

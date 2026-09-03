@@ -372,10 +372,20 @@ public class PanelUsuarios extends PanelFondo {
         javax.swing.JTextField campoTelefono = FabricaCampos.crearCampo();
         javax.swing.JPasswordField campoPassword = FabricaCampos.crearPassword();
 
+        // "Cliente" se quitó de este combo: los clientes se registran
+        // ellos mismos desde la app (ver View.Registro.Registro), el
+        // Administrador aquí solo da de alta personal interno.
         JComboBox<String> comboRolForm = FabricaCampos.crearCombo();
-        comboRolForm.addItem("Cliente");
         comboRolForm.addItem("Trabajador");
         comboRolForm.addItem("Administrador");
+
+        // Solo aplica cuando el rol elegido es Trabajador (igual que en
+        // PanelTrabajadores.java) — para Administrador se ignora y se
+        // guarda null, tal como ya espera UsuarioDAOImpl.
+        JComboBox<String> comboTurnoForm = FabricaCampos.crearCombo();
+        comboTurnoForm.addItem("Mañana");
+        comboTurnoForm.addItem("Tarde");
+        comboTurnoForm.addItem("Noche");
 
         if (esEdicion) {
             campoNombre.setText(usuarioExistente.getNombre());
@@ -384,6 +394,9 @@ public class PanelUsuarios extends PanelFondo {
             campoTelefono.setText(usuarioExistente.getTelefono());
             if (usuarioExistente.getRol() != null) {
                 comboRolForm.setSelectedItem(usuarioExistente.getRol().getNombre());
+            }
+            if (usuarioExistente.getTurno() != null) {
+                comboTurnoForm.setSelectedItem(usuarioExistente.getTurno());
             }
         }
 
@@ -398,6 +411,8 @@ public class PanelUsuarios extends PanelFondo {
         formulario.add(campoTelefono);
         formulario.add(new JLabel("Rol:"));
         formulario.add(comboRolForm);
+        formulario.add(new JLabel("Turno (solo Trabajador):"));
+        formulario.add(comboTurnoForm);
         formulario.add(new JLabel(esEdicion ? "Nueva contraseña (opcional):" : "Contraseña:"));
         formulario.add(campoPassword);
 
@@ -440,6 +455,7 @@ public class PanelUsuarios extends PanelFondo {
         usuario.setCorreo(campoCorreo.getText().trim());
         usuario.setTelefono(campoTelefono.getText().trim());
         usuario.setRol(rolElegido);
+        usuario.setTurno("Trabajador".equals(rolTexto) ? (String) comboTurnoForm.getSelectedItem() : null);
 
         if (!esEdicion) {
             usuario.setEstado(true);

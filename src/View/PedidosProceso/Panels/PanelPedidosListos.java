@@ -14,6 +14,7 @@ import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
+import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -59,7 +60,7 @@ import java.util.List;
  * mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
-public class PanelPedidosListos extends PanelFondo {
+public class PanelPedidosListos extends PanelFondo implements Refrescable {
 
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm a");
 
