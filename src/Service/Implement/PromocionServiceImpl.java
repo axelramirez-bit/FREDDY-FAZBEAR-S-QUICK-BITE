@@ -96,32 +96,38 @@ public class PromocionServiceImpl implements IPromocionService {
 
     // ---------- Métodos auxiliares de negocio ----------
     private boolean validarPromocion(Promocion promocion) {
+        return validar(promocion) == null;
+    }
+
+    @Override
+    public String validar(Promocion promocion) {
 
         if (promocion == null) {
-            return false;
+            return "Promoción inválida.";
         }
 
         if (promocion.getNombre() == null || promocion.getNombre().isBlank()) {
-            return false;
+            return "El nombre de la promoción es obligatorio.";
         }
 
-        if (promocion.getDescuento() == null
-                || promocion.getDescuento().compareTo(BigDecimal.ZERO) < 0
+        if (promocion.getDescuento() == null) {
+            return "El descuento es obligatorio.";
+        }
+
+        if (promocion.getDescuento().compareTo(BigDecimal.ZERO) < 0
                 || promocion.getDescuento().compareTo(new BigDecimal("100")) > 0) {
-
-            return false;
-
+            return "El descuento debe estar entre 0% y 100%.";
         }
 
         if (promocion.getFechaInicio() == null || promocion.getFechaFin() == null) {
-            return false;
+            return "Debes indicar fecha de inicio y fecha de fin.";
         }
 
         if (promocion.getFechaFin().isBefore(promocion.getFechaInicio())) {
-            return false;
+            return "La fecha de fin no puede ser anterior a la fecha de inicio.";
         }
 
-        return true;
+        return null;
 
     }
 

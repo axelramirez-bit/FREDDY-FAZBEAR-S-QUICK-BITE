@@ -25,10 +25,8 @@ import javax.swing.SwingUtilities;
  *
  * Cada panel se registra envuelto en FabricaScroll.crearPanel(...)
  * para que, si el contenido (tarjetas KPI + tabla + notas) es más
- * alto que la ventana, aparezca una barra de scroll vertical en
- * vez de recortarse. El scroll horizontal queda deshabilitado
- * (VELOCIDAD_SCROLL/estilo ya definido en EstilosComponentes) para
- * no romper el diseño responsivo de cada panel.
+ * alto O más ancho que la ventana, aparezca la barra de scroll
+ * correspondiente en vez de recortarse.
  * ===============================================================
  */
 public class DashboardAdministrador extends DashboardBase {

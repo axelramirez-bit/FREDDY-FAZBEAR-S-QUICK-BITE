@@ -168,29 +168,33 @@ public class ProductoServiceImpl implements IProductoService {
 
     // ---------- Métodos auxiliares de negocio ----------
     private boolean validarProducto(Producto producto) {
+        return validar(producto) == null;
+    }
+
+    @Override
+    public String validar(Producto producto) {
 
         if (producto == null) {
-            return false;
+            return "Producto inválido.";
         }
 
         if (producto.getCategoria() == null || producto.getCategoria().getIdCategoria() <= 0) {
-            return false;
+            return "Debes seleccionar una categoría.";
         }
 
         if (producto.getNombre() == null || producto.getNombre().isBlank()) {
-            return false;
+            return "El nombre del producto es obligatorio.";
         }
 
-        if (producto.getPrecio() == null
-                || producto.getPrecio().compareTo(BigDecimal.ZERO) < 0) {
-            return false;
+        if (producto.getPrecio() == null || producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+            return "El precio debe ser mayor a Q0.00.";
         }
 
         if (producto.getStock() < 0) {
-            return false;
+            return "El stock no puede ser negativo.";
         }
 
-        return true;
+        return null;
 
     }
 

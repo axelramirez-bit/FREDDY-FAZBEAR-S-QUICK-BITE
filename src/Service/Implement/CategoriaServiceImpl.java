@@ -18,12 +18,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
     @Override
     public boolean guardar(Categoria categoria) {
 
-        if (categoria == null) {
-            return false;
-        }
-
-        if (categoria.getNombre() == null
-                || categoria.getNombre().trim().isEmpty()) {
+        if (validar(categoria) != null) {
             return false;
         }
 
@@ -33,15 +28,43 @@ public class CategoriaServiceImpl implements ICategoriaService {
     @Override
     public boolean actualizar(Categoria categoria) {
 
-        if (categoria == null) {
+        if (categoria == null || categoria.getIdCategoria() <= 0) {
             return false;
         }
 
-        if (categoria.getIdCategoria() <= 0) {
+        if (validar(categoria) != null) {
             return false;
         }
 
         return categoriaDAO.actualizar(categoria);
+    }
+
+    @Override
+    public String validar(Categoria categoria) {
+
+        if (categoria == null) {
+            return "Categoría inválida.";
+        }
+
+        if (categoria.getNombre() == null || categoria.getNombre().trim().isEmpty()) {
+            return "El nombre de la categoría es obligatorio.";
+        }
+
+        // La columna "nombre" es UNIQUE en la tabla categoria: sin este
+        // chequeo, crear/renombrar a un nombre repetido fallaba en
+        // silencio contra esa restricción y solo se veía "No se pudo
+        // guardar la categoría.", sin explicar que ya existía.
+        for (Categoria existente : categoriaDAO.listar()) {
+            boolean mismoNombre = existente.getNombre() != null
+                    && existente.getNombre().trim().equalsIgnoreCase(categoria.getNombre().trim());
+            boolean esOtraCategoria = existente.getIdCategoria() != categoria.getIdCategoria();
+
+            if (mismoNombre && esOtraCategoria) {
+                return "Ya existe una categoría con el nombre \"" + categoria.getNombre().trim() + "\".";
+            }
+        }
+
+        return null;
     }
 
     @Override

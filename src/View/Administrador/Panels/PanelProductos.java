@@ -477,8 +477,8 @@ public class PanelProductos extends PanelFondo {
         }
 
         BigDecimal precio = parsearPrecio(txtPrecio.getText());
-        if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
-            JOptionPane.showMessageDialog(this, "El precio debe ser un número válido mayor o igual a 0.",
+        if (precio == null || precio.compareTo(BigDecimal.ZERO) <= 0) {
+            JOptionPane.showMessageDialog(this, "El precio debe ser un número válido mayor a 0.",
                     "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -500,8 +500,16 @@ public class PanelProductos extends PanelFondo {
                 null, true, null, promocionSeleccionada
         );
 
+        String motivoInvalido = productoService.validar(producto);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo guardar el producto", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (!productoService.registrarProducto(producto)) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar el producto.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar el producto. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -562,8 +570,8 @@ public class PanelProductos extends PanelFondo {
         }
 
         BigDecimal precio = parsearPrecio(txtPrecio.getText());
-        if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
-            JOptionPane.showMessageDialog(this, "El precio debe ser un número válido mayor o igual a 0.",
+        if (precio == null || precio.compareTo(BigDecimal.ZERO) <= 0) {
+            JOptionPane.showMessageDialog(this, "El precio debe ser un número válido mayor a 0.",
                     "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -585,8 +593,16 @@ public class PanelProductos extends PanelFondo {
         producto.setEstado(chkActivo.isSelected());
         producto.setPromocion(obtenerPromocionSeleccionada(comboPromocion, promocionesDisponibles));
 
+        String motivoInvalido = productoService.validar(producto);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo actualizar el producto", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (!productoService.actualizarProducto(producto)) {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el producto.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo actualizar el producto. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

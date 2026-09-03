@@ -10,6 +10,9 @@ public interface IPromocionService {
 
     boolean actualizarPromocion(Promocion promocion);
 
+    /** Motivo exacto por el que una promoción no se podría guardar (null si está bien). */
+    String validar(Promocion promocion);
+
     boolean eliminarPromocion(int idPromocion);
 
     Promocion obtenerPromocionPorId(int idPromocion);

@@ -9,6 +9,9 @@ public interface ICategoriaService {
 
     boolean actualizar(Categoria categoria);
 
+    /** Motivo exacto por el que una categoría no se podría guardar (null si está bien). */
+    String validar(Categoria categoria);
+
     boolean cambiarEstado(int idCategoria, boolean estado);
 
     Categoria buscarPorId(int idCategoria);

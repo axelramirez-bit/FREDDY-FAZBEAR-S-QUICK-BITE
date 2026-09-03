@@ -1,4 +1,3 @@
-
 package View.Utils;
 
 import javax.swing.*;
@@ -149,9 +148,14 @@ public final class FabricaScroll {
         // Fondo transparente para integrarse con el diseño.
         scroll.getViewport().setOpaque(false);
 
-        // Evita que aparezca scroll horizontal en los paneles.
+        // CORREGIDO: antes esto forzaba HORIZONTAL_SCROLLBAR_NEVER "para
+        // no romper el diseño responsivo de cada panel" — pero varios
+        // paneles (tablas con muchas columnas, filas de tarjetas KPI)
+        // SÍ son más anchos que la ventana, y con el scroll horizontal
+        // apagado ese contenido simplemente se recortaba sin avisar.
+        // AS_NEEDED solo muestra la barra cuando realmente no cabe.
         scroll.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
 
         // Scroll vertical únicamente cuando el contenido

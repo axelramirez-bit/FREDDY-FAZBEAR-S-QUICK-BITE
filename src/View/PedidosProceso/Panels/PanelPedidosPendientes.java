@@ -9,11 +9,11 @@ import Service.Implement.PagoServiceImpl;
 import Service.Implement.PedidoServiceImpl;
 import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
+import Utils.AppLogger;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
-import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -66,7 +66,7 @@ import java.util.List;
  * crece mucho, es la misma paginación que ya tiene PanelHistorial.
  * ===============================================================
  */
-public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
+public class PanelPedidosPendientes extends PanelFondo {
 
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm a");
 
@@ -191,8 +191,16 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
     // ACCIÓN: Ver detalle (caso de uso 2 — consultar pedidos)
     // ==========================================================
     private void verDetalle(Pedido pedido) {
-        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
-        DialogoDetallePedido.mostrar(this, pedido, pago);
+        try {
+            Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+            DialogoDetallePedido.mostrar(this, pedido, pago);
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosPendientes.class,
+                    "No se pudo mostrar el detalle del pedido #" + pedido.getIdPedido() + ".",
+                    ex
+            );
+        }
     }
 
     // ==========================================================
@@ -200,19 +208,26 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
     // ==========================================================
     private void atenderPedido(Pedido pedido) {
 
-        pedido.cambiarEstado(EstadoPedido.PREPARACION);
+        try {
+            pedido.cambiarEstado(EstadoPedido.PREPARACION);
 
-        boolean actualizado = pedidoService.actualizarPedido(pedido);
+            boolean actualizado = pedidoService.actualizarPedido(pedido);
 
-        if (!actualizado) {
-            FabricaDialogos.error(
-                    this,
-                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + "."
+            if (!actualizado) {
+                FabricaDialogos.error(this, "No se pudo atender el pedido #" + pedido.getIdPedido() + ".");
+                return;
+            }
+
+            cargarDatos();
+
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosPendientes.class,
+                    "No se pudo atender el pedido #" + pedido.getIdPedido()
+                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    ex
             );
-            return;
         }
-
-        cargarDatos();
     }
 
     // ==========================================================
@@ -229,16 +244,26 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
             return;
         }
 
-        pedido.cambiarEstado(EstadoPedido.CANCELADO);
+        try {
+            pedido.cambiarEstado(EstadoPedido.CANCELADO);
 
-        boolean actualizado = pedidoService.actualizarPedido(pedido);
+            boolean actualizado = pedidoService.actualizarPedido(pedido);
 
-        if (!actualizado) {
-            FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
-            return;
+            if (!actualizado) {
+                FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
+                return;
+            }
+
+            cargarDatos();
+
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosPendientes.class,
+                    "No se pudo cancelar el pedido #" + pedido.getIdPedido()
+                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    ex
+            );
         }
-
-        cargarDatos();
     }
 
     // ==========================================================
@@ -246,7 +271,18 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
     // ==========================================================
     public void cargarDatos() {
 
-        List<Pedido> todos = pedidoService.listarPedidos();
+        List<Pedido> todos;
+
+        try {
+            todos = pedidoService.listarPedidos();
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosPendientes.class,
+                    "No se pudieron cargar los pedidos pendientes. Verifica tu conexión e inténtalo de nuevo.",
+                    ex
+            );
+            return;
+        }
 
         pendientesCompletos = new ArrayList<>();
         for (Pedido p : todos) {
@@ -255,7 +291,15 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
             }
         }
 
-        aplicarFiltros();
+        try {
+            aplicarFiltros();
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosPendientes.class,
+                    "Ocurrió un problema al mostrar los pedidos pendientes.",
+                    ex
+            );
+        }
     }
 
     private void aplicarFiltros() {
@@ -279,7 +323,7 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
 
             if (metodoSeleccionado != null && !"Todos".equals(metodoSeleccionado)) {
 
-                Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+                Pago pago = pagoSeguro(pedido);
                 String metodoPedido = pago != null ? nombreLegible(pago.getMetodoPago()) : "";
 
                 if (!metodoSeleccionado.equals(metodoPedido)) {
@@ -305,7 +349,7 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
 
         for (Pedido pedido : pedidosVisibles) {
 
-            Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+            Pago pago = pagoSeguro(pedido);
 
             modeloTabla.addRow(new Object[]{
                     "#" + pedido.getIdPedido(),
@@ -334,6 +378,24 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
     // ==========================================================
     // UTILITARIOS
     // ==========================================================
+
+    /**
+     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un
+     * dato mal formado en un solo pedido tumbe toda la tabla (pasó con
+     * un método de pago que no coincidía con el ENUM de la BD — ver
+     * DAO.Implement.PagoDAOImpl). Si falla, se registra con AppLogger
+     * y esa fila simplemente muestra "-" en vez de romper la pantalla.
+     */
+    private Pago pagoSeguro(Pedido pedido) {
+        try {
+            return pagoService.buscarPorPedido(pedido.getIdPedido());
+        } catch (Exception ex) {
+            AppLogger.error(PanelPedidosPendientes.class,
+                    "No se pudo obtener el pago del pedido #" + pedido.getIdPedido(), ex);
+            return null;
+        }
+    }
+
     private String nombreLegible(TipoEntrega tipo) {
         if (tipo == null) return "-";
         return tipo == TipoEntrega.PARA_LLEVAR ? "Para llevar" : "Comer en local";

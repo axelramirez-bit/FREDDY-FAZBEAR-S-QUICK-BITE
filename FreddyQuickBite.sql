@@ -188,6 +188,7 @@ CREATE TABLE detalle_pedido (
     cantidad      INT NOT NULL,
     precio        DECIMAL(10,2) NOT NULL,
     subtotal      DECIMAL(10,2) DEFAULT 0,
+    observaciones VARCHAR(255) NULL,
     FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido) ON DELETE CASCADE,
     FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
     FOREIGN KEY (id_promocion) REFERENCES promocion(id_promocion),
@@ -682,3 +683,5 @@ WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';
 SELECT u.id_usuario, u.correo, r.nombre AS rol
 FROM usuario u JOIN rol r ON r.id_rol = u.id_rol
 WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';
+ALTER TABLE detalle_pedido
+    ADD COLUMN observaciones VARCHAR(255) NULL AFTER subtotal;

@@ -16,7 +16,14 @@ public class DetallePedido {
     private BigDecimal precio;
 
     private BigDecimal subtotal;
-    
+
+    // Instrucciones del cliente para esta línea del pedido (ej. "sin
+    // cebolla", "extra queso"), capturadas desde el carrito
+    // (CarritoDetalle.observaciones — ver FilaProductoCarrito.editarObservaciones())
+    // y persistidas junto con el resto de la línea para que el
+    // Trabajador las vea al revisar el pedido antes de entregarlo.
+    private String observaciones;
+
 
     public DetallePedido(Pedido pedido, Producto producto, int cantidad) {
     this.pedido = pedido;
@@ -26,6 +33,15 @@ public class DetallePedido {
     calcularSubtotal();
 }
 
+    public DetallePedido(Pedido pedido, Producto producto, int cantidad, String observaciones) {
+        this.pedido = pedido;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.precio = producto.getPrecio();
+        this.observaciones = observaciones;
+        calcularSubtotal();
+    }
+
 
 
     public DetallePedido(int idDetalle, Pedido pedido, Producto producto, int cantidad, BigDecimal precio, BigDecimal subtotal) {
@@ -34,6 +50,16 @@ public class DetallePedido {
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
+        calcularSubtotal();
+    }
+
+    public DetallePedido(int idDetalle, Pedido pedido, Producto producto, int cantidad, BigDecimal precio, BigDecimal subtotal, String observaciones) {
+        this.idDetalle = idDetalle;
+        this.pedido = pedido;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.precio = precio;
+        this.observaciones = observaciones;
         calcularSubtotal();
     }
     private void calcularSubtotal(){
@@ -106,6 +132,18 @@ public class DetallePedido {
 
     public BigDecimal getSubtotal() {
         return subtotal;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public boolean tieneObservaciones() {
+        return observaciones != null && !observaciones.isBlank();
     }
 
  @Override

@@ -12,7 +12,6 @@ import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
 import View.Componentes.PanelFondo;
-import View.Componentes.Refrescable;
 import View.Utils.AdministradorTema;
 import View.Utils.FabricaBotones;
 import View.Utils.FabricaCampos;
@@ -57,7 +56,7 @@ import java.util.List;
  * mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
-public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable {
+public class PanelPedidosEnPreparacion extends PanelFondo {
 
     private static final Color NARANJA_LISTO = new Color(0xE07C1A);
 
@@ -167,8 +166,16 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
     // ACCIÓN: Ver detalle (caso 2)
     // ==========================================================
     private void verDetalle(Pedido pedido) {
-        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
-        DialogoDetallePedido.mostrar(this, pedido, pago);
+        try {
+            Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+            DialogoDetallePedido.mostrar(this, pedido, pago);
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosEnPreparacion.class,
+                    "No se pudo mostrar el detalle del pedido #" + pedido.getIdPedido() + ".",
+                    ex
+            );
+        }
     }
 
     // ==========================================================
@@ -176,19 +183,26 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
     // ==========================================================
     private void marcarComoListo(Pedido pedido) {
 
-        pedido.cambiarEstado(EstadoPedido.LISTO);
+        try {
+            pedido.cambiarEstado(EstadoPedido.LISTO);
 
-        boolean actualizado = pedidoService.actualizarPedido(pedido);
+            boolean actualizado = pedidoService.actualizarPedido(pedido);
 
-        if (!actualizado) {
-            FabricaDialogos.error(
-                    this,
-                    "No se pudo actualizar el pedido #" + pedido.getIdPedido() + "."
+            if (!actualizado) {
+                FabricaDialogos.error(this, "No se pudo marcar como listo el pedido #" + pedido.getIdPedido() + ".");
+                return;
+            }
+
+            cargarDatos();
+
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosEnPreparacion.class,
+                    "No se pudo marcar como listo el pedido #" + pedido.getIdPedido()
+                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    ex
             );
-            return;
         }
-
-        cargarDatos();
     }
 
     // ==========================================================
@@ -206,21 +220,42 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
             return;
         }
 
-        pedido.cambiarEstado(EstadoPedido.CANCELADO);
+        try {
+            pedido.cambiarEstado(EstadoPedido.CANCELADO);
 
-        boolean actualizado = pedidoService.actualizarPedido(pedido);
+            boolean actualizado = pedidoService.actualizarPedido(pedido);
 
-        if (!actualizado) {
-            FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
-            return;
+            if (!actualizado) {
+                FabricaDialogos.error(this, "No se pudo cancelar el pedido #" + pedido.getIdPedido() + ".");
+                return;
+            }
+
+            cargarDatos();
+
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosEnPreparacion.class,
+                    "No se pudo cancelar el pedido #" + pedido.getIdPedido()
+                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    ex
+            );
         }
-
-        cargarDatos();
     }
 
     public void cargarDatos() {
 
-        List<Pedido> todos = pedidoService.listarPedidos();
+        List<Pedido> todos;
+
+        try {
+            todos = pedidoService.listarPedidos();
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelPedidosEnPreparacion.class,
+                    "No se pudieron cargar los pedidos en preparación. Verifica tu conexión e inténtalo de nuevo.",
+                    ex
+            );
+            return;
+        }
 
         enPreparacionCompletos = new ArrayList<>();
         for (Pedido p : todos) {

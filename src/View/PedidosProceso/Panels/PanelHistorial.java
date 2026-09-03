@@ -9,6 +9,7 @@ import Service.Implement.PagoServiceImpl;
 import Service.Implement.PedidoServiceImpl;
 import Service.Interfaz.IPagoService;
 import Service.Interfaz.IPedidoService;
+import Utils.AppLogger;
 import View.Componentes.BarraBusqueda;
 import View.Componentes.ColumnaAccionTabla;
 import View.Componentes.DialogoDetallePedido;
@@ -193,8 +194,16 @@ public class PanelHistorial extends PanelFondo {
     }
 
     private void mostrarDetalle(Pedido pedido) {
-        Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
-        DialogoDetallePedido.mostrar(this, pedido, pago);
+        try {
+            Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+            DialogoDetallePedido.mostrar(this, pedido, pago);
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelHistorial.class,
+                    "No se pudo mostrar el detalle del pedido #" + pedido.getIdPedido() + ".",
+                    ex
+            );
+        }
     }
 
     // ==========================================================
@@ -265,7 +274,16 @@ public class PanelHistorial extends PanelFondo {
         }
 
         paginaActual = 0;
-        aplicarFiltros();
+
+        try {
+            aplicarFiltros();
+        } catch (Exception ex) {
+            FabricaDialogos.excepcion(
+                    this, PanelHistorial.class,
+                    "Ocurrió un problema al mostrar el historial de pedidos.",
+                    ex
+            );
+        }
     }
 
     private void aplicarFiltros() {
@@ -297,7 +315,7 @@ public class PanelHistorial extends PanelFondo {
 
             if (metodoSeleccionado != null && !"Todos".equals(metodoSeleccionado)) {
 
-                Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+                Pago pago = pagoSeguro(pedido);
                 String metodoPedido = pago != null ? nombreLegible(pago.getMetodoPago()) : "";
 
                 if (!metodoSeleccionado.equals(metodoPedido)) {
@@ -340,7 +358,7 @@ public class PanelHistorial extends PanelFondo {
 
         for (Pedido pedido : filasPaginaActual) {
 
-            Pago pago = pagoService.buscarPorPedido(pedido.getIdPedido());
+            Pago pago = pagoSeguro(pedido);
 
             modeloTabla.addRow(new Object[]{
                     "#" + pedido.getIdPedido(),
@@ -374,6 +392,21 @@ public class PanelHistorial extends PanelFondo {
     // ==========================================================
     private LocalDate convertir(Date fecha) {
         return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un
+     * dato mal formado en un solo pedido tumbe toda la tabla — ver
+     * DAO.Implement.PagoDAOImpl.
+     */
+    private Pago pagoSeguro(Pedido pedido) {
+        try {
+            return pagoService.buscarPorPedido(pedido.getIdPedido());
+        } catch (Exception ex) {
+            AppLogger.error(PanelHistorial.class,
+                    "No se pudo obtener el pago del pedido #" + pedido.getIdPedido(), ex);
+            return null;
+        }
     }
 
     private String nombreLegible(EstadoPedido estado) {

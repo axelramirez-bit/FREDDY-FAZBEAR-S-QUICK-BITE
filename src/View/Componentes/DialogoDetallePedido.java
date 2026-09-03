@@ -11,6 +11,7 @@ import View.Utils.FabricaDialogos;
 import View.Utils.FabricaEtiquetas;
 import View.Utils.FabricaTablas;
 import View.Utils.FormateadorMoneda;
+import View.Utils.PaletaColores;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -67,7 +68,7 @@ public final class DialogoDetallePedido {
                 contenido
         );
 
-        dialogo.setSize(560, 520);
+        dialogo.setSize(640, 560);
         dialogo.setResizable(true);
         dialogo.setLocationRelativeTo(propietario);
         dialogo.setVisible(true);
@@ -160,21 +161,22 @@ public final class DialogoDetallePedido {
     private static JPanel crearTablaProductos(Pedido pedido) {
 
         DefaultTableModel modelo = FabricaTablas.crearModeloSoloLectura(
-                new Object[]{"Producto", "Cantidad", "Precio", "Subtotal"});
+                new Object[]{"Producto", "Cantidad", "Precio", "Subtotal", "Observaciones"});
 
         JTable tabla = FabricaTablas.crearTabla(modelo);
 
         List<DetallePedido> detalles = pedido.getDetalles();
 
         if (detalles.isEmpty()) {
-            modelo.addRow(new Object[]{"Sin productos registrados para este pedido.", "-", "-", "-"});
+            modelo.addRow(new Object[]{"Sin productos registrados para este pedido.", "-", "-", "-", "-"});
         } else {
             for (DetallePedido detalle : detalles) {
                 modelo.addRow(new Object[]{
                         detalle.getProducto() != null ? detalle.getProducto().getNombre() : "-",
                         detalle.getCantidad(),
                         FormateadorMoneda.formatear(detalle.getPrecio()),
-                        FormateadorMoneda.formatear(detalle.getSubtotal())
+                        FormateadorMoneda.formatear(detalle.getSubtotal()),
+                        detalle.tieneObservaciones() ? detalle.getObservaciones() : "-"
                 });
             }
         }
@@ -182,12 +184,90 @@ public final class DialogoDetallePedido {
         tabla.getColumnModel().getColumn(1).setCellRenderer(centrado());
         tabla.getColumnModel().getColumn(2).setCellRenderer(centrado());
         tabla.getColumnModel().getColumn(3).setCellRenderer(centrado());
+        tabla.getColumnModel().getColumn(4).setCellRenderer(observacionRenderer());
 
-        JPanel contenedor = FabricaTablas.crearPanelTabla(tabla);
-        contenedor.setBorder(BorderFactory.createEmptyBorder(
+        JPanel envoltura = new JPanel(new BorderLayout(0, AdministradorTema.espacioPequeño()));
+        envoltura.setOpaque(false);
+        envoltura.setBorder(BorderFactory.createEmptyBorder(
                 0, 0, AdministradorTema.espacioPequeño(), 0));
 
-        return contenedor;
+        envoltura.add(FabricaTablas.crearPanelTabla(tabla), BorderLayout.CENTER);
+
+        JPanel banner = crearBannerObservaciones(detalles);
+        if (banner != null) {
+            envoltura.add(banner, BorderLayout.SOUTH);
+        }
+
+        return envoltura;
+    }
+
+    /**
+     * Resalta en rojo/negrita la celda de "Observaciones" cuando el
+     * cliente sí dejó una instrucción — para que el ojo del Trabajador
+     * vaya directo ahí en vez de tener que leer fila por fila.
+     */
+    private static javax.swing.table.TableCellRenderer observacionRenderer() {
+        return (t, valor, seleccionado, foco, fila, columna) -> {
+            String texto = valor == null ? "-" : valor.toString();
+            boolean tieneObservacion = !"-".equals(texto);
+
+            JLabel etiqueta = new JLabel(texto);
+            etiqueta.setOpaque(true);
+            etiqueta.setBackground(seleccionado ? t.getSelectionBackground()
+                    : tieneObservacion ? PaletaColores.ESTADO_ADVERTENCIA_FONDO : t.getBackground());
+            etiqueta.setForeground(seleccionado ? t.getSelectionForeground()
+                    : tieneObservacion ? PaletaColores.ESTADO_ADVERTENCIA : t.getForeground());
+            etiqueta.setFont(tieneObservacion ? t.getFont().deriveFont(java.awt.Font.BOLD) : t.getFont());
+            etiqueta.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+            return etiqueta;
+        };
+    }
+
+    /**
+     * Aviso arriba del total: obliga a que el Trabajador confirme que
+     * revisó las instrucciones del cliente antes de entregar el pedido
+     * (caso de uso: "revisar que el pedido está tal cual lo pidió el
+     * cliente"). Solo aparece si al menos una línea tiene observaciones.
+     */
+    private static JPanel crearBannerObservaciones(List<DetallePedido> detalles) {
+
+        List<DetallePedido> conObservaciones = new java.util.ArrayList<>();
+        for (DetallePedido detalle : detalles) {
+            if (detalle.tieneObservaciones()) {
+                conObservaciones.add(detalle);
+            }
+        }
+
+        if (conObservaciones.isEmpty()) {
+            return null;
+        }
+
+        JPanel banner = new JPanel(new BorderLayout(AdministradorTema.espacioPequeño(), 4));
+        banner.setBackground(PaletaColores.ESTADO_ADVERTENCIA_FONDO);
+        banner.setBorder(BorderFactory.createEmptyBorder(
+                AdministradorTema.espacioPequeño(), AdministradorTema.espacioMediano(),
+                AdministradorTema.espacioPequeño(), AdministradorTema.espacioMediano()));
+
+        JLabel titulo = new JLabel("⚠ Este pedido tiene indicaciones del cliente — revisa antes de entregar:");
+        titulo.setForeground(PaletaColores.ESTADO_ADVERTENCIA);
+        titulo.setFont(AdministradorTema.fuentePequeñaNegrita());
+
+        JPanel lista = new JPanel();
+        lista.setOpaque(false);
+        lista.setLayout(new javax.swing.BoxLayout(lista, javax.swing.BoxLayout.Y_AXIS));
+
+        for (DetallePedido detalle : conObservaciones) {
+            JLabel item = new JLabel("• "
+                    + (detalle.getProducto() != null ? detalle.getProducto().getNombre() : "Producto")
+                    + ": " + detalle.getObservaciones());
+            item.setForeground(PaletaColores.ESTADO_ADVERTENCIA);
+            lista.add(item);
+        }
+
+        banner.add(titulo, BorderLayout.NORTH);
+        banner.add(lista, BorderLayout.CENTER);
+
+        return banner;
     }
 
     private static javax.swing.table.TableCellRenderer centrado() {

@@ -29,8 +29,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
     @Override
     public boolean insertar(DetallePedido detalle) {
 
-        String sql = "INSERT INTO detalle_pedido (id_pedido,id_producto,cantidad,precio,subtotal) "
-                + "VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO detalle_pedido (id_pedido,id_producto,cantidad,precio,subtotal,observaciones) "
+                + "VALUES (?,?,?,?,?,?)";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -40,6 +40,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             ps.setInt(3, detalle.getCantidad());
             ps.setBigDecimal(4, detalle.getPrecio());
             ps.setBigDecimal(5, detalle.getSubtotal());
+            ps.setString(6, detalle.getObservaciones());
 
             int filas = ps.executeUpdate();
 
@@ -54,9 +55,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             return filas > 0;
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo insertar el detalle del pedido #"
-                            + detalle.getPedido().getIdPedido(), e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo insertar el detalle del pedido", e);
             return false;
         }
     }
@@ -64,7 +63,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
     @Override
     public boolean actualizar(DetallePedido detalle) {
 
-        String sql = "UPDATE detalle_pedido SET cantidad=?, precio=?, subtotal=? WHERE id_detalle=?";
+        String sql = "UPDATE detalle_pedido SET cantidad=?, precio=?, subtotal=?, observaciones=? WHERE id_detalle=?";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -72,13 +71,13 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             ps.setInt(1, detalle.getCantidad());
             ps.setBigDecimal(2, detalle.getPrecio());
             ps.setBigDecimal(3, detalle.getSubtotal());
-            ps.setInt(4, detalle.getIdDetalle());
+            ps.setString(4, detalle.getObservaciones());
+            ps.setInt(5, detalle.getIdDetalle());
 
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo actualizar el detalle #" + detalle.getIdDetalle(), e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo actualizar el detalle del pedido", e);
             return false;
         }
     }
@@ -96,8 +95,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo eliminar el detalle #" + id, e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo eliminar el detalle del pedido", e);
             return false;
         }
     }
@@ -119,8 +117,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo buscar el detalle #" + id, e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo obtener el detalle del pedido por id", e);
         }
 
         return null;
@@ -142,8 +139,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo listar los detalles de pedido.", e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo listar los detalles de pedido", e);
         }
 
         return lista;
@@ -185,7 +181,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
                             producto,
                             rs.getInt("cantidad"),
                             rs.getBigDecimal("precio"),
-                            rs.getBigDecimal("subtotal")
+                            rs.getBigDecimal("subtotal"),
+                            rs.getString("observaciones")
                     );
 
                     lista.add(detalle);
@@ -193,8 +190,7 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
             }
 
         } catch (SQLException e) {
-            AppLogger.error(DetallePedidoDAOImpl.class,
-                    "No se pudo listar los detalles del pedido #" + idPedido, e);
+            AppLogger.error(DetallePedidoDAOImpl.class, "No se pudo listar los detalles del pedido", e);
         }
 
         return lista;
@@ -218,7 +214,8 @@ public class DetallePedidoDAOImpl implements IDetallePedidoDAO {
                 producto,
                 rs.getInt("cantidad"),
                 rs.getBigDecimal("precio"),
-                rs.getBigDecimal("subtotal")
+                rs.getBigDecimal("subtotal"),
+                rs.getString("observaciones")
         );
     }
 

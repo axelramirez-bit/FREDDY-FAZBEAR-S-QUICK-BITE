@@ -402,12 +402,20 @@ public class PanelPromociones extends PanelFondo {
             promocion.setEstado(true);
         }
 
+        String motivoInvalido = promocionService.validar(promocion);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo guardar la promoción", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         boolean exito = esEdicion
                 ? promocionService.actualizarPromocion(promocion)
                 : promocionService.registrarPromocion(promocion);
 
         if (!exito) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar la promoción.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar la promoción. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

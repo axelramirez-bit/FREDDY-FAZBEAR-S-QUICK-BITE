@@ -388,12 +388,20 @@ public class PanelTrabajadores extends PanelFondo {
             );
         }
 
+        String motivoInvalido = usuarioService.validar(trabajador);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo guardar el trabajador", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         boolean exito = esEdicion
                 ? usuarioService.actualizarUsuario(trabajador)
                 : usuarioService.registrarUsuario(trabajador);
 
         if (!exito) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar el trabajador.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar el trabajador. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

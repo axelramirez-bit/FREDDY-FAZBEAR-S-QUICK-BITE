@@ -407,21 +407,33 @@ public class PanelCategorias extends PanelFondo {
 
         int orden = parsearOrden(txtOrden.getText());
 
+        Categoria categoriaAValidar;
         boolean exito;
 
         if (esEdicion) {
             categoriaExistente.setNombre(txtNombre.getText().trim());
             categoriaExistente.setDescripcion(txtDescripcion.getText().trim());
             categoriaExistente.setOrden(orden);
-            exito = categoriaService.actualizar(categoriaExistente);
+            categoriaAValidar = categoriaExistente;
         } else {
-            Categoria nueva = new Categoria(0, txtNombre.getText().trim(),
+            categoriaAValidar = new Categoria(0, txtNombre.getText().trim(),
                     txtDescripcion.getText().trim(), null, null, null, orden, true);
-            exito = categoriaService.guardar(nueva);
         }
 
+        String motivoInvalido = categoriaService.validar(categoriaAValidar);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo guardar la categoría", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        exito = esEdicion
+                ? categoriaService.actualizar(categoriaAValidar)
+                : categoriaService.guardar(categoriaAValidar);
+
         if (!exito) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar la categoría.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar la categoría. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

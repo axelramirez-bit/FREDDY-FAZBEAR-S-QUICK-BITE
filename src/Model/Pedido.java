@@ -1,4 +1,3 @@
-
 package Model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -234,13 +233,22 @@ public void agregarDetalle(
         Producto producto,
         int cantidad
 ) {
+    agregarDetalle(producto, cantidad, null);
+}
+
+public void agregarDetalle(
+        Producto producto,
+        int cantidad,
+        String observaciones
+) {
 
     DetallePedido detalle =
 
             new DetallePedido(
                     this,
                     producto,
-                    cantidad
+                    cantidad,
+                    observaciones
             );
 
     detalles.add(detalle);

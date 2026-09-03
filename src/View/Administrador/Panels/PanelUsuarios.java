@@ -461,12 +461,20 @@ public class PanelUsuarios extends PanelFondo {
             }
         }
 
+        String motivoInvalido = usuarioService.validar(usuario);
+        if (motivoInvalido != null) {
+            JOptionPane.showMessageDialog(this, motivoInvalido,
+                    "No se pudo guardar el usuario", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         boolean exito = esEdicion
                 ? usuarioService.actualizarUsuario(usuario)
                 : usuarioService.registrarUsuario(usuario);
 
         if (!exito) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar el usuario.",
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar el usuario. Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

@@ -100,37 +100,50 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // ---------- Métodos auxiliares de negocio ----------
 
     private boolean validarUsuario(Usuario usuario) {
+        return validar(usuario) == null;
+    }
+
+    @Override
+    public String validar(Usuario usuario) {
 
         if (usuario == null) {
-            return false;
+            return "Usuario inválido.";
         }
 
         if (usuario.getRol() == null || usuario.getRol().getIdRol() <= 0) {
-            return false;
+            return "Debes seleccionar un rol.";
         }
 
         if (usuario.getNombre() == null || usuario.getNombre().isBlank()) {
-            return false;
+            return "El nombre es obligatorio.";
         }
 
         if (usuario.getApellido() == null || usuario.getApellido().isBlank()) {
-            return false;
+            return "El apellido es obligatorio.";
         }
 
         if (usuario.getCorreo() == null || !CORREO_PATTERN.matcher(usuario.getCorreo()).matches()) {
-            return false;
+            return "El correo no tiene un formato válido (ejemplo: nombre@dominio.com).";
+        }
+
+        Usuario conEseCorreo = usuarioDAO.buscarPorCorreo(usuario.getCorreo().trim());
+        if (conEseCorreo != null && conEseCorreo.getIdUsuario() != usuario.getIdUsuario()) {
+            return "Ya existe un usuario registrado con el correo \"" + usuario.getCorreo() + "\".";
         }
 
         if (usuario.getPassword() == null || usuario.getPassword().length() < 6) {
-            return false;
+            return "La contraseña debe tener al menos 6 caracteres.";
         }
 
-        if (usuario.getFechaNacimiento() == null || !esMayorDeEdadMinima(usuario.getFechaNacimiento())) {
-            return false;
+        if (usuario.getFechaNacimiento() == null) {
+            return "La fecha de nacimiento es obligatoria.";
         }
 
-        return true;
+        if (!esMayorDeEdadMinima(usuario.getFechaNacimiento())) {
+            return "El usuario debe tener al menos " + EDAD_MINIMA + " años.";
+        }
 
+        return null;
     }
 
     private boolean esMayorDeEdadMinima(LocalDate fechaNacimiento) {

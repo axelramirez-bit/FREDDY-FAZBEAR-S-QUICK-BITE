@@ -154,7 +154,8 @@ public class PedidoController {
         for (CarritoDetalle detalleCarrito : carrito.getDetalles()) {
             pedido.agregarDetalle(
                     detalleCarrito.getProducto(),
-                    detalleCarrito.getCantidad()
+                    detalleCarrito.getCantidad(),
+                    detalleCarrito.getObservaciones()
             );
         }
 
@@ -186,14 +187,8 @@ public class PedidoController {
         boolean pedidoGuardado = pedidoService.registrarPedido(pedido);
 
         if (!pedidoGuardado || pedido.getIdPedido() <= 0) {
-            // El detalle técnico (qué INSERT falló y por qué) ya
-            // queda registrado por AppLogger dentro de
-            // PedidoServiceImpl/PedidoDAOImpl. Aquí solo se informa
-            // al cajero, sin nombres de clase ni jerga de código.
             return ResultadoConfirmacion.error(
-                    "No se pudo registrar el pedido. Verifica los productos e "
-                            + "inténtalo de nuevo; si el problema continúa, avisa "
-                            + "al administrador."
+                    "No se pudo registrar el pedido. Revisa PedidoDAO/DetallePedidoDAO."
             );
         }
 

@@ -10,6 +10,9 @@ public interface IProductoService {
 
     boolean actualizarProducto(Producto producto);
 
+    /** Motivo exacto por el que un producto no se podría guardar (null si está bien). */
+    String validar(Producto producto);
+
     boolean eliminarProducto(int idProducto);
 
     // Caso de uso "Desactivar producto": siempre posible.
