@@ -10,6 +10,8 @@ public interface IPedidoDAO {
     boolean actualizar(Pedido pedido);
 
     boolean eliminar(int id);
+    
+    boolean existePedidoParaCarrito(int idCarrito);
 
     Pedido buscarPorId(int id);
 

@@ -11,6 +11,8 @@ public interface IPedidoService {
     boolean actualizarPedido(Pedido pedido);
 
     boolean eliminarPedido(int idPedido);
+    
+    boolean existePedidoParaCarrito(int idCarrito);
 
     Pedido obtenerPedidoPorId(int idPedido);
 

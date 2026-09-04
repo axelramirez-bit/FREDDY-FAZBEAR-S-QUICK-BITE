@@ -94,12 +94,12 @@ public class PedidoServiceImpl implements IPedidoService {
             } catch (SQLException rollbackEx) {
                 AppLogger.error(PedidoServiceImpl.class,
                         "Falló el rollback al registrar el pedido "
-                                + pedido.getNumeroOrden(), rollbackEx);
+                        + pedido.getNumeroOrden(), rollbackEx);
             }
 
             AppLogger.error(PedidoServiceImpl.class,
                     "No se pudo registrar el pedido " + pedido.getNumeroOrden()
-                            + " (revertido por transacción).", e);
+                    + " (revertido por transacción).", e);
             return false;
 
         } finally {
@@ -112,6 +112,16 @@ public class PedidoServiceImpl implements IPedidoService {
             }
         }
 
+    }
+
+    @Override
+    public boolean existePedidoParaCarrito(int idCarrito) {
+
+        if (idCarrito <= 0) {
+            return false;
+        }
+
+        return pedidoDAO.existePedidoParaCarrito(idCarrito);
     }
 
     @Override

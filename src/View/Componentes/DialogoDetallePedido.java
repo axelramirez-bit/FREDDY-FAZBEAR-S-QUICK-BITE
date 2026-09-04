@@ -32,26 +32,25 @@ import java.util.List;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * "Ver detalle" de un pedido — caso de uso 2 del diagrama
- * (Trabajador/Cajero: "Consultar pedidos, listar y ver detalle").
+ * --------------------------------------------------------------- "Ver detalle"
+ * de un pedido — caso de uso 2 del diagrama (Trabajador/Cajero: "Consultar
+ * pedidos, listar y ver detalle").
  *
- * Es UN solo componente compartido por las 4 pantallas del
- * Trabajador que necesitan mostrar el detalle de un pedido
- * (Pendientes, En preparación, Listos, Historial), en vez de que
- * cada panel arme su propio JOptionPane de texto plano — mismo
- * criterio que ya usa ColumnaAccionTabla para los botones de
- * acción y EtiquetaEstado para los badges de estado.
+ * Es UN solo componente compartido por las 4 pantallas del Trabajador que
+ * necesitan mostrar el detalle de un pedido (Pendientes, En preparación,
+ * Listos, Historial), en vez de que cada panel arme su propio JOptionPane de
+ * texto plano — mismo criterio que ya usa ColumnaAccionTabla para los botones
+ * de acción y EtiquetaEstado para los badges de estado.
  *
  * USO:
  *
- *     DialogoDetallePedido.mostrar(this, pedido, pago);
+ * DialogoDetallePedido.mostrar(this, pedido, pago);
  * ===============================================================
  */
 public final class DialogoDetallePedido {
 
-    private static final DateTimeFormatter FORMATO_FECHA_HORA =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+    private static final DateTimeFormatter FORMATO_FECHA_HORA
+            = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
 
     private DialogoDetallePedido() {
     }
@@ -106,7 +105,7 @@ public final class DialogoDetallePedido {
 
         JLabel titulo = FabricaEtiquetas.crearSubtitulo(
                 "Pedido #" + pedido.getIdPedido()
-                        + (pedido.getNumeroOrden() != null ? " · " + pedido.getNumeroOrden() : ""));
+                + (pedido.getNumeroOrden() != null ? " · " + pedido.getNumeroOrden() : ""));
 
         encabezado.add(titulo, BorderLayout.WEST);
         encabezado.add(EtiquetaEstado.automatico(nombreLegible(pedido.getEstado())), BorderLayout.EAST);
@@ -117,9 +116,7 @@ public final class DialogoDetallePedido {
     // ---- Ficha de datos: cliente, fecha, entrega, pago ----
     private static JPanel crearFichaInformacion(Pedido pedido, Pago pago) {
 
-        boolean esDomicilio = pedido.getTipoEntrega() == TipoEntrega.DOMICILIO;
-
-        JPanel ficha = new JPanel(new GridLayout(esDomicilio ? 4 : 3, 2, AdministradorTema.espacioMediano(), 4));
+        JPanel ficha = new JPanel(new GridLayout(3, 2, AdministradorTema.espacioMediano(), 4));
         ficha.setOpaque(false);
         ficha.setBorder(BorderFactory.createEmptyBorder(0, 0, AdministradorTema.espacioPequeño(), 0));
 
@@ -133,13 +130,6 @@ public final class DialogoDetallePedido {
 
         agregarCampo(ficha, "Método de pago",
                 pago != null ? nombreLegible(pago.getMetodoPago()) : "Sin registrar");
-
-        if (esDomicilio) {
-            String direccion = pedido.getDireccionEntrega() != null ? pedido.getDireccionEntrega() : "-";
-            String referencia = pedido.getReferenciaEntrega();
-            agregarCampo(ficha, "Dirección",
-                    referencia != null && !referencia.isBlank() ? direccion + " (" + referencia + ")" : direccion);
-        }
 
         return ficha;
     }
@@ -172,11 +162,11 @@ public final class DialogoDetallePedido {
         } else {
             for (DetallePedido detalle : detalles) {
                 modelo.addRow(new Object[]{
-                        detalle.getProducto() != null ? detalle.getProducto().getNombre() : "-",
-                        detalle.getCantidad(),
-                        FormateadorMoneda.formatear(detalle.getPrecio()),
-                        FormateadorMoneda.formatear(detalle.getSubtotal()),
-                        detalle.tieneObservaciones() ? detalle.getObservaciones() : "-"
+                    detalle.getProducto() != null ? detalle.getProducto().getNombre() : "-",
+                    detalle.getCantidad(),
+                    FormateadorMoneda.formatear(detalle.getPrecio()),
+                    FormateadorMoneda.formatear(detalle.getSubtotal()),
+                    detalle.tieneObservaciones() ? detalle.getObservaciones() : "-"
                 });
             }
         }
@@ -202,9 +192,9 @@ public final class DialogoDetallePedido {
     }
 
     /**
-     * Resalta en rojo/negrita la celda de "Observaciones" cuando el
-     * cliente sí dejó una instrucción — para que el ojo del Trabajador
-     * vaya directo ahí en vez de tener que leer fila por fila.
+     * Resalta en rojo/negrita la celda de "Observaciones" cuando el cliente sí
+     * dejó una instrucción — para que el ojo del Trabajador vaya directo ahí en
+     * vez de tener que leer fila por fila.
      */
     private static javax.swing.table.TableCellRenderer observacionRenderer() {
         return (t, valor, seleccionado, foco, fila, columna) -> {
@@ -224,10 +214,10 @@ public final class DialogoDetallePedido {
     }
 
     /**
-     * Aviso arriba del total: obliga a que el Trabajador confirme que
-     * revisó las instrucciones del cliente antes de entregar el pedido
-     * (caso de uso: "revisar que el pedido está tal cual lo pidió el
-     * cliente"). Solo aparece si al menos una línea tiene observaciones.
+     * Aviso arriba del total: obliga a que el Trabajador confirme que revisó
+     * las instrucciones del cliente antes de entregar el pedido (caso de uso:
+     * "revisar que el pedido está tal cual lo pidió el cliente"). Solo aparece
+     * si al menos una línea tiene observaciones.
      */
     private static JPanel crearBannerObservaciones(List<DetallePedido> detalles) {
 
@@ -330,34 +320,52 @@ public final class DialogoDetallePedido {
     // UTILITARIOS
     // ==========================================================
     private static String nombreLegible(EstadoPedido estado) {
-        if (estado == null) return "-";
+        if (estado == null) {
+            return "-";
+        }
         switch (estado) {
-            case PENDIENTE: return "Pendiente";
-            case PREPARACION: return "En preparación";
-            case LISTO: return "Listo";
-            case ENTREGADO: return "Entregado";
-            case CANCELADO: return "Cancelado";
-            default: return estado.name();
+            case PENDIENTE:
+                return "Pendiente";
+            case PREPARACION:
+                return "En preparación";
+            case LISTO:
+                return "Listo";
+            case ENTREGADO:
+                return "Entregado";
+            case CANCELADO:
+                return "Cancelado";
+            default:
+                return estado.name();
         }
     }
 
     private static String nombreLegible(TipoEntrega tipo) {
-        if (tipo == null) return "-";
+        if (tipo == null) {
+            return "-";
+        }
         switch (tipo) {
-            case PARA_LLEVAR: return "Para llevar";
-            case DOMICILIO: return "A domicilio";
-            case COMER_EN_RESTAURANTE: return "Comer en local";
-            default: return tipo.name();
+            case PARA_LLEVAR:
+                return "Para llevar";
+            case COMER_EN_RESTAURANTE:
+                return "Comer en local";
+            default:
+                return tipo.name();
         }
     }
 
     private static String nombreLegible(MetodoPago metodo) {
-        if (metodo == null) return "-";
+        if (metodo == null) {
+            return "-";
+        }
         switch (metodo) {
-            case EFECTIVO: return "Efectivo";
-            case TARJETA: return "Tarjeta";
-            case TRANSFERENCIA: return "Transferencia";
-            default: return metodo.name();
+            case EFECTIVO:
+                return "Efectivo";
+            case TARJETA:
+                return "Tarjeta";
+            case TRANSFERENCIA:
+                return "Transferencia";
+            default:
+                return metodo.name();
         }
     }
 }

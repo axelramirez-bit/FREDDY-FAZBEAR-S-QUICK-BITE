@@ -34,7 +34,6 @@ public class PasoConfirmacion extends JPanel {
 
     private final JPanel panelDetalleProductos = new JPanel();
     private JLabel lblTipoEntrega;
-    private JLabel lblDireccion;
     private JLabel lblMetodoPago;
 
     private final JPanel panelItemsResumen = new JPanel();
@@ -100,7 +99,6 @@ public class PasoConfirmacion extends JPanel {
         tarjetaEntrega.add(subtitulo("Entrega"));
         tarjetaEntrega.add(Box.createVerticalStrut(8));
         lblTipoEntrega = filaEtiquetaValor(tarjetaEntrega, "Tipo:");
-        lblDireccion = filaEtiquetaValor(tarjetaEntrega, "Dirección:");
 
         PanelRedondeado tarjetaPago = tarjeta();
         tarjetaPago.add(subtitulo("Pago"));
@@ -240,16 +238,6 @@ public class PasoConfirmacion extends JPanel {
         TipoEntrega tipo = padre.getTipoEntrega();
         lblTipoEntrega.setText(textoTipoEntrega(tipo));
 
-        if (tipo == TipoEntrega.DOMICILIO) {
-            String direccion = padre.getDireccionEntrega() != null ? padre.getDireccionEntrega() : "";
-            String referencia = padre.getReferenciaEntrega();
-            lblDireccion.setText(direccion + (referencia != null && !referencia.isBlank()
-                    ? " (" + referencia + ")" : ""));
-            lblDireccion.getParent().setVisible(true);
-        } else {
-            lblDireccion.getParent().setVisible(false);
-        }
-
         // ---- Pago ----
         lblMetodoPago.setText(textoMetodoPago(padre.getMetodoPago()));
 
@@ -307,7 +295,6 @@ public class PasoConfirmacion extends JPanel {
         return switch (tipo) {
             case COMER_EN_RESTAURANTE -> "Comer en restaurante";
             case PARA_LLEVAR -> "Para llevar";
-            case DOMICILIO -> "Domicilio";
         };
     }
 

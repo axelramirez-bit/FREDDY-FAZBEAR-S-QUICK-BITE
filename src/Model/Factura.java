@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 public class Factura {
 
     private int idFactura;
@@ -29,11 +30,11 @@ public class Factura {
     private BigDecimal total;
 
     private BigDecimal iva;
-    
-    private static final BigDecimal TASA_IVA =
-        new BigDecimal("0.12");
-    
-    private String  nit;
+
+    private static final BigDecimal TASA_IVA
+            = new BigDecimal("0.12");
+
+    private String nit;
 
     // Costo de envío a domicilio (Q0 si no aplica). Se suma al total
     // DESPUÉS del IVA — el envío no lleva impuesto, igual que en el
@@ -41,35 +42,37 @@ public class Factura {
     private BigDecimal costoEnvio;
 
     private List<DetalleFactura> detalles;
-    
-    
-public Factura() {
 
-    this.fecha = LocalDateTime.now();
+    private String nombreCliente;
 
-    this.detalles = new ArrayList<>();
+    public Factura() {
 
-    this.subtotal = BigDecimal.ZERO;
+        this.fecha = LocalDateTime.now();
 
-    this.descuento = BigDecimal.ZERO;
+        this.detalles = new ArrayList<>();
 
-    this.iva = BigDecimal.ZERO;
+        this.subtotal = BigDecimal.ZERO;
 
-    this.total = BigDecimal.ZERO;
+        this.descuento = BigDecimal.ZERO;
 
-    this.costoEnvio = BigDecimal.ZERO;
-}
-public Factura(
-        Pedido pedido,
-        Usuario cliente) {
+        this.iva = BigDecimal.ZERO;
 
-    this();
+        this.total = BigDecimal.ZERO;
 
-    this.pedido = pedido;
-    this.cliente = cliente;
-}
+        this.costoEnvio = BigDecimal.ZERO;
+    }
 
-    public Factura(int idFactura, Pedido pedido, String numeroFactura, LocalDateTime fecha, Usuario cliente, String direccion, BigDecimal subtotal, BigDecimal descuento, MetodoPago metodoPago, BigDecimal total, BigDecimal iva, String  nit) {
+    public Factura(
+            Pedido pedido,
+            Usuario cliente) {
+
+        this();
+
+        this.pedido = pedido;
+        this.cliente = cliente;
+    }
+
+    public Factura(int idFactura, Pedido pedido, String numeroFactura, LocalDateTime fecha, Usuario cliente, String direccion, BigDecimal subtotal, BigDecimal descuento, MetodoPago metodoPago, BigDecimal total, BigDecimal iva, String nit) {
         this.idFactura = idFactura;
         this.pedido = pedido;
         this.numeroFactura = numeroFactura;
@@ -114,10 +117,11 @@ public Factura(
 
         detalles.add(detalle);
     }
+
     public void eliminarDetalle(DetalleFactura detalle) {
 
-    detalles.remove(detalle);
-}
+        detalles.remove(detalle);
+    }
 
     public MetodoPago getMetodoPago() {
         return metodoPago;
@@ -129,6 +133,19 @@ public Factura(
 
     public Usuario getCliente() {
         return cliente;
+    }
+
+    public String getNombreCliente() {
+
+        if (nombreCliente != null && !nombreCliente.isBlank()) {
+            return nombreCliente;
+        }
+
+        if (cliente == null) {
+            return "Cliente no registrado";
+        }
+
+        return cliente.getNombreCompleto();
     }
 
     public int getIdFactura() {
@@ -167,7 +184,7 @@ public Factura(
         return iva;
     }
 
-    public String  getNit() {
+    public String getNit() {
         return nit;
     }
 
@@ -191,6 +208,10 @@ public Factura(
         this.cliente = cliente;
     }
 
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
@@ -211,7 +232,7 @@ public Factura(
         this.iva = iva;
     }
 
-    public void setNit(String  nit) {
+    public void setNit(String nit) {
         this.nit = nit;
     }
 
@@ -221,76 +242,71 @@ public Factura(
 
     }
 
-public String getNombreCliente() {
-
-    if (cliente == null) {
-        return "Cliente no registrado";
-    }
-
-    return cliente.getNombreCompleto();
-}
-
     public String getFechaFormateada() {
 
-    if (fecha == null) {
-        return "";
+        if (fecha == null) {
+            return "";
+        }
+
+        DateTimeFormatter formato
+                = DateTimeFormatter.ofPattern(
+                        "dd/MM/yyyy HH:mm"
+                );
+
+        return fecha.format(formato);
     }
 
-    DateTimeFormatter formato =
-            DateTimeFormatter.ofPattern(
-                    "dd/MM/yyyy HH:mm"
-            );
-
-    return fecha.format(formato);
-}
     public BigDecimal calcularSubtotal() {
 
-    BigDecimal resultado = BigDecimal.ZERO;
+        BigDecimal resultado = BigDecimal.ZERO;
 
-    for (DetalleFactura detalle : detalles) {
+        for (DetalleFactura detalle : detalles) {
 
-        if (detalle != null) {
+            if (detalle != null) {
 
-            resultado = resultado.add(
-                    detalle.obtenerSubtotal()
-            );
+                resultado = resultado.add(
+                        detalle.obtenerSubtotal()
+                );
+            }
         }
+
+        this.subtotal = resultado;
+
+        return resultado;
     }
 
-    this.subtotal = resultado;
+    public BigDecimal calcularIva() {
 
-    return resultado;
-}
-public BigDecimal calcularIva() {
+        BigDecimal base = subtotal.subtract(
+                descuento != null
+                        ? descuento
+                        : BigDecimal.ZERO
+        );
 
-    BigDecimal base = subtotal.subtract(
-            descuento != null
-                    ? descuento
-                    : BigDecimal.ZERO
-    );
+        iva = base.multiply(
+                TASA_IVA
+        );
 
-    iva = base.multiply(
-            TASA_IVA
-    );
+        return iva;
+    }
 
-    return iva;
-}
-public BigDecimal calcularTotal() {
+    public BigDecimal calcularTotal() {
 
-    BigDecimal base = subtotal.subtract(
-            descuento != null
-                    ? descuento
-                    : BigDecimal.ZERO
-    );
+        BigDecimal base = subtotal.subtract(
+                descuento != null
+                        ? descuento
+                        : BigDecimal.ZERO
+        );
 
-    calcularIva();
+        calcularIva();
 
-    BigDecimal envio = costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
+        BigDecimal envio = costoEnvio != null ? costoEnvio : BigDecimal.ZERO;
 
-    total = base.add(iva).add(envio);
+        total = base.add(iva).add(envio);
 
-    return total;
-}
+        return total;
+    }
+
     @Override
     public boolean equals(Object obj) {
 

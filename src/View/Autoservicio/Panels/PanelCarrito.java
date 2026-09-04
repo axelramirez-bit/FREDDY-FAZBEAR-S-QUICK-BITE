@@ -162,20 +162,20 @@ public class PanelCarrito extends PanelFondo {
     // ==========================================================
     private void cargarCarritoDesdeBD() {
 
-    Usuario usuario = Sesion.getInstancia().getUsuario();
+        Usuario usuario = Sesion.getInstancia().getUsuario();
 
-    if (usuario == null) {
-        carrito = null;
-        return;
+        if (usuario == null) {
+            carrito = null;
+            return;
+        }
+
+        carrito = carritoService.obtenerOCrearCarritoActivo(usuario.getIdUsuario());
+
+        if (carrito != null) {
+            carrito.getDetalles().clear();
+            carrito.getDetalles().addAll(carritoService.obtenerDetalles(carrito.getIdCarrito()));
+        }
     }
-
-    carrito = carritoService.obtenerOCrearCarritoActivo(usuario.getIdUsuario());
-
-    if (carrito != null) {
-        carrito.getDetalles().clear();
-        carrito.getDetalles().addAll(carritoService.obtenerDetalles(carrito.getIdCarrito()));
-    }
-}
 
     public Carrito getCarrito() {
         return carrito;
@@ -283,7 +283,7 @@ public class PanelCarrito extends PanelFondo {
     }
 
     public BigDecimal getCostoEnvio() {
-        return tipoEntrega == TipoEntrega.DOMICILIO ? COSTO_ENVIO_DOMICILIO : BigDecimal.ZERO;
+        return BigDecimal.ZERO;
     }
 
     public String getDireccionEntrega() {
@@ -341,11 +341,6 @@ public class PanelCarrito extends PanelFondo {
      */
     public String validarPaso2() {
 
-        if (tipoEntrega == TipoEntrega.DOMICILIO
-                && (direccionEntrega == null || direccionEntrega.isBlank())) {
-            return "Indica la direccion de entrega para el envio a domicilio.";
-        }
-
         if (nombreCliente == null || nombreCliente.isBlank()) {
             return "El nombre del cliente es obligatorio para la factura.";
         }
@@ -377,15 +372,17 @@ public class PanelCarrito extends PanelFondo {
         }
 
         PedidoController.ResultadoConfirmacion resultado = pedidoController.confirmarPedido(
-                carrito,
-                tipoEntrega,
-                metodoPago,
-                montoRecibido,
-                getCostoEnvio(),
-                direccionEntrega,
-                referenciaEntrega,
-                consumidorFinal ? null : nit
-        );
+        carrito,
+        tipoEntrega,
+        metodoPago,
+        montoRecibido,
+        getCostoEnvio(),
+        direccionEntrega,
+        referenciaEntrega,
+        consumidorFinal ? null : nit,
+        nombreCliente,
+        correoCliente
+);
 
         if (!resultado.isExito()) {
             JOptionPane.showMessageDialog(

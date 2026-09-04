@@ -31,32 +31,28 @@ import java.time.LocalDateTime;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Orquesta el paso "Confirmar pedido" del wizard de compra
- * (Carrito -> Pago -> Confirmacion -> Factura).
+ * --------------------------------------------------------------- Orquesta el
+ * paso "Confirmar pedido" del wizard de compra (Carrito -> Pago -> Confirmacion
+ * -> Factura).
  *
- * Mientras el cliente navega los pasos 1-3, el Carrito vive
- * solo en memoria: no se toca la base de datos. Todo se
- * persiste en un único punto: confirmarPedido().
+ * Mientras el cliente navega los pasos 1-3, el Carrito vive solo en memoria: no
+ * se toca la base de datos. Todo se persiste en un único punto:
+ * confirmarPedido().
  *
- * Orden de persistencia (igual al diagrama de secuencia):
- *   1) INSERT pedido + INSERT detalle_pedido (PedidoService)
- *   2) INSERT pago                            (PagoService)
- *   3) INSERT factura                         (FacturaService)
- *   4) Generar el PDF                         (GeneradorFacturaPdf)
- *   5) Vaciar el carrito                      (CarritoService)
- *   6) Enviar la factura por correo, opcional (GeneradorFacturaPdf)
+ * Orden de persistencia (igual al diagrama de secuencia): 1) INSERT pedido +
+ * INSERT detalle_pedido (PedidoService) 2) INSERT pago (PagoService) 3) INSERT
+ * factura (FacturaService) 4) Generar el PDF (GeneradorFacturaPdf) 5) Vaciar el
+ * carrito (CarritoService) 6) Enviar la factura por correo, opcional
+ * (GeneradorFacturaPdf)
  *
- * DEPENDENCIAS QUE NO CONTROLA ESTA CLASE (DAO):
- *  - PedidoDAOImpl.insertar() debe devolver el id generado
- *    (Statement.RETURN_GENERATED_KEYS) y setearlo en el Pedido.
- *    Hoy no lo hace -> pedido.getIdPedido() queda en 0 y el
- *    pago/factura de abajo fallarían al enlazar la FK id_pedido.
- *  - DetallePedidoDAO debe insertar cada línea del pedido
- *    dentro de la misma transacción que el INSERT pedido.
- *    Hoy esa clase está vacía.
- * Si algo de esto falla, el error es de la capa DAO, no de este
- * Controller: aquí solo se asume el contrato de IPedidoService.
+ * DEPENDENCIAS QUE NO CONTROLA ESTA CLASE (DAO): - PedidoDAOImpl.insertar()
+ * debe devolver el id generado (Statement.RETURN_GENERATED_KEYS) y setearlo en
+ * el Pedido. Hoy no lo hace -> pedido.getIdPedido() queda en 0 y el
+ * pago/factura de abajo fallarían al enlazar la FK id_pedido. -
+ * DetallePedidoDAO debe insertar cada línea del pedido dentro de la misma
+ * transacción que el INSERT pedido. Hoy esa clase está vacía. Si algo de esto
+ * falla, el error es de la capa DAO, no de este Controller: aquí solo se asume
+ * el contrato de IPedidoService.
  * ===============================================================
  */
 public class PedidoController {
@@ -82,10 +78,10 @@ public class PedidoController {
 
     // Constructor alterno para pruebas (inyectar servicios falsos/mocks)
     public PedidoController(ICarritoService carritoService,
-                             IPedidoService pedidoService,
-                             IPagoService pagoService,
-                             IFacturaService facturaService,
-                             GeneradorFacturaPdf generadorFacturaPdf) {
+            IPedidoService pedidoService,
+            IPagoService pagoService,
+            IFacturaService facturaService,
+            GeneradorFacturaPdf generadorFacturaPdf) {
         this.carritoService = carritoService;
         this.pedidoService = pedidoService;
         this.pagoService = pagoService;
@@ -94,26 +90,29 @@ public class PedidoController {
     }
 
     /**
-     * Punto de entrada único del Paso 3 -> Paso 4 del wizard.
-     * Se llama cuando el cliente presiona "Confirmar pedido".
+     * Punto de entrada único del Paso 3 -> Paso 4 del wizard. Se llama cuando
+     * el cliente presiona "Confirmar pedido".
      *
-     * @param carrito           carrito activo del cliente (Paso 1)
-     * @param tipoEntrega       elegido en el Paso 2
-     * @param metodoPago        elegido en el Paso 2
-     * @param montoRecibido     solo se valida si metodoPago = EFECTIVO
-     * @param costoEnvio        Q0 salvo que tipoEntrega = DOMICILIO
-     * @param direccionEntrega  solo aplica si tipoEntrega = DOMICILIO
-     * @param referenciaEntrega solo aplica si tipoEntrega = DOMICILIO (opcional)
-     * @param nit               NIT del cliente para la factura ("CF"/null = consumidor final)
+     * @param carrito carrito activo del cliente (Paso 1)
+     * @param tipoEntrega elegido en el Paso 2
+     * @param metodoPago elegido en el Paso 2
+     * @param montoRecibido solo se valida si metodoPago = EFECTIVO
+     * @param costoEnvio Q0 salvo que tipoEntrega = DOMICILIO
+     * @param direccionEntrega solo aplica si tipoEntrega = DOMICILIO
+     * @param referenciaEntrega solo aplica si tipoEntrega = DOMICILIO
+     * (opcional)
+     * @param nit NIT del cliente para la factura ("CF"/null = consumidor final)
      */
     public ResultadoConfirmacion confirmarPedido(Carrito carrito,
-                                                  TipoEntrega tipoEntrega,
-                                                  MetodoPago metodoPago,
-                                                  BigDecimal montoRecibido,
-                                                  BigDecimal costoEnvio,
-                                                  String direccionEntrega,
-                                                  String referenciaEntrega,
-                                                  String nit) {
+            TipoEntrega tipoEntrega,
+            MetodoPago metodoPago,
+            BigDecimal montoRecibido,
+            BigDecimal costoEnvio,
+            String direccionEntrega,
+            String referenciaEntrega,
+            String nit,
+            String nombreCliente,
+            String correoClienteEditado) {
 
         // ---------- 1. Validaciones de entrada ----------
         if (carrito == null || carrito.estaVacio()) {
@@ -128,28 +127,23 @@ public class PedidoController {
             return ResultadoConfirmacion.error("Debes elegir tipo de entrega y método de pago.");
         }
 
-        if (tipoEntrega == TipoEntrega.DOMICILIO
-                && (direccionEntrega == null || direccionEntrega.isBlank())) {
-            return ResultadoConfirmacion.error("Debes indicar la dirección de entrega.");
+        if (carrito.getIdCarrito() > 0 && pedidoService.existePedidoParaCarrito(carrito.getIdCarrito())) {
+            return ResultadoConfirmacion.error(
+                    "Ya se registró un pedido para este carrito. Vuelve al menú para iniciar uno nuevo."
+            );
         }
 
-        BigDecimal envio = (tipoEntrega == TipoEntrega.DOMICILIO && costoEnvio != null)
-                ? costoEnvio
-                : BigDecimal.ZERO;
+        BigDecimal envio = BigDecimal.ZERO;
 
         Usuario cliente = carrito.getUsuario();
 
         // ---------- 2. Armar el Pedido a partir del Carrito (aún nada en BD) ----------
         Pedido pedido = new Pedido();
         pedido.setUsuario(cliente);
+        pedido.setIdCarrito(carrito.getIdCarrito());   // NUEVO
         pedido.setTipoEntrega(tipoEntrega);
         pedido.setDescuento(BigDecimal.ZERO); // TODO: aplicar Promocion aquí si corresponde
         pedido.setCostoEnvio(envio);
-
-        if (tipoEntrega == TipoEntrega.DOMICILIO) {
-            pedido.setDireccionEntrega(direccionEntrega);
-            pedido.setReferenciaEntrega(referenciaEntrega);
-        }
 
         for (CarritoDetalle detalleCarrito : carrito.getDetalles()) {
             pedido.agregarDetalle(
@@ -205,7 +199,7 @@ public class PedidoController {
         if (!pagoGuardado) {
             return ResultadoConfirmacion.error(
                     "El pedido #" + pedido.getNumeroOrden()
-                            + " se creó, pero no se pudo registrar el pago. Avisa a un trabajador."
+                    + " se creó, pero no se pudo registrar el pago. Avisa a un trabajador."
             );
         }
 
@@ -217,14 +211,17 @@ public class PedidoController {
         factura.setMetodoPago(metodoPago);
         factura.setCostoEnvio(envio);
         factura.setNit(nit == null || nit.isBlank() ? "CF" : nit.trim());
+        factura.setNombreCliente(
+                (nombreCliente != null && !nombreCliente.isBlank())
+                ? nombreCliente.trim()
+                : cliente.getNombreCompleto()
+        );
 
         String direccionFactura = switch (tipoEntrega) {
-            case PARA_LLEVAR -> "Para llevar";
-            case COMER_EN_RESTAURANTE -> "Comer en restaurante";
-            case DOMICILIO -> direccionEntrega
-                    + (referenciaEntrega != null && !referenciaEntrega.isBlank()
-                            ? " — Ref: " + referenciaEntrega
-                            : "");
+            case PARA_LLEVAR ->
+                "Para llevar";
+            case COMER_EN_RESTAURANTE ->
+                "Comer en restaurante";
         };
         factura.setDireccion(direccionFactura);
         // Se usa el número de orden del pedido en vez de generarNumeroFactura(),
@@ -277,7 +274,9 @@ public class PedidoController {
         // correo (opcional)"), igual que ya se hacía con el PDF arriba.
         ResultadoConfirmacion resultado = ResultadoConfirmacion.ok(pedido, factura, pdfFactura);
 
-        String correoCliente = cliente.getCorreo();
+        String correoCliente = (correoClienteEditado != null && !correoClienteEditado.isBlank())
+                ? correoClienteEditado.trim()
+                : cliente.getCorreo();
 
         if (correoCliente != null && !correoCliente.isBlank()) {
             try {
@@ -301,9 +300,8 @@ public class PedidoController {
     }
 
     /**
-     * Resultado del Paso 3 -> Paso 4. El Paso 4 (PanelFacturaWizard)
-     * solo necesita leer esto para mostrar el resumen y el botón
-     * de descarga de PDF.
+     * Resultado del Paso 3 -> Paso 4. El Paso 4 (PanelFacturaWizard) solo
+     * necesita leer esto para mostrar el resumen y el botón de descarga de PDF.
      */
     public static class ResultadoConfirmacion {
 
@@ -320,7 +318,7 @@ public class PedidoController {
         private String mensajeCorreo;
 
         private ResultadoConfirmacion(boolean exito, String mensajeError,
-                                       Pedido pedido, Factura factura, File pdfFactura) {
+                Pedido pedido, Factura factura, File pdfFactura) {
             this.exito = exito;
             this.mensajeError = mensajeError;
             this.pedido = pedido;

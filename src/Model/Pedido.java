@@ -1,4 +1,5 @@
 package Model;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +8,11 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class Pedido {
+
     private int idPedido;
 
     private String numeroOrden;
-    
+
     private Usuario usuario;
 
     private LocalDateTime fecha;
@@ -18,13 +20,13 @@ public class Pedido {
     private TipoEntrega tipoEntrega;
 
     private EstadoPedido estado;
-    
+
     private LocalDateTime horaEstimada;
 
     private BigDecimal subtotal;
-    
+
     private BigDecimal descuento;
-    
+
     private BigDecimal total;
 
     // Costo de envío cuando tipoEntrega = DOMICILIO. Q0 para los
@@ -37,22 +39,21 @@ public class Pedido {
 
     private String referenciaEntrega;
 
- // Composición
+    private int idCarrito;
+
+    // Composición
     private final List<DetallePedido> detalles;
 
     public Pedido() {
 
-    this.estado = EstadoPedido.PENDIENTE;
-    this.fecha = LocalDateTime.now();
-    this.detalles = new ArrayList<>();
-    this.costoEnvio = BigDecimal.ZERO;
+        this.estado = EstadoPedido.PENDIENTE;
+        this.fecha = LocalDateTime.now();
+        this.detalles = new ArrayList<>();
+        this.costoEnvio = BigDecimal.ZERO;
 
-}
+    }
 
-
-   
-
-    public List<DetallePedido> getDetalles(){
+    public List<DetallePedido> getDetalles() {
         return Collections.unmodifiableList(detalles);
     }
 
@@ -60,8 +61,8 @@ public class Pedido {
         this.usuario = usuario;
         this.tipoEntrega = tipoEntrega;
         this.detalles = detalles;
-            this.estado = EstadoPedido.PENDIENTE;
-    this.fecha = LocalDateTime.now();
+        this.estado = EstadoPedido.PENDIENTE;
+        this.fecha = LocalDateTime.now();
 
     }
 
@@ -105,11 +106,13 @@ public class Pedido {
         this.referenciaEntrega = referenciaEntrega;
     }
 
+    public int getIdCarrito() {
+        return idCarrito;
+    }
 
-
-
-
-
+    public void setIdCarrito(int idCarrito) {
+        this.idCarrito = idCarrito;
+    }
 
     public int getIdPedido() {
         return idPedido;
@@ -119,13 +122,9 @@ public class Pedido {
         return numeroOrden;
     }
 
-
-
     public Usuario getIdUsuario() {
         return usuario;
     }
-
-
 
     public LocalDateTime getFecha() {
         return fecha;
@@ -159,9 +158,6 @@ public class Pedido {
         return total;
     }
 
-
-
-
     public void setIdPedido(int idPedido) {
         this.idPedido = idPedido;
     }
@@ -182,12 +178,9 @@ public class Pedido {
         this.subtotal = subtotal;
     }
 
- 
     public void setTotal(BigDecimal total) {
         this.total = total;
     }
-
-
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
@@ -205,143 +198,151 @@ public class Pedido {
         this.horaEstimada = horaEstimada;
     }
 
-public void setDescuento(BigDecimal descuento){
+    public void setDescuento(BigDecimal descuento) {
 
-    this.descuento = descuento;
+        this.descuento = descuento;
 
-    recalcularTotales();
+        recalcularTotales();
 
-}
-public void vaciarPedido(){
+    }
 
-    detalles.clear();
+    public void vaciarPedido() {
 
-    recalcularTotales();
+        detalles.clear();
 
-}
-public boolean tieneProductos(){
+        recalcularTotales();
 
-    return !detalles.isEmpty();
+    }
 
-}
-public int getCantidadDetalles(){
+    public boolean tieneProductos() {
 
-    return detalles.size();
+        return !detalles.isEmpty();
 
-}
-public void agregarDetalle(
-        Producto producto,
-        int cantidad
-) {
-    agregarDetalle(producto, cantidad, null);
-}
+    }
 
-public void agregarDetalle(
-        Producto producto,
-        int cantidad,
-        String observaciones
-) {
+    public int getCantidadDetalles() {
 
-    DetallePedido detalle =
+        return detalles.size();
 
-            new DetallePedido(
-                    this,
-                    producto,
-                    cantidad,
-                    observaciones
-            );
+    }
 
-    detalles.add(detalle);
+    public void agregarDetalle(
+            Producto producto,
+            int cantidad
+    ) {
+        agregarDetalle(producto, cantidad, null);
+    }
 
-    recalcularTotales();
+    public void agregarDetalle(
+            Producto producto,
+            int cantidad,
+            String observaciones
+    ) {
 
-}
-public void eliminarDetalle(DetallePedido detalle){
+        DetallePedido detalle
+                = new DetallePedido(
+                        this,
+                        producto,
+                        cantidad,
+                        observaciones
+                );
 
-    detalles.remove(detalle);
+        detalles.add(detalle);
 
-    recalcularTotales();
+        recalcularTotales();
 
-}
+    }
 
-public void recalcularTotales() {
-    subtotal = BigDecimal.ZERO;
-    for (DetallePedido detalle : detalles) {
-        if (detalle.getSubtotal() != null) {
-            subtotal = subtotal.add(detalle.getSubtotal());
+    public void eliminarDetalle(DetallePedido detalle) {
+
+        detalles.remove(detalle);
+
+        recalcularTotales();
+
+    }
+
+    public void recalcularTotales() {
+        subtotal = BigDecimal.ZERO;
+        for (DetallePedido detalle : detalles) {
+            if (detalle.getSubtotal() != null) {
+                subtotal = subtotal.add(detalle.getSubtotal());
+            }
         }
-    }
-    
-    BigDecimal desc = (descuento != null) ? descuento : BigDecimal.ZERO;
-    BigDecimal envio = (costoEnvio != null) ? costoEnvio : BigDecimal.ZERO;
-    total = subtotal.subtract(desc).add(envio);
-}
 
-public boolean estaEntregado() {
-
-    return estado == EstadoPedido.ENTREGADO;
-
-}
-public boolean estaCancelado() {
-
-    return estado == EstadoPedido.CANCELADO;
-
-}
-
-public boolean estaPendiente() {
-
-    return estado == EstadoPedido.PENDIENTE;
-
-}
-public boolean estaListo() {
-
-    return estado == EstadoPedido.LISTO;
-
-}
-public void cambiarEstado(EstadoPedido estado) {
-
-    this.estado = estado;
-
-}
-public void prepararPedido() {
-
-    this.estado = EstadoPedido.PREPARACION;
-
-}
-
-public void entregarPedido() {
-
-    this.estado = EstadoPedido.ENTREGADO;
-
-}
-@Override
-public boolean equals(Object obj) {
-
-    if (this == obj) {
-        return true;
+        BigDecimal desc = (descuento != null) ? descuento : BigDecimal.ZERO;
+        BigDecimal envio = (costoEnvio != null) ? costoEnvio : BigDecimal.ZERO;
+        total = subtotal.subtract(desc).add(envio);
     }
 
-    if (!(obj instanceof Pedido)) {
-        return false;
+    public boolean estaEntregado() {
+
+        return estado == EstadoPedido.ENTREGADO;
+
     }
 
-    Pedido other = (Pedido) obj;
+    public boolean estaCancelado() {
 
-    return idPedido == other.idPedido;
+        return estado == EstadoPedido.CANCELADO;
 
-}
+    }
 
-@Override
-public int hashCode() {
+    public boolean estaPendiente() {
 
-    return Objects.hash(idPedido);
+        return estado == EstadoPedido.PENDIENTE;
 
-}
+    }
+
+    public boolean estaListo() {
+
+        return estado == EstadoPedido.LISTO;
+
+    }
+
+    public void cambiarEstado(EstadoPedido estado) {
+
+        this.estado = estado;
+
+    }
+
+    public void prepararPedido() {
+
+        this.estado = EstadoPedido.PREPARACION;
+
+    }
+
+    public void entregarPedido() {
+
+        this.estado = EstadoPedido.ENTREGADO;
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Pedido)) {
+            return false;
+        }
+
+        Pedido other = (Pedido) obj;
+
+        return idPedido == other.idPedido;
+
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(idPedido);
+
+    }
 
     @Override
     public String toString() {
         return "Pedido{" + "idPedido=" + idPedido + ", numeroOrden=" + numeroOrden + ", usuario=" + usuario + ", fecha=" + fecha + ", tipoEntrega=" + tipoEntrega + ", estado=" + estado + ", horaEstimada=" + horaEstimada + ", subtotal=" + subtotal + ", descuento=" + descuento + ", total=" + total + ", detalles=" + detalles + '}';
     }
 
-    
 }
