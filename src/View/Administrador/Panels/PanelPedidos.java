@@ -159,7 +159,27 @@ public class PanelPedidos extends PanelFondo {
 
     public void cargarDatos() {
 
-        todosLosPedidos = pedidoService.listarPedidos();
+        try {
+            todosLosPedidos = pedidoService.listarPedidos();
+        } catch (IllegalArgumentException ex) {
+            // PedidoDAOImpl.listar() mapea tipo_entrega/estado de la BD a
+            // sus enums con valueOf(...); si algún registro trae un valor
+            // que no coincide con ningún enum (dato corrupto o un valor
+            // nuevo agregado en la BD que Java todavía no conoce), esto
+            // revienta en vez de devolver una lista vacía. Se distingue
+            // de un fallo de conexión para no mandar a "revisa tu red"
+            // cuando el problema real está en los datos.
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los pedidos: hay un valor inesperado en la base de datos ("
+                            + ex.getMessage() + "). Repórtalo al equipo de desarrollo.",
+                    "Datos inconsistentes", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los pedidos. Verifica tu conexión e inténtalo de nuevo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         int pendientes = 0, enPreparacion = 0, listos = 0, entregadosHoy = 0, cancelados = 0;
 
@@ -268,8 +288,17 @@ public class PanelPedidos extends PanelFondo {
 
         pedido.setEstado(siguiente);
 
-        if (!pedidoService.actualizarPedido(pedido)) {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el estado del pedido.",
+        try {
+            if (!pedidoService.actualizarPedido(pedido)) {
+                JOptionPane.showMessageDialog(this, "No se pudo actualizar el estado del pedido #"
+                                + pedido.getIdPedido() + ".",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo actualizar el estado del pedido #" + pedido.getIdPedido()
+                            + ". Verifica tu conexión e inténtalo de nuevo.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

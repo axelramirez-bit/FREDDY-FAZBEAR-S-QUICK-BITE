@@ -17,6 +17,7 @@ import View.Utils.RenderizadorEstado;
 import View.Utils.UIConstants;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -152,7 +153,25 @@ public class PanelPagos extends PanelFondo {
 
     public void cargarDatos() {
 
-        todosLosPagos = pagoService.listar();
+        try {
+            todosLosPagos = pagoService.listar();
+        } catch (IllegalArgumentException ex) {
+            // Mismo caso que PanelPedidos: PagoDAOImpl.listar() traduce
+            // estado/método de pago de la BD a enum, y un valor que no
+            // coincida con ninguna opción conocida revienta en vez de
+            // devolver una lista vacía. Se avisa la causa real (dato
+            // inconsistente) en vez de un error de conexión genérico.
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los pagos: hay un valor inesperado en la base de datos ("
+                            + ex.getMessage() + "). Repórtalo al equipo de desarrollo.",
+                    "Datos inconsistentes", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los pagos. Verifica tu conexión e inténtalo de nuevo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         LocalDate hoy = LocalDate.now();
 

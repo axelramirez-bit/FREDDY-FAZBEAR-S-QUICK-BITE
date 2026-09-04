@@ -139,8 +139,31 @@ public class PanelReportes extends PanelFondo {
 
     public void cargarDatos() {
 
-        List<Pedido> pedidos = pedidoService.listarPedidos();
-        List<Pago> pagos = pagoService.listar();
+        List<Pedido> pedidos;
+        List<Pago> pagos;
+        Map<String, BigDecimal> ventasPorDia;
+
+        try {
+            pedidos = pedidoService.listarPedidos();
+            pagos = pagoService.listar();
+            ventasPorDia = dashboardService.ventasPorDia(7);
+        } catch (IllegalArgumentException ex) {
+            // Igual que en Pedidos/Pagos/Ventas: los DAO de Pedido y Pago
+            // mapean valores de la BD a enum con valueOf(...), y un valor
+            // que no calce revienta en vez de devolver una lista vacía.
+            // Se distingue la causa (dato inconsistente) de un problema
+            // de conexión, igual que en el resto de paneles del Admin.
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo generar el reporte: hay un valor inesperado en la base de datos ("
+                            + ex.getMessage() + "). Repórtalo al equipo de desarrollo.",
+                    "Datos inconsistentes", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo generar el reporte. Verifica tu conexión e inténtalo de nuevo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         BigDecimal ventasTotales = BigDecimal.ZERO;
         int productosVendidos = 0;
@@ -166,8 +189,6 @@ public class PanelReportes extends PanelFondo {
 
         tarjetaTicketPromedio.actualizar(FORMATO_Q.format(ticketPromedio), "");
         tarjetaProductosVendidos.actualizar(String.valueOf(productosVendidos), "");
-
-        Map<String, BigDecimal> ventasPorDia = dashboardService.ventasPorDia(7);
 
         panelGrafica.removeAll();
         panelGrafica.add(FabricaEtiquetas.crearSubtitulo("Ventas por Día (Q) — últimos 7 días"), BorderLayout.NORTH);

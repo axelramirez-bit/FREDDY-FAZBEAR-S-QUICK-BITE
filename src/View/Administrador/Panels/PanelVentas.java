@@ -15,6 +15,7 @@ import View.Utils.FabricaTablas;
 import View.Utils.UtilImagenes;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -192,7 +193,27 @@ public class PanelVentas extends PanelFondo {
 
     private void cargarDatos() {
 
-        IVentasService.ResumenVentas resumen = controller.obtenerResumen(desde, hasta);
+        IVentasService.ResumenVentas resumen;
+
+        try {
+            resumen = controller.obtenerResumen(desde, hasta);
+        } catch (IllegalArgumentException ex) {
+            // VentasServiceImpl se apoya en IPedidoService/IPagoService,
+            // cuyos DAO mapean tipo_entrega/estado/método de pago de la
+            // BD con valueOf(...); un valor que no calce con ningún enum
+            // revienta aquí. Se distingue del resto de fallas para no
+            // confundir un dato corrupto con un problema de conexión.
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar las ventas: hay un valor inesperado en la base de datos ("
+                            + ex.getMessage() + "). Repórtalo al equipo de desarrollo.",
+                    "Datos inconsistentes", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar las ventas. Verifica tu conexión e inténtalo de nuevo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         tarjetaVentas.actualizar(
                 "Q" + resumen.totalVentas.setScale(2, java.math.RoundingMode.HALF_UP),
@@ -205,8 +226,19 @@ public class PanelVentas extends PanelFondo {
         );
         tarjetaProductos.actualizar(String.valueOf(resumen.productosVendidos), "Unidades vendidas");
 
-        actualizarGrafica();
-        actualizarTabla();
+        try {
+            actualizarGrafica();
+            actualizarTabla();
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo cargar la gráfica ni la tabla de ventas: hay un valor inesperado en la base de datos ("
+                            + ex.getMessage() + "). Repórtalo al equipo de desarrollo.",
+                    "Datos inconsistentes", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo cargar la gráfica ni la tabla de ventas. Verifica tu conexión e inténtalo de nuevo.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void actualizarGrafica() {
