@@ -33,9 +33,9 @@ public class Login extends JFrame {
     private JCheckBox chkRecordarme;
     
     // ── BOTONES SOCIALES Y REGISTRO ─────────────────────────
-    private JButton btnGoogle;
-    private JButton btnFacebook;
-    private JButton btnRegistrate;
+   // private JButton btnGoogle;
+  //  private JButton btnFacebook;
+//    private JButton btnRegistrate;
     
     private JPanel panelFondo;
     private Image imagenFondo;
@@ -62,11 +62,11 @@ public class Login extends JFrame {
         // 1. CARGAR IMAGEN DE FONDO
         // ══════════════════════════════════════════════════════
         try {
-            java.net.URL url = getClass().getResource("/Imagenes/Fondo_Login.jpg");
+            java.net.URL url = getClass().getResource("/Imagenes/Fondo_Login.png" );
             if (url != null) {
                 imagenFondo = new ImageIcon(url).getImage();
             } else {
-                System.out.println("❌ No se encontró '/Imagenes/Fondo_Login.jpg'");
+                System.out.println("❌ No se encontró '/Imagenes/Fondo_Login.png'");
             }
         } catch (Exception e) {
             System.out.println("Error al cargar imagen: " + e.getMessage());
@@ -122,7 +122,7 @@ public class Login extends JFrame {
         btnIniciarSesion.setText("INICIAR SESIÓN");
         btnIniciarSesion.addActionListener(e -> alPresionarIniciarSesion());
 
-        btnGoogle = new BotonTransparente();
+ /*     btnGoogle = new BotonTransparente();
         btnGoogle.setText(""); 
         btnGoogle.addActionListener(e -> alPresionarGoogle());
 
@@ -136,14 +136,14 @@ public class Login extends JFrame {
         btnRegistrate.setText("Regístrate aquí");
         btnRegistrate.setHorizontalAlignment(SwingConstants.CENTER);
         btnRegistrate.addActionListener(e -> alPresionarRegistrate());
-       
+       */
         panelFondo.add(txtCorreo);
         panelFondo.add(txtPassword);
         panelFondo.add(chkRecordarme);
         panelFondo.add(btnIniciarSesion);
-        panelFondo.add(btnGoogle);      
-        panelFondo.add(btnFacebook);    
-        panelFondo.add(btnRegistrate);  
+        //panelFondo.add(btnGoogle);      
+     //   panelFondo.add(btnFacebook);    
+     //   panelFondo.add(btnRegistrate);  
 
         // ══════════════════════════════════════════════════════
         // 4. LISTENER DE REDIMENSIONAMIENTO (LA CLAVE DE LA ADAPTABILIDAD)
@@ -191,10 +191,10 @@ public class Login extends JFrame {
         ponerBounds(btnIniciarSesion,  0.555,  0.629,  0.340,  0.070);
         ponerBounds(chkRecordarme,     0.553,  0.565,  0.035,  0.035);
 
-        ponerBounds(btnGoogle,         0.563,  0.730,  0.160,  0.060);
-        ponerBounds(btnFacebook,       0.743,  0.730,  0.160,  0.060);
+      //  ponerBounds(btnGoogle,         0.563,  0.730,  0.160,  0.060);
+      //  ponerBounds(btnFacebook,       0.743,  0.730,  0.160,  0.060);
 
-        ponerBounds(btnRegistrate,     0.790,  0.813,  0.115,  0.035);
+       // ponerBounds(btnRegistrate,     0.790,  0.813,  0.115,  0.035);
 
         // ═══════════════════════════════════════════════════════
         // ✅ APLICAR TAMAÑO DE FUENTE DINÁMICO BASADO EN LA ESCALA REAL
@@ -216,9 +216,9 @@ public class Login extends JFrame {
         btnIniciarSesion.setFont(new Font("Segoe UI", Font.BOLD, sizeBtnPrincipal));
 
         // 3. Botón Regístrate
-        int sizeRegistro = Math.max(14, (int) (FUENTE_BASE_REGISTRO * escala));
+  /*      int sizeRegistro = Math.max(14, (int) (FUENTE_BASE_REGISTRO * escala));
         btnRegistrate.setFont(new Font("Segoe UI", Font.BOLD, sizeRegistro));
-    }
+    */}
 
     private void ponerBounds(JComponent comp, double xP, double yP, double wP, double hP) {
         // Esta función multiplica tus porcentajes fijos por el tamaño ACTUAL de la ventana
