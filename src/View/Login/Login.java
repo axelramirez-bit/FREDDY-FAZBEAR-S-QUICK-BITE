@@ -5,8 +5,7 @@ import Service.Implement.UsuarioServiceImpl;
 import Service.Interfaz.IUsuarioService;
 import Utils.Sesion;
 import View.Administrador.DashboardAdministrador;
-import View.Autoservicio.Autoservicio;
-import View.Registro.Registro;
+
 import View.PedidosProceso.PedidosProceso;
 import View.Utils.UtilPantalla;
 
@@ -62,11 +61,11 @@ public class Login extends JFrame {
         // 1. CARGAR IMAGEN DE FONDO
         // ══════════════════════════════════════════════════════
         try {
-            java.net.URL url = getClass().getResource("/Imagenes/Fondo_Login.png" );
+            java.net.URL url = getClass().getResource("/Resources/Imagenes/Fondo_Login.png" );
             if (url != null) {
                 imagenFondo = new ImageIcon(url).getImage();
             } else {
-                System.out.println("❌ No se encontró '/Imagenes/Fondo_Login.png'");
+                System.out.println("❌ No se encontró '/Resources/Imagenes/Fondo_Login.png'");
             }
         } catch (Exception e) {
             System.out.println("Error al cargar imagen: " + e.getMessage());
@@ -288,33 +287,7 @@ public class Login extends JFrame {
         }
     }
 
-    // ══════════════════════════════════════════════════════════
-    // ACCIONES
-    // ══════════════════════════════════════════════════════════
 
-    private void alPresionarGoogle() {
-        JOptionPane.showMessageDialog(this, "Inicio de sesión con Google próximamente.", "Google", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void alPresionarFacebook() {
-        JOptionPane.showMessageDialog(this, "Inicio de sesión con Facebook próximamente.", "Facebook", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void alPresionarRegistrate() {
-        System.out.println("📝 Clic en Regístrate aquí - Abriendo ventana de Registro...");
-        this.dispose();
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Registro ventanaRegistro = new Registro();
-                ventanaRegistro.setVisible(true);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, 
-                    "Error al abrir la ventana de registro: " + e.getMessage(), 
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-            }
-        });
-    }
 
     private void alPresionarIniciarSesion() {
         String correo   = txtCorreo.getText().trim();
