@@ -1,5 +1,6 @@
 package Base;
 
+import Utils.FranjaHoraria;
 import Utils.Sesion;
 import View.Componentes.PanelContenido;
 import View.Utils.UtilPantalla;
@@ -168,9 +169,27 @@ public abstract class DashboardBase extends JFrame implements BarraLateralListen
 
         panelContenido.mostrar(idVista);
 
-        encabezado.setTitulo(
-                titulosPorVista.getOrDefault(idVista, "")
-        );
+        encabezado.setTitulo(tituloDeVista(idVista));
+    }
+
+    /**
+     * Título a mostrar en el Encabezado para el idVista dado.
+     *
+     * "DESAYUNOS_CENAS" es especial: titulosPorVista se llena UNA
+     * sola vez en cargarTitulosDeMenu() (al abrir el dashboard), así
+     * que si se usara ese mapa tal cual, el título quedaría
+     * congelado en la franja horaria que había al iniciar sesión.
+     * Aquí se recalcula contra la hora local actual para que
+     * coincida siempre con lo que BarraLateral ya actualiza en el
+     * ítem del menú (ver BarraLateral.actualizarOpcionSiEsDinamica).
+     */
+    private String tituloDeVista(String idVista) {
+
+        if ("DESAYUNOS_CENAS".equals(idVista)) {
+            return FranjaHoraria.texto();
+        }
+
+        return titulosPorVista.getOrDefault(idVista, "");
     }
 
     @Override

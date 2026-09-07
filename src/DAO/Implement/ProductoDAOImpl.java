@@ -180,6 +180,8 @@ public class ProductoDAOImpl implements IProductoDAO {
             + "c.estado AS estado_categoria, "
             + "pr.nombre AS nombre_promocion, "
             + "pr.descuento AS descuento_promocion, "
+            + "pr.fecha_inicio AS fecha_inicio_promocion, "
+            + "pr.fecha_fin AS fecha_fin_promocion, "
             + "pr.estado AS estado_promocion "
             + "FROM producto p "
             + "JOIN categoria c ON c.id_categoria = p.id_categoria "
@@ -283,6 +285,26 @@ public class ProductoDAOImpl implements IProductoDAO {
             promocion.setIdPromocion(rs.getInt("id_promocion"));
             promocion.setNombre(rs.getString("nombre_promocion"));
             promocion.setDescuento(rs.getBigDecimal("descuento_promocion"));
+
+            // BUG QUE ESTO CORRIGE: antes no se seleccionaban ni
+            // mapeaban fecha_inicio/fecha_fin, así que quedaban en
+            // null. Promocion.estaVigente() hace
+            // hoy.isBefore(fechaInicio) / hoy.isAfter(fechaFin), y
+            // eso truena con NullPointerException apenas
+            // Producto.tienePromocion() la invoca. Resultado real:
+            // el panel de Promociones del Cliente nunca podía
+            // filtrar por "vigente" y tenía que conformarse con
+            // "tiene una promoción asignada, esté vencida o no".
+            java.sql.Date fechaInicio = rs.getDate("fecha_inicio_promocion");
+            if (fechaInicio != null) {
+                promocion.setFechaInicio(fechaInicio.toLocalDate());
+            }
+
+            java.sql.Date fechaFin = rs.getDate("fecha_fin_promocion");
+            if (fechaFin != null) {
+                promocion.setFechaFin(fechaFin.toLocalDate());
+            }
+
             promocion.setEstado(rs.getBoolean("estado_promocion"));
             producto.setPromocion(promocion);
 

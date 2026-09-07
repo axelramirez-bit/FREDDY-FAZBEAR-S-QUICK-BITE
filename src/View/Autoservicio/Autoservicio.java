@@ -2,15 +2,16 @@ package View.Autoservicio;
 
 import Base.DashboardBase;
 import Base.Rol;
-import View.Autoservicio.Panels.PanelAlmuerzos;
 import View.Autoservicio.Panels.PanelAntojos;
 import View.Autoservicio.Panels.PanelBebidas;
 import View.Autoservicio.Panels.PanelCajitaFeliz;
 import View.Autoservicio.Panels.PanelCarrito;
 import View.Autoservicio.Panels.PanelCombos;
-import View.Autoservicio.Panels.PanelDesayunos;
+import View.Autoservicio.Panels.PanelDesayunosCenas;
+import View.Autoservicio.Panels.PanelHamburguesas;
 import View.Autoservicio.Panels.PanelInicio;
 import View.Autoservicio.Panels.PanelMcCafe;
+import View.Autoservicio.Panels.PanelPizzas;
 import View.Autoservicio.Panels.PanelPostres;
 import View.Autoservicio.Panels.PanelPromociones;
 import View.PedidosProceso.PedidosProceso;
@@ -35,9 +36,10 @@ public class Autoservicio extends DashboardBase {
     @Override
     protected void registrarPaneles() {
 
-        registrarVista("INICIO", new PanelInicio());
-        registrarVista("DESAYUNOS", new PanelDesayunos());
-        registrarVista("ALMUERZOS", new PanelAlmuerzos());
+        registrarVista("INICIO", new PanelInicio(this::onOpcionSeleccionada));
+        registrarVista("DESAYUNOS_CENAS", new PanelDesayunosCenas());
+        registrarVista("HAMBURGUESAS", new PanelHamburguesas());
+        registrarVista("PIZZAS", new PanelPizzas());
         registrarVista("POSTRES", new PanelPostres());
         registrarVista("MCCAFE", new PanelMcCafe());
         registrarVista("BEBIDAS", new PanelBebidas());

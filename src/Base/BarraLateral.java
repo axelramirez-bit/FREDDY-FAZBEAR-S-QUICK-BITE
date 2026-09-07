@@ -1,5 +1,6 @@
 package Base;
 
+import Utils.FranjaHoraria;
 import View.Componentes.ItemMenu;
 import View.Utils.AdministradorTema;
 import View.Utils.UtilImagenes;
@@ -315,9 +316,36 @@ public class BarraLateral extends JPanel {
      */
     private void seleccionarOpcion(String idVista) {
 
+        actualizarOpcionSiEsDinamica(idVista);
+
         marcarComoSeleccionado(idVista);
 
         listener.onOpcionSeleccionada(idVista);
+    }
+
+    /**
+     * La opción "DESAYUNOS_CENAS" (ver OpcionesCliente) no tiene
+     * texto ni ícono fijos: se recalculan contra la hora local cada
+     * vez que el Cliente le hace clic, para que alguien que entra a
+     * las 11:55 y vuelve a esa opción a las 12:05 vea el cambio de
+     * "Desayunos" a "Cenas" (con su ícono correspondiente) sin
+     * tener que cerrar sesión y volver a entrar.
+     */
+    private void actualizarOpcionSiEsDinamica(String idVista) {
+
+        if (!"DESAYUNOS_CENAS".equals(idVista)) {
+            return;
+        }
+
+        ItemMenu item = itemsPorVista.get(idVista);
+
+        if (item == null) {
+            return;
+        }
+
+        item.setTexto(FranjaHoraria.texto());
+
+        item.setIcono(FranjaHoraria.nombreIcono());
     }
 
     /**

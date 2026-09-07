@@ -46,8 +46,13 @@ public class ItemMenu extends JPanel {
 
     /**
      * Nombre del icono normal.
+     *
+     * Ya no es final: la opción dinámica "Desayunos/Cenas" (ver
+     * Base.OpcionesCliente.DESAYUNOS_CENAS y Base.BarraLateral)
+     * necesita poder cambiar de ícono en caliente según la hora
+     * local, sin tener que reconstruir el ItemMenu completo.
      */
-    private final String iconoNormal;
+    private String iconoNormal;
 
     // ==========================================================
     // ESTADO
@@ -677,6 +682,23 @@ private void aplicarEstadoSeleccionado() {
     public void setTexto(String texto) {
 
         lblTexto.setText(texto);
+
+    }
+
+    /**
+     * Cambia únicamente el ícono mostrado (por ejemplo, cuando la
+     * franja horaria cambia de Desayuno a Cena). Repinta de una vez
+     * para que el cambio se vea sin esperar a un hover/selección.
+     *
+     * @param nombreIcono Nuevo nombre de ícono (sin ruta ni
+     *                    extensión), tal como lo espera
+     *                    CacheImagenes.obtenerIcono(...).
+     */
+    public void setIcono(String nombreIcono) {
+
+        this.iconoNormal = nombreIcono;
+
+        actualizarApariencia();
 
     }
 

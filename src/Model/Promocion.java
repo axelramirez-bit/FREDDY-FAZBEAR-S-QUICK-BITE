@@ -106,6 +106,16 @@ public class Promocion {
 
 public boolean estaVigente() {
 
+    // BUG QUE ESTO CORRIGE: si fechaInicio/fechaFin llegan en null
+    // (por ejemplo porque el mapeo que arma este objeto no las trae),
+    // hoy.isBefore(null)/isAfter(null) lanzan NullPointerException y
+    // cualquier pantalla que dependa de tienePromocion() se cae. Sin
+    // fechas no hay forma de saber si está vigente, así que se trata
+    // como "no vigente" en vez de reventar.
+    if (fechaInicio == null || fechaFin == null) {
+        return false;
+    }
+
     LocalDate hoy = LocalDate.now();
 
     return estado

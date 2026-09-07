@@ -159,11 +159,21 @@ public final class FabricaIconos {
         return icono("icon_inicio");
     }
 
-    public static ImageIcon desayunos() {
-        return icono("icon_desayunos");
+    public static ImageIcon hamburguesas() {
+        // BUG QUE ESTO CORRIGE: apuntaba a "icon_hamburguesas", un
+        // archivo que nunca existió en Resources/Iconos (por eso
+        // salía "No se encontró la imagen"). "icon_comida" es el
+        // mismo ícono temporal que ya usa OpcionesCliente.HAMBURGUESAS
+        // mientras no exista un ícono propio.
+        return icono("icon_comida");
     }
 
-    public static ImageIcon almuerzos() {
+    public static ImageIcon pizzas() {
+        // BUG QUE ESTO CORRIGE: apuntaba a "icon_pizzas", que
+        // tampoco existe en Resources/Iconos. "icon_almuerzoscenas"
+        // sí existe (es el ícono de la categoría "Pizzas" de cuando
+        // se llamaba "Almuerzos y Cenas") y no está en uso en
+        // ningún otro lado, así que es el reemplazo más fiel.
         return icono("icon_almuerzoscenas");
     }
 
@@ -292,7 +302,12 @@ public final class FabricaIconos {
     // ==========================================================
 
     public static ImageIcon cerrarSesion() {
-        return icono("icon_cerrarsesion");
+        // BUG QUE ESTO CORRIGE: "icon_cerrarsesion" (sin guión bajo)
+        // no existe; el archivo real es "icon_cerrar_sesion.png"
+        // (el mismo que ya usa BarraLateral directamente). Este
+        // método no estaba en uso todavía, pero se deja correcto
+        // para quien lo use más adelante.
+        return icono("icon_cerrar_sesion");
     }
 
     public static ImageIcon logo() {
