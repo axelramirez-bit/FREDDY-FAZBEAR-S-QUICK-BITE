@@ -1,0 +1,17 @@
+# Copia este archivo como config.properties (en src/) y pon tus propios
+# datos. config.properties NO debe subirse a Git (ver .gitignore).
+db.host=localhost
+db.port=3306
+db.name=FreddyQuickBite
+db.user=freddy_app
+db.password=
+
+app.name=Freddy Fazbear's Quick Bite
+app.version=1.0.0
+app.empresa=Freddy Fazbear's Quick Bite
+
+ui.theme=light
+ui.language=es
+ui.fullscreen=false
+
+log.level=INFO

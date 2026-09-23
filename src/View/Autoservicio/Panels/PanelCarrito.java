@@ -39,9 +39,13 @@ import java.math.BigDecimal;
 public class PanelCarrito extends PanelFondo {
 
     /**
-     * Costo fijo de envio a domicilio. Q0 para los demas tipos de entrega.
+     * ANTES (código muerto): existía COSTO_ENVIO_DOMICILIO sugiriendo una
+     * tercera opción de entrega a domicilio, pero TipoEntrega.java solo
+     * define COMER_EN_RESTAURANTE y PARA_LLEVAR: esta constante no se usa
+     * en ningún lado y no hay forma de que un pedido la dispare.
+     * CORRECCIÓN: se elimina. Si el equipo agrega la entrega a domicilio
+     * más adelante, este es el valor a restaurar junto con el enum.
      */
-    public static final BigDecimal COSTO_ENVIO_DOMICILIO = new BigDecimal("15.00");
 
     private final ICarritoService carritoService = new CarritoServiceImpl();
     private final ICarritoDetalleService carritoDetalleService = new CarritoDetalleServiceImpl();
@@ -232,7 +236,9 @@ public class PanelCarrito extends PanelFondo {
     }
 
     /**
-     * Subtotal + IVA (12%) + envio (si aplica Domicilio). Total real a pagar.
+     * Subtotal + IVA (12%) + envio. Total real a pagar.
+     * (No existe entrega a domicilio en este proyecto: los dos tipos son
+     * Comer en restaurante y Para llevar; ver TipoEntrega.java.)
      */
     public BigDecimal calcularTotalAPagar() {
         return calcularSubtotalConIva().add(getCostoEnvio());

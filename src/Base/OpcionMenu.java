@@ -1,3 +1,4 @@
+// Paquete Base
 package Base;
 
 /**
@@ -16,17 +17,20 @@ package Base;
  * en cada lugar donde se usa el texto.
  * ===============================================================
  */
+// Contrato que toda opción de menú debe cumplir
 public interface OpcionMenu {
 
     /**
      * Texto visible del botón de menú.
      */
+    // Devuelve el texto visible del botón
     String getTexto();
 
     /**
      * Nombre del icono (sin ruta ni extensión), tal como lo espera
      * View.Utils.UtilImagenes.icono(nombre, tamaño).
      */
+    // Devuelve el nombre del ícono (sin ruta ni extensión)
     String getNombreIcono();
 
     /**
@@ -34,6 +38,7 @@ public interface OpcionMenu {
      * View.Utils.ControlNavegacion. Es lo que se le pasa a
      * ControlNavegacion.abrir(idVista).
      */
+    // Devuelve el id de la vista destino
     String getIdVista();
 
 }

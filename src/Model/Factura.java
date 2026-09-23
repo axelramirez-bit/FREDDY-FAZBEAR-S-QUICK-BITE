@@ -36,7 +36,8 @@ public class Factura {
 
     private String nit;
 
-    // Costo de envío a domicilio (Q0 si no aplica). Se suma al total
+    // Costo de envío. Siempre Q0 en este proyecto: no existe entrega a
+    // domicilio. Se suma al total
     // DESPUÉS del IVA — el envío no lleva impuesto, igual que en el
     // Pedido de origen.
     private BigDecimal costoEnvio;

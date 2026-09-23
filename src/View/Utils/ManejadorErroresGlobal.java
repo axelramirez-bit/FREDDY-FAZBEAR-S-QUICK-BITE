@@ -1,6 +1,7 @@
 package View.Utils;
 
 import Config.ConexionException;
+import Excepciones.AppException;
 import Utils.AppLogger;
 
 import java.awt.AWTEvent;
@@ -63,6 +64,11 @@ public class ManejadorErroresGlobal extends EventQueue {
                     "No se pudo conectar con la base de datos.\n"
                             + "Verifica que el servicio de MySQL esté "
                             + "encendido e inténtalo de nuevo.");
+
+        } catch (AppException ex) {
+
+            // Errores de negocio/validación/BD con mensaje ya listo para el usuario
+            EjecutorUI.mostrarError(null, ex);
 
         } catch (Throwable ex) {
 

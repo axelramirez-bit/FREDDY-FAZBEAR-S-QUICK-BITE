@@ -24,5 +24,10 @@ public interface IUsuarioDAO {
 
     Usuario buscarPorCorreo(String correo);
 
+    // Agregado: buscarPorCorreo() solo ve usuarios con estado = TRUE, así
+    // que un correo repetido en un usuario DESACTIVADO no se detectaba
+    // como duplicado en el registro (ver corrección en UsuarioDAOImpl y
+    // UsuarioServiceImpl.validar()).
+    boolean existeCorreo(String correo);
 
 }

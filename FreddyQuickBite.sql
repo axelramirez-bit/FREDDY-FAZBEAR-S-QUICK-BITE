@@ -1,12 +1,24 @@
 -- ============================================================
 -- BASE DE DATOS: FreddyQuickBite
 -- Proyecto: Freddy Fazbear's Quick Bite - Pantalla de autoservicio
--- Versión: ORGANIZADA (Fase 2)
+-- Versión: ORGANIZADA (Fase 3 - categorías Hamburguesas/Pizzas)
 -- ============================================================
 -- Este script ya integra las migraciones anteriores directamente
 -- en la definición de las tablas y los datos iniciales, en vez de
 -- dejarlas como pasos separados. Al ejecutarlo de cero se obtiene
 -- la base de datos ya en su versión final y correcta.
+--
+-- Fase 3 agrega sp_migrar_categorias_hamburguesas_pizzas (sección
+-- 4), que corrige las categorías heredadas "Desayunos"/"Almuerzos
+-- y Cenas" para que coincidan con lo que ya filtra el Autoservicio
+-- ("Hamburguesas"/"Pizzas"). El seed data (sección 5) la llama al
+-- final, así que un install limpio con este script ya queda
+-- correcto de una vez. El procedimiento se deja en el esquema (no
+-- se elimina) porque es idempotente y también sirve para aplicar
+-- el mismo arreglo contra una base de datos EXISTENTE, con datos
+-- reales, sin tener que recrearla desde cero (ver
+-- migracion_categorias_hamburguesas_pizzas.sql, que solo crea y
+-- llama este procedimiento, sin el DROP DATABASE de aquí abajo).
 --
 -- Estructura del archivo:
 --   1. Creación de la base de datos
@@ -320,6 +332,80 @@ JOIN pago pg ON pg.id_pedido = p.id_pedido
 WHERE pg.estado = 'Pagado'
 GROUP BY DATE(p.fecha);
 
+-- ------------------------------------------------------------
+-- PROCEDIMIENTO: sp_migrar_categorias_hamburguesas_pizzas
+-- ------------------------------------------------------------
+-- El Autoservicio (PanelHamburguesas, PanelPizzas, OpcionesCliente,
+-- FranjaHoraria, PanelInicio) filtra productos por
+-- categoria.nombre = 'Hamburguesas' / 'Pizzas'. Los datos
+-- heredados de este proyecto seguían llamando a esas categorías
+-- "Desayunos" y "Almuerzos y Cenas", así que esos paneles cargaban
+-- vacíos.
+--
+-- Revisando el CONTENIDO real (no el nombre) de cada categoría:
+--   - "Almuerzos y Cenas": las 4 hamburguesas reales (Freddy Burger
+--     Deluxe, Bonnie BBQ Burger, Chica Chicken Burger, Foxy Triple
+--     Burger) + la única pizza (Pizza Party Personal) + otros 4
+--     productos (Wrap Fazbear, Combo Fazbear Supremo, Chicken
+--     Tenders Basket, Plato Fazbear Clásico).
+--   - "Desayunos": solo comida de desayuno (pancakes, omelette,
+--     waffles...), ninguna hamburguesa. No se toca: hoy no está
+--     conectada a ningún panel activo del Autoservicio.
+--
+-- Este procedimiento:
+--   1) Renombra "Almuerzos y Cenas" -> "Hamburguesas".
+--   2) Crea "Pizzas" y mueve solo "Pizza Party Personal".
+--   3) Sincroniza producto_categoria (N:M) con el mismo cambio,
+--      para que perteneceACategoria() no siga contando ese
+--      producto también como "Hamburguesas".
+--
+-- IDEMPOTENTE: revisa el estado actual antes de tocar cada cosa,
+-- así que se puede volver a llamar las veces que haga falta sin
+-- duplicar categorías ni fallar. Pensado para poder ejecutarse
+-- también contra una base de datos EXISTENTE (con pedidos/usuarios
+-- reales) sin necesidad de recrearla desde cero con este script.
+-- ------------------------------------------------------------
+DELIMITER //
+
+CREATE PROCEDURE sp_migrar_categorias_hamburguesas_pizzas()
+BEGIN
+    -- 1) Renombrar "Almuerzos y Cenas" -> "Hamburguesas" (si el
+    --    nombre viejo todavía existe; si ya se migró, no hace nada)
+    UPDATE categoria
+    SET nombre = 'Hamburguesas',
+        descripcion = 'Hamburguesas y platillos principales'
+    WHERE nombre = 'Almuerzos y Cenas';
+
+    -- 2) Crear "Pizzas" solo si todavía no existe
+    INSERT INTO categoria (nombre, descripcion)
+    SELECT 'Pizzas', 'Pizzas individuales'
+    WHERE NOT EXISTS (SELECT 1 FROM categoria WHERE nombre = 'Pizzas');
+
+    -- 3) Mover "Pizza Party Personal" a Pizzas (categoría principal)
+    UPDATE producto p
+    JOIN categoria c ON c.nombre = 'Pizzas'
+    SET p.id_categoria = c.id_categoria
+    WHERE p.nombre = 'Pizza Party Personal'
+      AND p.id_categoria <> c.id_categoria;
+
+    -- 4) Reflejar el mismo cambio en producto_categoria (N:M):
+    --    quitar el rastro de "Hamburguesas" y dejar solo "Pizzas"
+    --    para ese producto.
+    DELETE pc FROM producto_categoria pc
+    JOIN producto p  ON p.id_producto  = pc.id_producto
+    JOIN categoria c ON c.id_categoria = pc.id_categoria
+    WHERE p.nombre = 'Pizza Party Personal'
+      AND c.nombre = 'Hamburguesas';
+
+    INSERT INTO producto_categoria (id_producto, id_categoria)
+    SELECT p.id_producto, c.id_categoria
+    FROM producto p, categoria c
+    WHERE p.nombre = 'Pizza Party Personal' AND c.nombre = 'Pizzas'
+    ON DUPLICATE KEY UPDATE id_categoria = VALUES(id_categoria);
+END //
+
+DELIMITER ;
+
 
 -- ============================================================
 -- 5. DATOS INICIALES (SEED DATA)
@@ -547,6 +633,47 @@ UPDATE producto SET imagen = 'Cajita Mini Pizza' WHERE nombre = 'Cajita Mini Piz
 UPDATE producto SET imagen = 'Cajita Fazbear Deluxe' WHERE nombre = 'Cajita Fazbear Deluxe';
 
 -- ------------------------------------------------------------
+-- imagen de producto (parte 2): 31 productos que SÍ tienen su
+-- archivo disponible en Resources/Productos pero nunca recibieron
+-- su UPDATE de imagen, así que quedaban en NULL y mostraban el
+-- respaldo genérico (Comidarealista.png) sin necesidad. Detectado
+-- comparando cada nombre de producto contra los archivos reales de
+-- Resources/Productos (ignorando tildes/paréntesis, que es la
+-- misma normalización que ya usan los 53 UPDATE de arriba).
+-- ------------------------------------------------------------
+UPDATE producto SET imagen = 'Burrito de Desayuno Grande' WHERE nombre = 'Burrito de Desayuno Grande';
+UPDATE producto SET imagen = 'Pancakes Clasico' WHERE nombre = 'Pancakes Clásico';
+UPDATE producto SET imagen = 'Pancakes con Miel de Maple' WHERE nombre = 'Pancakes con Miel de Maple';
+UPDATE producto SET imagen = 'Plato Fazbear Clasico' WHERE nombre = 'Plato Fazbear Clásico';
+UPDATE producto SET imagen = 'Bol de Acai del Pirata' WHERE nombre = 'Bol de Acaí del Pirata';
+UPDATE producto SET imagen = 'Sundae de Helado' WHERE nombre = 'Sundae de Helado';
+UPDATE producto SET imagen = 'Root Beer Float' WHERE nombre = 'Root Beer Float';
+UPDATE producto SET imagen = 'Waffles de Chocolate' WHERE nombre = 'Waffles de Chocolate';
+UPDATE producto SET imagen = 'Expresso Machiato' WHERE nombre = 'Expresso Machiato';
+UPDATE producto SET imagen = 'Latte Clasico' WHERE nombre = 'Latte Clásico';
+UPDATE producto SET imagen = 'Mocha Chocolate Iced' WHERE nombre = 'Mocha Chocolate Iced';
+UPDATE producto SET imagen = 'Mocha Chocolate Iced Frio' WHERE nombre = 'Mocha Chocolate Iced (Frío)';
+UPDATE producto SET imagen = 'Frappe de Caramelo Frio' WHERE nombre = 'Frappé de Caramelo (Frío)';
+UPDATE producto SET imagen = 'Frappe de Caramelo con Helado' WHERE nombre = 'Frappé de Caramelo con Helado';
+UPDATE producto SET imagen = 'Bebida de Fresa' WHERE nombre = 'Bebida de Fresa';
+UPDATE producto SET imagen = 'Botin de Pirata de Foxy' WHERE nombre = 'Botín de Pirata de Foxy';
+UPDATE producto SET imagen = 'Ponche de Frutas' WHERE nombre = 'Ponche de Frutas';
+UPDATE producto SET imagen = 'Granizado de Arandano' WHERE nombre = 'Granizado de Arándano';
+UPDATE producto SET imagen = 'Slushie de Lima' WHERE nombre = 'Slushie de Lima';
+UPDATE producto SET imagen = 'Smoothie de Durazno' WHERE nombre = 'Smoothie de Durazno';
+UPDATE producto SET imagen = 'Te Helado' WHERE nombre = 'Té Helado';
+UPDATE producto SET imagen = 'Alitas de Foxy' WHERE nombre = 'Alitas de Foxy';
+UPDATE producto SET imagen = 'Bocados de Maiz' WHERE nombre = 'Bocados de Maíz';
+UPDATE producto SET imagen = 'Sarten de Queso' WHERE nombre = 'Sartén de Queso';
+UPDATE producto SET imagen = 'Copa de Pastel de Chica' WHERE nombre = 'Copa de Pastel de Chica';
+UPDATE producto SET imagen = 'Festin de Tacos de Bonnie' WHERE nombre = 'Festín de Tacos de Bonnie';
+UPDATE producto SET imagen = 'Paquete de Papas Shadow' WHERE nombre = 'Paquete de Papas Shadow';
+UPDATE producto SET imagen = 'Paquete de Pizza de Chica' WHERE nombre = 'Paquete de Pizza de Chica';
+UPDATE producto SET imagen = 'Combo Golden Pizza-Burger' WHERE nombre = 'Combo Golden Pizza-Burger';
+UPDATE producto SET imagen = 'Combo Bonnie-Nuggets' WHERE nombre = 'Combo Bonnie-Nuggets';
+UPDATE producto SET imagen = 'Combo Freddy Fazbear' WHERE nombre = 'Combo Freddy Fazbear';
+
+-- ------------------------------------------------------------
 -- producto_categoria
 -- Cada producto conserva, como mínimo, su categoría principal
 -- también dentro de la tabla intermedia N:M, para que las
@@ -564,6 +691,17 @@ UPDATE producto SET imagen = 'Cajita Fazbear Deluxe' WHERE nombre = 'Cajita Fazb
 -- ------------------------------------------------------------
 INSERT INTO producto_categoria (id_producto, id_categoria)
 SELECT id_producto, id_categoria FROM producto;
+
+-- ------------------------------------------------------------
+-- Aplicar la migración de categorías (ver sp_migrar_categorias_
+-- hamburguesas_pizzas en la sección 4) para que, al ejecutar este
+-- script de cero, la base de datos quede directamente con
+-- "Hamburguesas" y "Pizzas" en vez de los nombres heredados
+-- "Desayunos"/"Almuerzos y Cenas". El procedimiento se deja creado
+-- en el esquema (no se elimina) para poder volver a llamarlo contra
+-- una base de datos existente sin recrearla.
+-- ------------------------------------------------------------
+CALL sp_migrar_categorias_hamburguesas_pizzas();
 
 
 -- ============================================================
@@ -679,9 +817,3 @@ WHERE r.nombre = 'Administrador';
 SELECT u.id_usuario, u.correo, r.nombre AS rol
 FROM usuario u JOIN rol r ON r.id_rol = u.id_rol
 WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';
-
-SELECT u.id_usuario, u.correo, r.nombre AS rol
-FROM usuario u JOIN rol r ON r.id_rol = u.id_rol
-WHERE u.correo = 'trabajador.prueba@freddyquickbite.com';
-ALTER TABLE detalle_pedido
-    ADD COLUMN observaciones VARCHAR(255) NULL AFTER subtotal;

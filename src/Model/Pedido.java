@@ -29,11 +29,14 @@ public class Pedido {
 
     private BigDecimal total;
 
-    // Costo de envío cuando tipoEntrega = DOMICILIO. Q0 para los
+    // Costo de envío. Siempre Q0 en este proyecto: no existe entrega a
+    // domicilio (TipoEntrega solo tiene COMER_EN_RESTAURANTE y
+    // PARA_LLEVAR). Se deja el campo por si se agrega más adelante.
+    // Para los
     // demás tipos de entrega.
     private BigDecimal costoEnvio;
 
-    // Solo se usan cuando tipoEntrega = DOMICILIO. Para los otros
+    // Sin uso mientras no exista entrega a domicilio. Para los otros
     // tipos de entrega quedan en null.
     private String direccionEntrega;
 

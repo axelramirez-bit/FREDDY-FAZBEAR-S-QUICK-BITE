@@ -249,12 +249,22 @@ public class Producto {
 
     }
 
-public BigDecimal getPrecioFinal() {
-    if (promocion == null) return precio;
-    BigDecimal descuento = precio.multiply(promocion.getDescuento())
-                                  .divide(BigDecimal.valueOf(100));
-    return precio.subtract(descuento);
-}
+    // ANTES (bug): solo comprobaba "promocion == null", así que una
+    // promoción vencida o inactiva seguía aplicando el descuento,
+    // porque tienePromocion() (que sí valida promocion.estaVigente())
+    // no se llamaba desde aquí.
+    // CORRECCIÓN: usa tienePromocion(), que ya valida la vigencia.
+    public BigDecimal getPrecioFinal() {
+
+        if (!tienePromocion()) {
+            return precio;
+        }
+
+        BigDecimal descuento = precio.multiply(promocion.getDescuento())
+                                      .divide(BigDecimal.valueOf(100));
+
+        return precio.subtract(descuento);
+    }
 
     public boolean hayStock() {
 

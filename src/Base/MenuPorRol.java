@@ -1,3 +1,4 @@
+// Paquete Base
 package Base;
 
 /**
@@ -15,8 +16,10 @@ package Base;
  * cambios dentro de BarraLateral (principio Abierto/Cerrado).
  * ===============================================================
  */
+// Clase que entrega las opciones de menú según el rol
 public final class MenuPorRol {
 
+    // Constructor privado: no se instancia
     private MenuPorRol() {
     }
 
@@ -26,21 +29,32 @@ public final class MenuPorRol {
      * @param rol Rol para el cual se construye el menú.
      * @return Arreglo de opciones de menú.
      */
+    // Devuelve las opciones de menú del rol recibido
     public static OpcionMenu[] obtener(Rol rol) {
 
+        // Evalúa el rol
         switch (rol) {
 
+            // Si es CLIENTE
             case CLIENTE:
+                // devuelve las opciones de Cliente
                 return OpcionesCliente.values();
 
+            // Si es TRABAJADOR
             case TRABAJADOR:
+                // devuelve las opciones de Trabajador
                 return OpcionesTrabajador.values();
 
+            // Si es ADMINISTRADOR
             case ADMINISTRADOR:
+                // devuelve las opciones de Administrador
                 return OpcionesAdministrador.values();
 
+            // Cualquier otro rol
             default:
+                // Lanza error de rol no soportado
                 throw new IllegalArgumentException(
+                        // Mensaje con el rol recibido
                         "Rol no soportado: " + rol
                 );
         }

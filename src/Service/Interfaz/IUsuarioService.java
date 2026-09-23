@@ -1,13 +1,19 @@
+// Paquete Service.Interfaz
 package Service.Interfaz;
 
+// Importa el modelo Usuario
 import Model.Usuario;
 
+// Importa List
 import java.util.List;
 
+// Contrato del servicio de usuarios
 public interface IUsuarioService {
 
+    // Registra un usuario
     boolean registrarUsuario(Usuario usuario);
 
+    // Actualiza un usuario
     boolean actualizarUsuario(Usuario usuario);
 
     /**
@@ -20,19 +26,26 @@ public interface IUsuarioService {
      * Los paneles deben llamar este método ANTES de registrar/actualizar
      * y mostrar el mensaje si no es null.
      */
+    // Valida y devuelve el motivo del error (null si está bien)
     String validar(Usuario usuario);
 
+    // Elimina un usuario por id
     boolean eliminarUsuario(int idUsuario);
 
     // Caso de uso 2.4: desactivar (estado=false) siempre es posible.
+    // Desactiva un usuario
     boolean desactivarUsuario(int idUsuario);
 
+    // Activa un usuario
     boolean activarUsuario(int idUsuario);
 
+    // Obtiene un usuario por id
     Usuario obtenerUsuarioPorId(int idUsuario);
 
+    // Lista todos los usuarios
     List<Usuario> listarUsuarios();
 
+    // Valida correo y contraseña e inicia sesión
     Usuario iniciarSesion(String correo, String password);
 
 }

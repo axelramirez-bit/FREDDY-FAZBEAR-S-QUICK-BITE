@@ -2,6 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 public class Usuario {
@@ -209,10 +210,13 @@ public boolean esCliente() {
             && rol.getNombre().equalsIgnoreCase("Cliente");
 
 }
+    // ANTES (bug): hashCode() devolvía siempre 3, sin relación con el
+    // id, mientras equals() sí compara por id (mismo problema que en
+    // Carrito.hashCode()).
+    // CORRECCIÓN: el hash se calcula a partir del id.
     @Override
     public int hashCode() {
-        int hash = 3;
-        return hash;
+        return Objects.hash(idUsuario);
     }
 public boolean esRol(Rol tipo) {
     return rol != null && rol == tipo;

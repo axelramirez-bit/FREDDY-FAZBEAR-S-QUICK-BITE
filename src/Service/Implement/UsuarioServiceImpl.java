@@ -12,8 +12,12 @@ import java.util.regex.Pattern;
 
 public class UsuarioServiceImpl implements IUsuarioService {
 
+    // ANTES (bug): "^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$" solo aceptaba
+    // un dominio de un nivel (ej. gmail.com) y rechazaba correos con
+    // subdominio como axelramirez@emilianisomascos.edu.gt.
+    // CORRECCIÓN: (nivel.)+ permite uno o más subdominios antes del TLD.
     private static final Pattern CORREO_PATTERN =
-            Pattern.compile("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$");
+            Pattern.compile("^[\\w.+-]+@([\\w-]+\\.)+[a-zA-Z]{2,}$");
 
     private static final int EDAD_MINIMA = 13;
 
@@ -126,8 +130,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
             return "El correo no tiene un formato válido (ejemplo: nombre@dominio.com).";
         }
 
-        Usuario conEseCorreo = usuarioDAO.buscarPorCorreo(usuario.getCorreo().trim());
-        if (conEseCorreo != null && conEseCorreo.getIdUsuario() != usuario.getIdUsuario()) {
+        // ANTES (bug): usaba buscarPorCorreo(), que solo ve usuarios
+        // activos (estado = TRUE). Un correo repetido en un usuario
+        // desactivado pasaba la validación y luego fallaba en la BD
+        // por la restricción UNIQUE, con un mensaje genérico.
+        // CORRECCIÓN: existeCorreo() no filtra por estado. Al editar un
+        // usuario existente se excluye su propio correo de la
+        // comparación (si no cambió, no debe marcarse como duplicado).
+        String correoActual = usuario.getIdUsuario() > 0
+                ? optCorreoActual(usuario.getIdUsuario())
+                : null;
+
+        boolean correoCambio = correoActual == null
+                || !correoActual.equalsIgnoreCase(usuario.getCorreo().trim());
+
+        if (correoCambio && usuarioDAO.existeCorreo(usuario.getCorreo().trim())) {
             return "Ya existe un usuario registrado con el correo \"" + usuario.getCorreo() + "\".";
         }
 
@@ -144,6 +161,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
 
         return null;
+    }
+
+    private String optCorreoActual(int idUsuario) {
+        Usuario actual = usuarioDAO.buscarPorId(idUsuario);
+        return actual == null ? null : actual.getCorreo();
     }
 
     private boolean esMayorDeEdadMinima(LocalDate fechaNacimiento) {

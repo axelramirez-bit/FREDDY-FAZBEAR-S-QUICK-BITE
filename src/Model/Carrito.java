@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 public class Carrito {
     private int idCarrito;
     
@@ -182,10 +183,15 @@ public int getCantidadItems() {
     return detalles.size();
 
 }
+    // ANTES (bug): hashCode() devolvía siempre 7, sin importar el id.
+    // equals() sí compara por id, así que dos carritos distintos eran
+    // "iguales" en hash pero no en equals: en un HashMap/HashSet todos
+    // caían en el mismo bucket (funciona, pero sin ninguna ventaja de
+    // usar una tabla hash).
+    // CORRECCIÓN: el hash se calcula a partir del id, igual que equals().
     @Override
     public int hashCode() {
-        int hash = 7;
-        return hash;
+        return Objects.hash(idCarrito);
     }
 
     @Override

@@ -4,13 +4,14 @@ import Base.PanelProductos;
 
 public class PanelCombos extends PanelProductos {
 
-    // NOTA: esta categoría "Combos" todavía no existe en la tabla
-    // categoria de la base de datos (solo hay Hamburguesas, Pizzas,
-    // Postres, McCafe, Bebidas, Antojos, Cajita Feliz y
-    // Promociones). Este panel seguirá vacío hasta que se agregue
-    // la categoría "Combos" y se reasignen los productos tipo combo
-    // que hoy están mezclados dentro de "Cajita Feliz". Ver el script
-    // SQL de migración que agrega esta categoría.
+    // La categoría "Combos" ya existe en la tabla categoria y trae
+    // sus propios productos ("Combo Golden Pizza-Burger", "Combo
+    // Bonnie-Nuggets", "Combo Freddy Fazbear") desde el seed data
+    // de FreddyQuickBite.sql. Las categorías completas de hoy son:
+    // Hamburguesas, Pizzas, Postres, McCafe, Bebidas, Antojos,
+    // Cajita Feliz, Combos y Promociones (ver
+    // sp_migrar_categorias_hamburguesas_pizzas en FreddyQuickBite.sql
+    // para el detalle de cómo se corrigieron Hamburguesas/Pizzas).
     public PanelCombos() {
 
         super(producto -> producto.perteneceACategoria("Combos"));

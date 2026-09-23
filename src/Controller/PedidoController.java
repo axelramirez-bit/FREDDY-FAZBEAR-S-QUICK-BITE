@@ -97,9 +97,10 @@ public class PedidoController {
      * @param tipoEntrega elegido en el Paso 2
      * @param metodoPago elegido en el Paso 2
      * @param montoRecibido solo se valida si metodoPago = EFECTIVO
-     * @param costoEnvio Q0 salvo que tipoEntrega = DOMICILIO
-     * @param direccionEntrega solo aplica si tipoEntrega = DOMICILIO
-     * @param referenciaEntrega solo aplica si tipoEntrega = DOMICILIO
+     * @param costoEnvio Q0 en este proyecto (no hay entrega a domicilio;
+     *        TipoEntrega solo tiene COMER_EN_RESTAURANTE y PARA_LLEVAR)
+     * @param direccionEntrega sin uso mientras no exista entrega a domicilio
+     * @param referenciaEntrega sin uso mientras no exista entrega a domicilio
      * (opcional)
      * @param nit NIT del cliente para la factura ("CF"/null = consumidor final)
      */

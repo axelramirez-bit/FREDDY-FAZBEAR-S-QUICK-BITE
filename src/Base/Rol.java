@@ -1,3 +1,4 @@
+// Paquete Base
 package Base;
 
 /**
@@ -13,10 +14,14 @@ package Base;
  * visual.
  * ===============================================================
  */
+// Enum con los roles de la capa visual
 public enum Rol {
 
+    // Rol Cliente
     CLIENTE,
+    // Rol Trabajador
     TRABAJADOR,
+    // Rol Administrador
     ADMINISTRADOR
 
 }

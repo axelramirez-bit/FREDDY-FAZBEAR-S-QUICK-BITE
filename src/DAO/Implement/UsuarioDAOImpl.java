@@ -205,6 +205,32 @@ public class UsuarioDAOImpl implements IUsuarioDAO {
         return null;
     }
 
+    // ANTES (bug): la validación de "correo duplicado" usaba
+    // buscarPorCorreo(), que filtra "WHERE ... AND u.estado = TRUE".
+    // Si un usuario DESACTIVADO ya tenía ese correo, la validación no
+    // lo veía, el INSERT chocaba con la restricción UNIQUE de la BD y
+    // el usuario recibía un error genérico en vez de "correo duplicado".
+    // CORRECCIÓN: existeCorreo() no filtra por estado.
+    @Override
+    public boolean existeCorreo(String correo) {
+
+        String sql = "SELECT 1 FROM usuario WHERE correo = ?";
+
+        try (Connection con = Conexion.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, correo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            AppLogger.error(getClass(), "No se pudo verificar el correo.", e);
+            return false;
+        }
+    }
+
     // ==========================================
     // MÉTODO AUXILIAR PARA MAPEAR (Evita repetir código)
     // ==========================================

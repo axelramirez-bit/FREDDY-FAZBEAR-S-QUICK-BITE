@@ -1,3 +1,4 @@
+// Paquete Base
 package Base;
 
 /**
@@ -15,13 +16,17 @@ package Base;
  * responsabilidades diferentes.
  * ===============================================================
  */
+// Constantes con los ids de las opciones especiales del menú
 public final class IdVistaEspecial {
 
+    // Constructor privado: no se instancia
     private IdVistaEspecial() {
     }
 
+    // Id de la opción Configuración
     public static final String CONFIGURACION = "CONFIGURACION";
 
+    // Id de la opción Cerrar sesión
     public static final String CERRAR_SESION = "CERRAR_SESION";
 
 }

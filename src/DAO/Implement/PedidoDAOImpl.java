@@ -214,8 +214,8 @@ public class PedidoDAOImpl implements IPedidoDAO {
                         rs.getString("numero_orden"),
                         usuario,
                         rs.getTimestamp("fecha").toLocalDateTime(),
-                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_")),
-                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase()),
+                        parsearTipoEntrega(rs.getString("tipo_entrega")),
+                        parsearEstado(rs.getString("estado")),
                         null,
                         rs.getBigDecimal("subtotal"),
                         rs.getBigDecimal("descuento"),
@@ -258,37 +258,52 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         try (Connection con = Conexion.getInstancia().getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
+            // ANTES (bug): TipoEntrega.valueOf()/EstadoPedido.valueOf() se
+            // llamaban directo aquí adentro. Si UNA sola fila tenía un valor
+            // que el enum no reconoce (o NULL), la excepción no era
+            // SQLException, así que el catch de abajo no la atrapaba: el
+            // método terminaba abruptamente y la tabla de pedidos se veía
+            // vacía para TODOS los pedidos, no solo el de esa fila.
+            // CORRECCIÓN: se usa el parseo seguro (con valor por defecto) y,
+            // además, un try/catch por fila para que un dato inesperado en
+            // un pedido no tumbe el listado completo.
             while (rs.next()) {
-
-                Usuario usuario = new Usuario();
-                usuario.setIdUsuario(rs.getInt("id_usuario"));
-                usuario.setNombre(rs.getString("u_nombre"));
-                usuario.setApellido(rs.getString("u_apellido"));
-                usuario.setCorreo(rs.getString("u_correo"));
 
                 int idPedido = rs.getInt("id_pedido");
 
-                List<DetallePedido> detalles = detallePedidoDAO.listarPorPedido(idPedido);
+                try {
+                    Usuario usuario = new Usuario();
+                    usuario.setIdUsuario(rs.getInt("id_usuario"));
+                    usuario.setNombre(rs.getString("u_nombre"));
+                    usuario.setApellido(rs.getString("u_apellido"));
+                    usuario.setCorreo(rs.getString("u_correo"));
 
-                Pedido pedido = new Pedido(
-                        idPedido,
-                        rs.getString("numero_orden"),
-                        usuario,
-                        rs.getTimestamp("fecha").toLocalDateTime(),
-                        TipoEntrega.valueOf(rs.getString("tipo_entrega").toUpperCase().replace(" ", "_")),
-                        EstadoPedido.valueOf(rs.getString("estado").toUpperCase()),
-                        null,
-                        rs.getBigDecimal("subtotal"),
-                        rs.getBigDecimal("descuento"),
-                        rs.getBigDecimal("total"),
-                        detalles
-                );
+                    List<DetallePedido> detalles = detallePedidoDAO.listarPorPedido(idPedido);
 
-                pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
-                pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
-                pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
+                    Pedido pedido = new Pedido(
+                            idPedido,
+                            rs.getString("numero_orden"),
+                            usuario,
+                            rs.getTimestamp("fecha").toLocalDateTime(),
+                            parsearTipoEntrega(rs.getString("tipo_entrega")),
+                            parsearEstado(rs.getString("estado")),
+                            null,
+                            rs.getBigDecimal("subtotal"),
+                            rs.getBigDecimal("descuento"),
+                            rs.getBigDecimal("total"),
+                            detalles
+                    );
 
-                lista.add(pedido);
+                    pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
+                    pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
+                    pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
+
+                    lista.add(pedido);
+
+                } catch (RuntimeException e) {
+                    AppLogger.error(PedidoDAOImpl.class,
+                            "Se omitió el pedido #" + idPedido + " del listado por datos inválidos.", e);
+                }
 
             }
 
@@ -301,6 +316,51 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         return lista;
 
+    }
+
+    // ANTES (bug): TipoEntrega.valueOf(rs.getString("tipo_entrega")...)
+    // se llamaba directo dentro del try/catch de SQLException. La BD
+    // permite 'Domicilio' (no existe en el enum Java) y NULL en esa
+    // columna: la primera fila así lanzaba IllegalArgumentException o
+    // NullPointerException, que el catch (SQLException) NO atrapa, y
+    // tumbaba el método completo (en listar(), TODOS los pedidos
+    // desaparecían de la pantalla, no solo el de la fila problemática).
+    // CORRECCIÓN: parseo defensivo con valor por defecto y aviso en el
+    // log, para que una fila con dato inesperado no rompa el resto.
+    private TipoEntrega parsearTipoEntrega(String valorBd) {
+
+        if (valorBd == null) {
+            AppLogger.aviso(PedidoDAOImpl.class,
+                    "tipo_entrega llegó NULL; se usa COMER_EN_RESTAURANTE por defecto.");
+            return TipoEntrega.COMER_EN_RESTAURANTE;
+        }
+
+        try {
+            return TipoEntrega.valueOf(valorBd.toUpperCase().replace(" ", "_"));
+        } catch (IllegalArgumentException e) {
+            AppLogger.aviso(PedidoDAOImpl.class,
+                    "tipo_entrega desconocido en la BD: '" + valorBd
+                    + "'; se usa COMER_EN_RESTAURANTE por defecto.");
+            return TipoEntrega.COMER_EN_RESTAURANTE;
+        }
+    }
+
+    private EstadoPedido parsearEstado(String valorBd) {
+
+        if (valorBd == null) {
+            AppLogger.aviso(PedidoDAOImpl.class,
+                    "estado llegó NULL; se usa PENDIENTE por defecto.");
+            return EstadoPedido.PENDIENTE;
+        }
+
+        try {
+            return EstadoPedido.valueOf(valorBd.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            AppLogger.aviso(PedidoDAOImpl.class,
+                    "estado desconocido en la BD: '" + valorBd
+                    + "'; se usa PENDIENTE por defecto.");
+            return EstadoPedido.PENDIENTE;
+        }
     }
 
     private String tipoEntregaToDb(TipoEntrega tipo) {

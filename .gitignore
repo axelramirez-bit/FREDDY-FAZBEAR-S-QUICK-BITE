@@ -1,2 +1,23 @@
+# ANTES (bug de seguridad): el .gitignore original solo tenía
+#   /build/
+#   /dist/
+# así que src/config.properties (usuario y contraseña reales de MySQL),
+# la carpeta /facturas/ (PDF con datos de clientes) y los archivos
+# privados del IDE quedaban versionados en Git.
+# CORRECCIÓN: se agregan esas rutas. Si config.properties YA está en
+# el historial de Git, "git rm --cached src/config.properties" no
+# alcanza: hay que cambiar la contraseña de esa cuenta de MySQL,
+# porque el valor viejo sigue visible en commits anteriores.
+
 /build/
 /dist/
+
+# Credenciales locales — cada quien copia config.properties.example
+# y pone sus propios datos
+src/config.properties
+
+# PDF de facturas generadas (pueden tener datos de clientes)
+/facturas/
+
+# Archivos privados de NetBeans (rutas de máquina, no del proyecto)
+nbproject/private/
