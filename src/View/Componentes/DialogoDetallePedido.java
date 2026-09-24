@@ -120,8 +120,7 @@ public final class DialogoDetallePedido {
         ficha.setOpaque(false);
         ficha.setBorder(BorderFactory.createEmptyBorder(0, 0, AdministradorTema.espacioPequeño(), 0));
 
-        agregarCampo(ficha, "Cliente",
-                pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-");
+        agregarCampo(ficha, "Cliente", nombreClienteMostrar(pedido));
 
         agregarCampo(ficha, "Fecha",
                 pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_FECHA_HORA) : "-");
@@ -319,6 +318,13 @@ public final class DialogoDetallePedido {
     // ==========================================================
     // UTILITARIOS
     // ==========================================================
+    private static String nombreClienteMostrar(Pedido pedido) {
+        if (pedido.getNombreCliente() != null && !pedido.getNombreCliente().isBlank()) {
+            return pedido.getNombreCliente();
+        }
+        return pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-";
+    }
+
     private static String nombreLegible(EstadoPedido estado) {
         if (estado == null) {
             return "-";

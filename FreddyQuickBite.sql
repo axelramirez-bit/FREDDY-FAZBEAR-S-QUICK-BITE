@@ -188,6 +188,7 @@ CREATE TABLE pedido (
     FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito),
     CONSTRAINT chk_pedido_montos CHECK (subtotal >= 0 AND descuento >= 0 AND total >= 0)
 );
+   ALTER TABLE pedido ADD COLUMN nombre_cliente VARCHAR(100) NULL;
 
 -- ------------------------------------------------------------
 -- TABLA: detalle_pedido

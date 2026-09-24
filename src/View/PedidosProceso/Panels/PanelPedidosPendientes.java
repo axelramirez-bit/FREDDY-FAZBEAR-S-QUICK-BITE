@@ -313,7 +313,7 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
 
         for (Pedido pedido : pendientesCompletos) {
 
-            String cliente = pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "";
+            String cliente = nombreClienteMostrar(pedido);
             boolean coincideTexto = texto.isEmpty()
                     || ("#" + pedido.getIdPedido()).contains(texto)
                     || cliente.toLowerCase().contains(texto);
@@ -354,7 +354,7 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
 
             modeloTabla.addRow(new Object[]{
                     "#" + pedido.getIdPedido(),
-                    pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-",
+                    nombreClienteMostrar(pedido),
                     nombreLegible(pedido.getTipoEntrega()),
                     pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_HORA) : "-",
                     pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
@@ -396,6 +396,13 @@ public class PanelPedidosPendientes extends PanelFondo implements Refrescable {
             return null;
         }
     }
+    
+    private String nombreClienteMostrar(Pedido pedido) {
+    if (pedido.getNombreCliente() != null && !pedido.getNombreCliente().isBlank()) {
+        return pedido.getNombreCliente();
+    }
+    return pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-";
+}
 
     private String nombreLegible(TipoEntrega tipo) {
         if (tipo == null) return "-";

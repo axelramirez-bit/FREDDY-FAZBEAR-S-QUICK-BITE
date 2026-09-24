@@ -43,18 +43,17 @@ import java.util.List;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Pantalla 3 del mockup: pedidos EN_PREPARACION, con "Ver" (caso 2),
- * "Marcar listo" (PREPARACION -> LISTO, caso 6.2) y "Cancelar"
- * (caso 6.4, por si el pedido ya no se puede completar).
+ * --------------------------------------------------------------- Pantalla 3
+ * del mockup: pedidos EN_PREPARACION, con "Ver" (caso 2), "Marcar listo"
+ * (PREPARACION -> LISTO, caso 6.2) y "Cancelar" (caso 6.4, por si el pedido ya
+ * no se puede completar).
  *
- * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo
- * de tabla se creaba con FabricaTablas.crearModeloSoloLectura(),
- * que fuerza isCellEditable(...) = false para TODAS las celdas.
- * JTable solo invoca al CellEditor de una columna cuando el modelo
- * dice que esa celda es editable, así que los botones se veían
- * pero un clic nunca los disparaba. Aquí el modelo se construye a
- * mano y solo declara editables las columnas de acción.
+ * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo de tabla se
+ * creaba con FabricaTablas.crearModeloSoloLectura(), que fuerza
+ * isCellEditable(...) = false para TODAS las celdas. JTable solo invoca al
+ * CellEditor de una columna cuando el modelo dice que esa celda es editable,
+ * así que los botones se veían pero un clic nunca los disparaba. Aquí el modelo
+ * se construye a mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
 public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable {
@@ -100,9 +99,20 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
 
         barraBusqueda = new BarraBusqueda("Buscar pedido o cliente...");
         barraBusqueda.agregarListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void removeUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void changedUpdate(DocumentEvent e) { aplicarFiltros(); }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
         });
 
         comboOrden = FabricaCampos.crearCombo();
@@ -126,8 +136,8 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
         contenedor.setOpaque(false);
 
         Object[] columnas = {
-                "Pedido", "Cliente", "Tipo de entrega", "Tiempo en preparación",
-                "Detalle", "Acción", "Cancelar"
+            "Pedido", "Cliente", "Tipo de entrega", "Tiempo en preparación",
+            "Detalle", "Acción", "Cancelar"
         };
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -200,7 +210,7 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
             FabricaDialogos.excepcion(
                     this, PanelPedidosEnPreparacion.class,
                     "No se pudo marcar como listo el pedido #" + pedido.getIdPedido()
-                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    + ". Verifica tu conexión e inténtalo de nuevo.",
                     ex
             );
         }
@@ -214,7 +224,7 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
         boolean confirma = FabricaDialogos.confirmar(
                 this,
                 "¿Cancelar el pedido #" + pedido.getIdPedido() + "? Ya está en preparación; "
-                        + "esta acción no se puede deshacer."
+                + "esta acción no se puede deshacer."
         );
 
         if (!confirma) {
@@ -237,7 +247,7 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
             FabricaDialogos.excepcion(
                     this, PanelPedidosEnPreparacion.class,
                     "No se pudo cancelar el pedido #" + pedido.getIdPedido()
-                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    + ". Verifica tu conexión e inténtalo de nuevo.",
                     ex
             );
         }
@@ -277,7 +287,7 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
 
         for (Pedido pedido : enPreparacionCompletos) {
 
-            String cliente = pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "";
+            String cliente = nombreClienteMostrar(pedido);
             boolean coincide = texto.isEmpty()
                     || ("#" + pedido.getIdPedido()).contains(texto)
                     || cliente.toLowerCase().contains(texto);
@@ -302,13 +312,13 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
 
         for (Pedido pedido : visibles) {
             modeloTabla.addRow(new Object[]{
-                    "#" + pedido.getIdPedido(),
-                    pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-",
-                    nombreLegible(pedido.getTipoEntrega()),
-                    formatearTiempo(pedido.getFecha()),
-                    "Ver",
-                    "Marcar listo",
-                    "Cancelar"
+                "#" + pedido.getIdPedido(),
+                nombreClienteMostrar(pedido),
+                nombreLegible(pedido.getTipoEntrega()),
+                formatearTiempo(pedido.getFecha()),
+                "Ver",
+                "Marcar listo",
+                "Cancelar"
             });
         }
 
@@ -323,13 +333,24 @@ public class PanelPedidosEnPreparacion extends PanelFondo implements Refrescable
         panelPie.repaint();
     }
 
+    private String nombreClienteMostrar(Pedido pedido) {
+        if (pedido.getNombreCliente() != null && !pedido.getNombreCliente().isBlank()) {
+            return pedido.getNombreCliente();
+        }
+        return pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-";
+    }
+
     private String nombreLegible(TipoEntrega tipo) {
-        if (tipo == null) return "-";
+        if (tipo == null) {
+            return "-";
+        }
         return tipo == TipoEntrega.PARA_LLEVAR ? "Para llevar" : "Comer en local";
     }
 
     private String formatearTiempo(LocalDateTime fecha) {
-        if (fecha == null) return "-";
+        if (fecha == null) {
+            return "-";
+        }
         long minutos = Duration.between(fecha, LocalDateTime.now()).toMinutes();
         return minutos < 1 ? "< 1 min" : minutos + " min";
     }

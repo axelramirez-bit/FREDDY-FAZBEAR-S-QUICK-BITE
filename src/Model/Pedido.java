@@ -28,6 +28,8 @@ public class Pedido {
     private BigDecimal descuento;
 
     private BigDecimal total;
+    
+    private String nombreCliente;
 
     // Costo de envío. Siempre Q0 en este proyecto: no existe entrega a
     // domicilio (TipoEntrega solo tiene COMER_EN_RESTAURANTE y
@@ -160,6 +162,14 @@ public class Pedido {
     public BigDecimal getTotal() {
         return total;
     }
+    
+    public String getNombreCliente() { 
+        return nombreCliente; 
+    }
+    
+   public void setNombreCliente(String nombreCliente) { 
+       this.nombreCliente = nombreCliente; 
+   }
 
     public void setIdPedido(int idPedido) {
         this.idPedido = idPedido;

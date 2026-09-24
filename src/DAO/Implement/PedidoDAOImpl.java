@@ -38,8 +38,9 @@ public class PedidoDAOImpl implements IPedidoDAO {
 
         String sql = "INSERT INTO pedido "
                 + "(numero_orden,id_usuario,id_carrito,fecha,tipo_entrega,estado,"
-                + "subtotal,descuento,total,costo_envio,direccion_entrega,referencia_entrega) "
-                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                + "subtotal,descuento,total,costo_envio,direccion_entrega,referencia_entrega,"
+                + "nombre_cliente) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         // RETURN_GENERATED_KEYS: sin esto, pedido.getIdPedido() se
         // queda en 0 después de insertar, y el Pago/Factura que se
@@ -65,6 +66,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
             ps.setBigDecimal(10, pedido.getCostoEnvio());
             ps.setString(11, pedido.getDireccionEntrega());
             ps.setString(12, pedido.getReferenciaEntrega());
+            ps.setString(13, pedido.getNombreCliente());
 
             int filas = ps.executeUpdate();
 
@@ -226,6 +228,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
                 pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
                 pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
                 pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
+                pedido.setNombreCliente(rs.getString("nombre_cliente"));
 
                 return pedido;
 
@@ -297,6 +300,7 @@ public class PedidoDAOImpl implements IPedidoDAO {
                     pedido.setCostoEnvio(rs.getBigDecimal("costo_envio"));
                     pedido.setDireccionEntrega(rs.getString("direccion_entrega"));
                     pedido.setReferenciaEntrega(rs.getString("referencia_entrega"));
+                    pedido.setNombreCliente(rs.getString("nombre_cliente"));
 
                     lista.add(pedido);
 

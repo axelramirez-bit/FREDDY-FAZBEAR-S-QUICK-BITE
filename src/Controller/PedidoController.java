@@ -98,7 +98,7 @@ public class PedidoController {
      * @param metodoPago elegido en el Paso 2
      * @param montoRecibido solo se valida si metodoPago = EFECTIVO
      * @param costoEnvio Q0 en este proyecto (no hay entrega a domicilio;
-     *        TipoEntrega solo tiene COMER_EN_RESTAURANTE y PARA_LLEVAR)
+     * TipoEntrega solo tiene COMER_EN_RESTAURANTE y PARA_LLEVAR)
      * @param direccionEntrega sin uso mientras no exista entrega a domicilio
      * @param referenciaEntrega sin uso mientras no exista entrega a domicilio
      * (opcional)
@@ -143,6 +143,11 @@ public class PedidoController {
         pedido.setUsuario(cliente);
         pedido.setIdCarrito(carrito.getIdCarrito());   // NUEVO
         pedido.setTipoEntrega(tipoEntrega);
+        pedido.setNombreCliente(
+                (nombreCliente != null && !nombreCliente.isBlank())
+                ? nombreCliente.trim()
+                : null
+        );
         pedido.setDescuento(BigDecimal.ZERO); // TODO: aplicar Promocion aquí si corresponde
         pedido.setCostoEnvio(envio);
 

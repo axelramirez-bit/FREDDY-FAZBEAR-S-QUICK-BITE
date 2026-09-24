@@ -43,21 +43,19 @@ import java.util.List;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Pantalla 4 del mockup: pedidos LISTO, con "Ver" (caso 2),
- * "Entregar" (LISTO -> ENTREGADO, caso 6.3) y "Cancelar" (caso
- * 6.4, por si el cliente ya no lo recoge). "Entregar" sigue
- * pidiendo confirmación porque es una acción que no se puede
- * deshacer con un botón — una vez entregado, solo Historial lo
- * vuelve a mostrar.
+ * --------------------------------------------------------------- Pantalla 4
+ * del mockup: pedidos LISTO, con "Ver" (caso 2), "Entregar" (LISTO ->
+ * ENTREGADO, caso 6.3) y "Cancelar" (caso 6.4, por si el cliente ya no lo
+ * recoge). "Entregar" sigue pidiendo confirmación porque es una acción que no
+ * se puede deshacer con un botón — una vez entregado, solo Historial lo vuelve
+ * a mostrar.
  *
- * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo
- * de tabla se creaba con FabricaTablas.crearModeloSoloLectura(),
- * que fuerza isCellEditable(...) = false para TODAS las celdas.
- * JTable solo invoca al CellEditor de una columna cuando el modelo
- * dice que esa celda es editable, así que los botones se veían
- * pero un clic nunca los disparaba. Aquí el modelo se construye a
- * mano y solo declara editables las columnas de acción.
+ * CORRECCIÓN IMPORTANTE respecto a la versión anterior: el modelo de tabla se
+ * creaba con FabricaTablas.crearModeloSoloLectura(), que fuerza
+ * isCellEditable(...) = false para TODAS las celdas. JTable solo invoca al
+ * CellEditor de una columna cuando el modelo dice que esa celda es editable,
+ * así que los botones se veían pero un clic nunca los disparaba. Aquí el modelo
+ * se construye a mano y solo declara editables las columnas de acción.
  * ===============================================================
  */
 public class PanelPedidosListos extends PanelFondo implements Refrescable {
@@ -103,9 +101,20 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
 
         barraBusqueda = new BarraBusqueda("Buscar pedido o cliente...");
         barraBusqueda.agregarListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void removeUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void changedUpdate(DocumentEvent e) { aplicarFiltros(); }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
         });
 
         comboOrden = FabricaCampos.crearCombo();
@@ -129,8 +138,8 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
         contenedor.setOpaque(false);
 
         Object[] columnas = {
-                "Pedido", "Cliente", "Tipo de entrega", "Listo desde", "Método de pago",
-                "Detalle", "Acción", "Cancelar"
+            "Pedido", "Cliente", "Tipo de entrega", "Listo desde", "Método de pago",
+            "Detalle", "Acción", "Cancelar"
         };
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -212,7 +221,7 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
             FabricaDialogos.excepcion(
                     this, PanelPedidosListos.class,
                     "No se pudo entregar el pedido #" + pedido.getIdPedido()
-                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    + ". Verifica tu conexión e inténtalo de nuevo.",
                     ex
             );
         }
@@ -226,7 +235,7 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
         boolean confirma = FabricaDialogos.confirmar(
                 this,
                 "¿Cancelar el pedido #" + pedido.getIdPedido() + "? Ya está listo para entregar; "
-                        + "esta acción no se puede deshacer."
+                + "esta acción no se puede deshacer."
         );
 
         if (!confirma) {
@@ -249,7 +258,7 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
             FabricaDialogos.excepcion(
                     this, PanelPedidosListos.class,
                     "No se pudo cancelar el pedido #" + pedido.getIdPedido()
-                            + ". Verifica tu conexión e inténtalo de nuevo.",
+                    + ". Verifica tu conexión e inténtalo de nuevo.",
                     ex
             );
         }
@@ -297,7 +306,7 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
 
         for (Pedido pedido : listosCompletos) {
 
-            String cliente = pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "";
+            String cliente = nombreClienteMostrar(pedido);
             boolean coincide = texto.isEmpty()
                     || ("#" + pedido.getIdPedido()).contains(texto)
                     || cliente.toLowerCase().contains(texto);
@@ -325,14 +334,14 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
             Pago pago = pagoSeguro(pedido);
 
             modeloTabla.addRow(new Object[]{
-                    "#" + pedido.getIdPedido(),
-                    pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-",
-                    nombreLegible(pedido.getTipoEntrega()),
-                    pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_HORA) : "-",
-                    pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
-                    "Ver",
-                    "Entregar",
-                    "Cancelar"
+                "#" + pedido.getIdPedido(),
+                nombreClienteMostrar(pedido),
+                nombreLegible(pedido.getTipoEntrega()),
+                pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_HORA) : "-",
+                pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
+                "Ver",
+                "Entregar",
+                "Cancelar"
             });
         }
 
@@ -348,8 +357,8 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
     }
 
     /**
-     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un
-     * dato mal formado en un solo pedido tumbe toda la tabla — ver
+     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un dato
+     * mal formado en un solo pedido tumbe toda la tabla — ver
      * DAO.Implement.PagoDAOImpl.
      */
     private Pago pagoSeguro(Pedido pedido) {
@@ -362,18 +371,33 @@ public class PanelPedidosListos extends PanelFondo implements Refrescable {
         }
     }
 
+    private String nombreClienteMostrar(Pedido pedido) {
+        if (pedido.getNombreCliente() != null && !pedido.getNombreCliente().isBlank()) {
+            return pedido.getNombreCliente();
+        }
+        return pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-";
+    }
+
     private String nombreLegible(TipoEntrega tipo) {
-        if (tipo == null) return "-";
+        if (tipo == null) {
+            return "-";
+        }
         return tipo == TipoEntrega.PARA_LLEVAR ? "Para llevar" : "Comer en local";
     }
 
     private String nombreLegible(MetodoPago metodo) {
-        if (metodo == null) return "-";
+        if (metodo == null) {
+            return "-";
+        }
         switch (metodo) {
-            case EFECTIVO: return "Efectivo";
-            case TARJETA: return "Tarjeta";
-            case TRANSFERENCIA: return "Transferencia";
-            default: return metodo.name();
+            case EFECTIVO:
+                return "Efectivo";
+            case TARJETA:
+                return "Tarjeta";
+            case TRANSFERENCIA:
+                return "Transferencia";
+            default:
+                return metodo.name();
         }
     }
 }
