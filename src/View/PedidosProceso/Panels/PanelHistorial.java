@@ -49,16 +49,14 @@ import java.util.List;
 /**
  * ===============================================================
  * FREDDY-FAZBEAR'S QUICK BITE
- * ---------------------------------------------------------------
- * Pantalla 5 del mockup: historial de pedidos ya atendidos
- * (ENTREGADO o CANCELADO), con filtros de fecha, estado, método de
- * pago y búsqueda, más paginación simple.
+ * --------------------------------------------------------------- Pantalla 5
+ * del mockup: historial de pedidos ya atendidos (ENTREGADO o CANCELADO), con
+ * filtros de fecha, estado, método de pago y búsqueda, más paginación simple.
  *
- * A propósito NO tiene botón de exportar (PDF/Excel): en el
- * diagrama de casos de uso, "Generar/exportar reporte de ventas"
- * es exclusivo del Administrador (caso 7). Que el Trabajador no lo
- * tenga aquí es coherencia con ese diseño, no un olvido.
- * ===============================================================
+ * A propósito NO tiene botón de exportar (PDF/Excel): en el diagrama de casos
+ * de uso, "Generar/exportar reporte de ventas" es exclusivo del Administrador
+ * (caso 7). Que el Trabajador no lo tenga aquí es coherencia con ese diseño, no
+ * un olvido. ===============================================================
  */
 public class PanelHistorial extends PanelFondo implements Refrescable {
 
@@ -121,9 +119,20 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
 
         barraBusqueda = new BarraBusqueda("Buscar pedido o cliente...");
         barraBusqueda.agregarListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void removeUpdate(DocumentEvent e) { aplicarFiltros(); }
-            @Override public void changedUpdate(DocumentEvent e) { aplicarFiltros(); }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                aplicarFiltros();
+            }
         });
 
         spinnerFechaInicio.addChangeListener(e -> aplicarFiltros());
@@ -174,7 +183,7 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
     private JPanel crearPanelTabla() {
 
         Object[] columnas = {
-                "Pedido", "Cliente", "Fecha", "Estado", "Tipo de entrega", "Método de pago", "Total", "Acción"
+            "Pedido", "Cliente", "Fecha", "Estado", "Tipo de entrega", "Método de pago", "Total", "Acción"
         };
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -324,7 +333,7 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
                 }
             }
 
-            String cliente = pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "";
+            String cliente = nombreClienteMostrar(pedido);
             boolean coincideTexto = texto.isEmpty()
                     || ("#" + pedido.getIdPedido()).contains(texto)
                     || cliente.toLowerCase().contains(texto);
@@ -362,22 +371,22 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
             Pago pago = pagoSeguro(pedido);
 
             modeloTabla.addRow(new Object[]{
-                    "#" + pedido.getIdPedido(),
-                    pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-",
-                    pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_FECHA_HORA) : "-",
-                    nombreLegible(pedido.getEstado()),
-                    nombreLegible(pedido.getTipoEntrega()),
-                    pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
-                    "Q" + pedido.getTotal(),
-                    "Ver detalle"
+                "#" + pedido.getIdPedido(),
+                nombreClienteMostrar(pedido),
+                pedido.getFecha() != null ? pedido.getFecha().format(FORMATO_FECHA_HORA) : "-",
+                nombreLegible(pedido.getEstado()),
+                nombreLegible(pedido.getTipoEntrega()),
+                pago != null ? nombreLegible(pago.getMetodoPago()) : "-",
+                "Q" + pedido.getTotal(),
+                "Ver detalle"
             });
         }
 
         lblResumenPagina.setText(
                 resultadosFiltrados.isEmpty()
-                        ? "Sin pedidos para los filtros seleccionados"
-                        : "Mostrando " + (desde + 1) + " a " + hasta + " de " + resultadosFiltrados.size()
-                          + " pedidos (página " + (paginaActual + 1) + " de " + totalPaginas + ")"
+                ? "Sin pedidos para los filtros seleccionados"
+                : "Mostrando " + (desde + 1) + " a " + hasta + " de " + resultadosFiltrados.size()
+                + " pedidos (página " + (paginaActual + 1) + " de " + totalPaginas + ")"
         );
 
         btnAnterior.setEnabled(paginaActual > 0);
@@ -396,8 +405,8 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
     }
 
     /**
-     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un
-     * dato mal formado en un solo pedido tumbe toda la tabla — ver
+     * Igual que pagoService.buscarPorPedido(...), pero sin dejar que un dato
+     * mal formado en un solo pedido tumbe toda la tabla — ver
      * DAO.Implement.PagoDAOImpl.
      */
     private Pago pagoSeguro(Pedido pedido) {
@@ -410,30 +419,53 @@ public class PanelHistorial extends PanelFondo implements Refrescable {
         }
     }
 
+    private String nombreClienteMostrar(Pedido pedido) {
+        if (pedido.getNombreCliente() != null && !pedido.getNombreCliente().isBlank()) {
+            return pedido.getNombreCliente();
+        }
+        return pedido.getUsuario() != null ? pedido.getUsuario().getNombreCompleto() : "-";
+    }
+
     private String nombreLegible(EstadoPedido estado) {
-        if (estado == null) return "-";
+        if (estado == null) {
+            return "-";
+        }
         switch (estado) {
-            case PENDIENTE: return "Pendiente";
-            case PREPARACION: return "En preparación";
-            case LISTO: return "Listo";
-            case ENTREGADO: return "Entregado";
-            case CANCELADO: return "Cancelado";
-            default: return estado.name();
+            case PENDIENTE:
+                return "Pendiente";
+            case PREPARACION:
+                return "En preparación";
+            case LISTO:
+                return "Listo";
+            case ENTREGADO:
+                return "Entregado";
+            case CANCELADO:
+                return "Cancelado";
+            default:
+                return estado.name();
         }
     }
 
     private String nombreLegible(TipoEntrega tipo) {
-        if (tipo == null) return "-";
+        if (tipo == null) {
+            return "-";
+        }
         return tipo == TipoEntrega.PARA_LLEVAR ? "Para llevar" : "Comer en local";
     }
 
     private String nombreLegible(MetodoPago metodo) {
-        if (metodo == null) return "-";
+        if (metodo == null) {
+            return "-";
+        }
         switch (metodo) {
-            case EFECTIVO: return "Efectivo";
-            case TARJETA: return "Tarjeta";
-            case TRANSFERENCIA: return "Transferencia";
-            default: return metodo.name();
+            case EFECTIVO:
+                return "Efectivo";
+            case TARJETA:
+                return "Tarjeta";
+            case TRANSFERENCIA:
+                return "Transferencia";
+            default:
+                return metodo.name();
         }
     }
 }
