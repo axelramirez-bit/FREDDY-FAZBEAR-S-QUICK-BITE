@@ -403,6 +403,41 @@ BEGIN
     FROM producto p, categoria c
     WHERE p.nombre = 'Pizza Party Personal' AND c.nombre = 'Pizzas'
     ON DUPLICATE KEY UPDATE id_categoria = VALUES(id_categoria);
+
+    -- 5) Crear "Platos Fuertes" solo si todavía no existe.
+    --    BUG QUE ESTO CORRIGE: "Wrap Fazbear" y "Chicken Tenders
+    --    Basket" quedaron en "Hamburguesas" tras el paso 1 (son
+    --    parte del contenido heredado de "Almuerzos y Cenas") sin
+    --    ser hamburguesas de verdad. Se les da su propia categoría
+    --    de platos fuertes para que FranjaHoraria pueda ofrecerlos
+    --    en el horario de Cena junto con Pizzas, en vez de quedar
+    --    mezclados con las hamburguesas del horario de Desayuno.
+    INSERT INTO categoria (nombre, descripcion)
+    SELECT 'Platos Fuertes', 'Platos principales para la cena'
+    WHERE NOT EXISTS (SELECT 1 FROM categoria WHERE nombre = 'Platos Fuertes');
+
+    -- 6) Mover "Wrap Fazbear" y "Chicken Tenders Basket" a Platos Fuertes
+    UPDATE producto p
+    JOIN categoria c ON c.nombre = 'Platos Fuertes'
+    SET p.id_categoria = c.id_categoria
+    WHERE p.nombre IN ('Wrap Fazbear', 'Chicken Tenders Basket')
+      AND p.id_categoria <> c.id_categoria;
+
+    -- 7) Reflejar el cambio en producto_categoria (N:M): igual que en
+    --    el paso 4, quitar el rastro de "Hamburguesas" y dejar solo
+    --    "Platos Fuertes" para esos dos productos.
+    DELETE pc FROM producto_categoria pc
+    JOIN producto p  ON p.id_producto  = pc.id_producto
+    JOIN categoria c ON c.id_categoria = pc.id_categoria
+    WHERE p.nombre IN ('Wrap Fazbear', 'Chicken Tenders Basket')
+      AND c.nombre = 'Hamburguesas';
+
+    INSERT INTO producto_categoria (id_producto, id_categoria)
+    SELECT p.id_producto, c.id_categoria
+    FROM producto p, categoria c
+    WHERE p.nombre IN ('Wrap Fazbear', 'Chicken Tenders Basket')
+      AND c.nombre = 'Platos Fuertes'
+    ON DUPLICATE KEY UPDATE id_categoria = VALUES(id_categoria);
 END //
 
 DELIMITER ;
@@ -703,6 +738,24 @@ SELECT id_producto, id_categoria FROM producto;
 -- una base de datos existente sin recrearla.
 -- ------------------------------------------------------------
 CALL sp_migrar_categorias_hamburguesas_pizzas();
+
+-- ------------------------------------------------------------
+-- CORRECCIÓN DE DATOS: carritos que quedaron "Activo" para
+-- siempre después de pagar (ver bug corregido en
+-- PedidoController.confirmarPedido(): antes no marcaba el
+-- carrito como Finalizado, así que obtenerOCrearCarritoActivo()
+-- seguía devolviendo ese mismo carrito, y como ya tenía un
+-- pedido asociado (id_carrito es UNIQUE en pedido), el cliente
+-- quedaba bloqueado con "Ya se registró un pedido para este
+-- carrito" en TODAS sus compras siguientes. Se corrige el
+-- histórico: cualquier carrito Activo que ya tenga un pedido
+-- registrado se marca Finalizado. Es seguro volver a correr
+-- esto las veces que haga falta.
+-- ------------------------------------------------------------
+UPDATE carrito c
+JOIN pedido p ON p.id_carrito = c.id_carrito
+SET c.estado = 'Finalizado'
+WHERE c.estado = 'Activo';
 
 
 -- ============================================================

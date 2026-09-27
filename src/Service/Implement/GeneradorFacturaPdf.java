@@ -122,8 +122,12 @@ public class GeneradorFacturaPdf {
     // RUTAS DE RECURSOS
     // ==========================================================
 
+    // BUG: la ruta usaba "imagenes" en minúscula, pero la carpeta real es
+    // "Resources/Imagenes" (con mayúscula). getResourceAsStream() es
+    // sensible a mayúsculas/minúsculas, así que con la ruta vieja el logo
+    // nunca se cargaba (entrada == null) fuera de Windows/NetBeans.
     private static final String RUTA_LOGO =
-            "/Resources/imagenes/Logotipo.png";
+            "/Resources/Imagenes/Logotipo.png";
 
 
     // ==========================================================
@@ -1341,23 +1345,31 @@ public class GeneradorFacturaPdf {
         // ======================================================
         // CONFIGURACIÓN
         // ======================================================
+        // Se busca primero en config.properties (mail.correo /
+        // mail.password) porque es más cómodo de configurar desde el
+        // IDE (NetBeans no aplica variables de entorno nuevas sin
+        // reiniciar el proceso). Si no está ahí, se cae a las
+        // variables de entorno FREDDY_EMAIL/FREDDY_EMAIL_PASSWORD
+        // por compatibilidad con configuraciones existentes.
 
-        String correoEmisor =
-                System.getenv(
-                        "FREDDY_EMAIL"
-                );
+        String correoEmisor = Config.Configuracion.getMailCorreo();
+        if (correoEmisor == null) {
+            correoEmisor = System.getenv("FREDDY_EMAIL");
+        }
 
-        String contraseña =
-                System.getenv(
-                        "FREDDY_EMAIL_PASSWORD"
-                );
+        String contraseña = Config.Configuracion.getMailPassword();
+        if (contraseña == null) {
+            contraseña = System.getenv("FREDDY_EMAIL_PASSWORD");
+        }
 
 
         if (correoEmisor == null ||
                 correoEmisor.trim().isEmpty()) {
 
             throw new IllegalStateException(
-                    "No se configuró FREDDY_EMAIL."
+                    "No se configuró el correo emisor "
+                    + "(agrega mail.correo a config.properties, "
+                    + "o define FREDDY_EMAIL)."
             );
         }
 
@@ -1366,8 +1378,9 @@ public class GeneradorFacturaPdf {
                 contraseña.trim().isEmpty()) {
 
             throw new IllegalStateException(
-                    "No se configuró "
-                    + "FREDDY_EMAIL_PASSWORD."
+                    "No se configuró la contraseña del correo "
+                    + "(agrega mail.password a config.properties, "
+                    + "o define FREDDY_EMAIL_PASSWORD)."
             );
         }
 
@@ -1399,6 +1412,12 @@ public class GeneradorFacturaPdf {
         // ======================================================
         // SESIÓN
         // ======================================================
+        // correoEmisor y contraseña se reasignan arriba (if == null),
+        // así que no son "effectively final": no se pueden usar
+        // directamente dentro de la clase anónima Authenticator.
+        // Se copian a variables final para poder referenciarlas ahí.
+        final String correoEmisorFinal = correoEmisor;
+        final String contraseñaFinal = contraseña;
 
         Session sesion =
                 Session.getInstance(
@@ -1410,8 +1429,8 @@ public class GeneradorFacturaPdf {
                             getPasswordAuthentication() {
 
                                 return new PasswordAuthentication(
-                                        correoEmisor,
-                                        contraseña
+                                        correoEmisorFinal,
+                                        contraseñaFinal
                                 );
                             }
                         }

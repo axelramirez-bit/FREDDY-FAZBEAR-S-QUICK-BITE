@@ -5,6 +5,7 @@ import Model.CarritoDetalle;
 import Model.DetalleFactura;
 import Model.DetallePedido;
 import Model.EstadoPago;
+import Model.EstadoCarrito;
 import Model.Factura;
 import Model.MetodoPago;
 import Model.Pago;
@@ -163,6 +164,27 @@ public class PedidoController {
             return ResultadoConfirmacion.error("El pedido no tiene productos.");
         }
 
+        // ---------- 2.1 Validar stock ANTES de tocar la base de datos ----------
+        // BUG QUE ESTO CORRIGE: nada en el flujo del carrito validaba
+        // producto.hayStock(cantidad) antes de confirmar. Si un producto no
+        // alcanzaba, el INSERT en detalle_pedido SÍ fallaba (el trigger
+        // trg_descontar_stock deja el stock negativo y choca con
+        // chk_producto_stock CHECK(stock >= 0) de FreddyQuickBite.sql), pero
+        // ese SQLException solo queda en el log de DetallePedidoDAOImpl: el
+        // Controller recibía un simple "false" sin motivo y mostraba el
+        // mensaje genérico "Revisa PedidoDAO/DetallePedidoDAO" — que es
+        // exactamente el diálogo reportado. Validar aquí evita el INSERT que
+        // iba a fallar y le dice al cajero/cliente cuál producto no alcanza.
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            if (!detalle.getProducto().hayStock(detalle.getCantidad())) {
+                return ResultadoConfirmacion.error(
+                        "No hay stock suficiente de \"" + detalle.getProducto().getNombre()
+                        + "\" (disponible: " + detalle.getProducto().getStock()
+                        + ", pedido: " + detalle.getCantidad() + ")."
+                );
+            }
+        }
+
         // ---------- 3. Validar el monto si el pago es en efectivo ----------
         // El total que realmente se cobra incluye IVA (12%, calculado
         // sobre subtotal - descuento) más el envío. pedido.getTotal()
@@ -191,6 +213,24 @@ public class PedidoController {
                     "No se pudo registrar el pedido. Revisa PedidoDAO/DetallePedidoDAO."
             );
         }
+
+        // ---------- 4.1 Liberar el carrito de inmediato ----------
+        // BUG QUE ESTO CORRIGE: id_carrito es UNIQUE en la tabla pedido, así
+        // que apenas el INSERT de arriba tiene éxito, este carrito queda
+        // ligado a un pedido para siempre — sin importar lo que pase después
+        // (pago, factura, PDF, correo). Antes, vaciarCarrito()/actualizarEstado
+        // a FINALIZADO solo se ejecutaban al final del método (paso 7), así
+        // que si el pago o la factura fallaban más abajo, el método retornaba
+        // temprano y el carrito se quedaba "Activo" pero ya enlazado a un
+        // pedido. obtenerOCrearCarritoActivo() seguía devolviendo ESE mismo
+        // carrito la próxima vez (sigue Activo) y existePedidoParaCarrito()
+        // seguía devolviendo true: el cajero/trabajador quedaba bloqueado con
+        // "Ya se registró un pedido para este carrito" en TODOS los pedidos
+        // siguientes, no solo en el que falló. Se mueve aquí para que, pase lo
+        // que pase después, ya haya un carrito nuevo disponible para el
+        // siguiente pedido (el trabajador puede seguir atendiendo clientes).
+        carritoService.vaciarCarrito(carrito.getIdCarrito());
+        carritoService.actualizarEstado(carrito.getIdCarrito(), EstadoCarrito.FINALIZADO);
 
         // ---------- 5. Registrar el pago ----------
         Pago pago = new Pago();
@@ -254,8 +294,7 @@ public class PedidoController {
             );
         }
 
-        // ---------- 7. Vaciar el carrito ----------
-        carritoService.vaciarCarrito(carrito.getIdCarrito());
+        // ---------- 7. (El carrito ya se vació y se marcó Finalizado en el paso 4.1) ----------
 
         // ---------- 8. Generar el PDF ----------
         File pdfFactura;

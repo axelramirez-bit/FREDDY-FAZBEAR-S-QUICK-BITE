@@ -77,6 +77,25 @@ public final class Configuracion {
         return obtener(clave);
     }
 
+    /**
+     * Igual que getPropiedad(), pero para propiedades OPCIONALES: si la
+     * clave no existe o está vacía, devuelve null en vez de lanzar
+     * RuntimeException. Pensado para configuración que puede faltar sin
+     * que la aplicación deje de funcionar (ej. credenciales de correo).
+     */
+    // Obtiene una propiedad opcional (null si no existe)
+    public static String getPropiedadOpcional(String clave) {
+        // Busca el valor de la clave
+        String valor = PROPIEDADES.getProperty(clave);
+        // Si es nulo o está vacío
+        if (valor == null || valor.isBlank()) {
+            // Devuelve null en vez de lanzar excepción
+            return null;
+        }
+        // Devuelve el valor sin espacios sobrantes
+        return valor.trim();
+    }
+
     // ─── BLOQUE: BASE DE DATOS ──────────────────────────────────────────────
 
     // Host de la base de datos
@@ -97,6 +116,17 @@ public final class Configuracion {
              // Agrega parámetros: sin SSL, zona UTC, UTF-8 y timeouts de 5 s
              + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=5000&socketTimeout=5000";
     }
+
+    // ─── BLOQUE: CORREO (opcional) ───────────────────────────────────────────
+    // OPCIONAL a propósito: si falta, GeneradorFacturaPdf.enviarPorCorreo()
+    // sigue intentando las variables de entorno FREDDY_EMAIL/FREDDY_EMAIL_PASSWORD
+    // (compatibilidad hacia atrás) y, si tampoco existen, falla en modo
+    // "best-effort" sin bloquear el pedido — ver comentario en esa clase.
+
+    // Correo Gmail emisor de las facturas (o null si no está configurado)
+    public static String getMailCorreo() { return getPropiedadOpcional("mail.correo"); }
+    // Contraseña de aplicación de ese correo (o null si no está configurada)
+    public static String getMailPassword() { return getPropiedadOpcional("mail.password"); }
 
     // ─── BLOQUE: APLICACIÓN ─────────────────────────────────────────────────
 

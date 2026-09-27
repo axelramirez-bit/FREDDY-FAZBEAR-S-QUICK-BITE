@@ -15,3 +15,13 @@ ui.language=es
 ui.fullscreen=false
 
 log.level=INFO
+
+# Envío de factura por correo (OPCIONAL). Si se deja vacío o se omite,
+# el pedido y el PDF se generan igual; solo se salta el envío del
+# correo (ver GeneradorFacturaPdf.enviarPorCorreo, es "best-effort").
+# mail.correo debe ser una cuenta de Gmail real, y mail.password debe
+# ser una "contraseña de aplicación" de esa cuenta (no la contraseña
+# normal; se genera en la configuración de seguridad de Google y
+# requiere tener activada la verificación en dos pasos).
+mail.correo=
+mail.password=

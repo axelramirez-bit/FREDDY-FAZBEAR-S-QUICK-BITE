@@ -101,12 +101,37 @@ public final class FranjaHoraria {
      * categoria) que hay que usar para filtrar productos según la
      * franja horaria actual. Ver el aviso de mapeo de categorías en
      * el comentario de la clase.
+     *
+     * @deprecated usar {@link #nombresCategoria()}: el horario de
+     * Cena ya no es solo "Pizzas" (ver esa constante para el detalle
+     * de por qué se agregó "Platos Fuertes").
      */
     // Devuelve la categoría a filtrar según la franja
+    @Deprecated
     public static String nombreCategoria() {
 
         // "Hamburguesas" en desayuno, "Pizzas" en cena
         return actual() == Franja.DESAYUNO ? "Hamburguesas" : "Pizzas";
+    }
+
+    /**
+     * Categorías reales a filtrar según la franja horaria actual.
+     *
+     * BUG QUE ESTO CORRIGE: "Wrap Fazbear" y "Chicken Tenders
+     * Basket" no son hamburguesas, pero vivían en la categoría
+     * "Hamburguesas" y por eso solo aparecían en el horario de
+     * Desayuno (ver PanelDesayunosCenas). La migración
+     * sp_migrar_categorias_hamburguesas_pizzas los movió a una
+     * categoría nueva, "Platos Fuertes", pensada justamente para
+     * ofrecerse en el horario de Cena junto con "Pizzas".
+     */
+    // Devuelve las categorías a filtrar según la franja
+    public static String[] nombresCategoria() {
+
+        // "Hamburguesas" en desayuno; "Pizzas" + "Platos Fuertes" en cena
+        return actual() == Franja.DESAYUNO
+                ? new String[]{"Hamburguesas"}
+                : new String[]{"Pizzas", "Platos Fuertes"};
     }
 
 }

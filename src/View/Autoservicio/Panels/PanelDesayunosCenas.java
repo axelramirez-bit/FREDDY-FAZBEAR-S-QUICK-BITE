@@ -1,10 +1,12 @@
 package View.Autoservicio.Panels;
 
 import Base.PanelProductos;
+import Model.Producto;
 import Utils.FranjaHoraria;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Arrays;
 
 /**
  * ===============================================================
@@ -34,7 +36,13 @@ public class PanelDesayunosCenas extends PanelProductos {
 
     public PanelDesayunosCenas() {
 
-        super(producto -> producto.perteneceACategoria(FranjaHoraria.nombreCategoria()));
+        // BUG QUE ESTO CORRIGE: el horario de Cena ya no es solo
+        // "Pizzas" — ahora también incluye "Platos Fuertes" (Wrap
+        // Fazbear, Chicken Tenders Basket), que no son hamburguesas
+        // y por eso se separaron de esa categoría. Se filtra contra
+        // TODAS las categorías de la franja actual, no solo una.
+        super(producto -> Arrays.stream(FranjaHoraria.nombresCategoria())
+                .anyMatch(producto::perteneceACategoria));
 
         addComponentListener(new ComponentAdapter() {
             @Override

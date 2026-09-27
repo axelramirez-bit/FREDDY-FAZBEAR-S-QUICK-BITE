@@ -1,4 +1,3 @@
-
 package DAO.Implement;
  
 import Config.Conexion;
@@ -68,10 +67,20 @@ public class CarritoDAOImpl implements ICarritoDAO {
  
     @Override
     public Carrito buscarPorUsuario(int idUsuario) {
- 
+
         // Se asume que un usuario tiene, a lo sumo, un carrito Activo a la vez.
+        //
+        // "AND NOT EXISTS (... pedido ...)" es una segunda capa de defensa:
+        // id_carrito es UNIQUE en pedido, así que un carrito con un pedido
+        // ya enlazado nunca debería seguir siendo utilizable, aunque por
+        // algún motivo (datos viejos de antes de este fix, un estado que
+        // quedó mal actualizado, etc.) su columna "estado" todavía diga
+        // 'Activo'. Al excluirlo aquí, ese carrito "envenenado" deja de
+        // devolverse como activo y obtenerOCrearCarritoActivo() crea uno
+        // nuevo automáticamente, sin necesidad de arreglar los datos a mano.
         String sql = "SELECT id_carrito, id_usuario, fecha_creacion, estado "
                 + "FROM carrito WHERE id_usuario = ? AND estado = 'Activo' "
+                + "AND NOT EXISTS (SELECT 1 FROM pedido p WHERE p.id_carrito = carrito.id_carrito) "
                 + "ORDER BY fecha_creacion DESC LIMIT 1";
  
         try (Connection con = Conexion.getInstancia().getConexion();

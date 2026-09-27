@@ -34,7 +34,49 @@ public class CarritoDetalleServiceImpl implements ICarritoDetalleService {
             return false;
         }
 
+        // BUG QUE ESTO CORRIGE: agregar el mismo producto dos veces al
+        // carrito insertaba dos filas separadas en carrito_detalle
+        // (cantidad=1 cada una) en vez de una sola fila con cantidad=2,
+        // así que "Tu pedido" y la factura mostraban la misma línea
+        // repetida (ver factura con "Pizza Party Personal" dos veces).
+        // Si ya existe una línea para el mismo producto CON LAS MISMAS
+        // observaciones, se suma la cantidad ahí en vez de insertar una
+        // fila nueva. Si las observaciones son distintas, se deja como
+        // línea aparte para no perder la nota específica de cada una.
+        CarritoDetalle existente = buscarLineaExistente(detalle);
+
+        if (existente != null) {
+            return carritoDetalleDAO.actualizarCantidad(
+                    existente.getIdCarritoDetalle(),
+                    existente.getCantidad() + detalle.getCantidad()
+            );
+        }
+
         return carritoDetalleDAO.agregarProducto(detalle);
+    }
+
+    // Busca, entre las líneas ya guardadas del carrito, una que sea del
+    // mismo producto y con las mismas observaciones que "nuevo".
+    private CarritoDetalle buscarLineaExistente(CarritoDetalle nuevo) {
+
+        List<CarritoDetalle> actuales = carritoDetalleDAO.listarPorCarrito(nuevo.getCarrito().getIdCarrito());
+        String obsNuevo = normalizar(nuevo.getObservaciones());
+
+        for (CarritoDetalle actual : actuales) {
+
+            boolean mismoProducto = actual.getProducto().getIdProducto() == nuevo.getProducto().getIdProducto();
+            boolean mismasObs = normalizar(actual.getObservaciones()).equals(obsNuevo);
+
+            if (mismoProducto && mismasObs) {
+                return actual;
+            }
+        }
+
+        return null;
+    }
+
+    private String normalizar(String texto) {
+        return texto == null ? "" : texto.trim();
     }
 
     @Override
