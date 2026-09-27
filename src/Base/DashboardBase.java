@@ -127,6 +127,15 @@ public abstract class DashboardBase extends JFrame implements BarraLateralListen
 
         // Pone la ventana en pantalla completa
         UtilPantalla.pantallaCompleta(this);
+
+        // BUG QUE ESTO CORRIGE: si el usuario desmaximiza esta
+        // ventana y la achica a mano, nada forzaba un
+        // revalidate()/repaint() completo del árbol (ver el
+        // comentario de UtilPantalla.activarRelayoutEnVivo()). Se
+        // activa acá, una sola vez, para los tres dashboards
+        // (Cliente, Trabajador, Administrador) que extienden esta
+        // clase base.
+        UtilPantalla.activarRelayoutEnVivo(this);
     }
 
     // ==========================================================

@@ -440,13 +440,21 @@ public final class AdministradorTema {
 
     // ==========================================================
     // TABLAS
+    //
+    // BUG QUE ESTO CORRIGE: EstilosComponentes.aplicarEstiloTabla()
+    // le pasaba la fuente de la tabla por AdministradorTema.fuenteNormal()
+    // (ya escalada, ver UtilFuentes) pero el alto de fila lo tomaba
+    // directo de UIConstants.ALTURA_FILA_TABLA, fijo. En un monitor
+    // grande la fuente crece pero la fila no, y el texto queda
+    // apretado/cortado verticalmente dentro de la celda. Se escalan
+    // igual que el resto de las medidas de la tarjeta de producto.
     // ==========================================================
     public static int alturaFilaTabla() {
-        return UIConstants.ALTURA_FILA_TABLA;
+        return DisenoAdaptable.escalar(UIConstants.ALTURA_FILA_TABLA);
     }
 
     public static int alturaHeaderTabla() {
-        return UIConstants.ALTURA_HEADER_TABLA;
+        return DisenoAdaptable.escalar(UIConstants.ALTURA_HEADER_TABLA);
     }
 
     // ==========================================================

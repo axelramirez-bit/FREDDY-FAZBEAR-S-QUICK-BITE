@@ -149,9 +149,28 @@ public final class FabricaDialogos {
 
         dialogo.setContentPane(contenido);
 
+        // ANTES: dialogo.setSize(UIConstants.ANCHO_DIALOGO, UIConstants.ALTO_DIALOGO)
+        // fijo en píxeles. BUG QUE ESTO CORRIGE: mismo patrón que ya se
+        // corrigió en TarjetaProducto — un tamaño "de diseño" fijo se ve
+        // desproporcionado frente al resto de la UI (que sí escala) en
+        // un monitor distinto a 1920x1080, y si un formulario puntual
+        // necesita más alto del que esos 350px fijos daban (más campos
+        // de los usuales), el contenido quedaba cortado sin aviso.
+        //
+        // Se escala el tamaño de diseño con DisenoAdaptable (igual que
+        // anchoTarjetaProducto()/altoTarjetaProducto()) y se usa como
+        // PISO, no como techo: si el propio contenido pide más espacio
+        // (contenido.getPreferredSize()), se respeta ese tamaño real en
+        // vez de recortarlo.
+        Dimension disenio = new Dimension(
+                DisenoAdaptable.escalarAncho(UIConstants.ANCHO_DIALOGO),
+                DisenoAdaptable.escalarAlto(UIConstants.ALTO_DIALOGO));
+
+        Dimension preferido = contenido.getPreferredSize();
+
         dialogo.setSize(
-                UIConstants.ANCHO_DIALOGO,
-                UIConstants.ALTO_DIALOGO);
+                Math.max(disenio.width, preferido.width),
+                Math.max(disenio.height, preferido.height));
 
         dialogo.setLocationRelativeTo(owner);
 

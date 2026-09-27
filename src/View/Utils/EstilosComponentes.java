@@ -150,8 +150,14 @@ public final class EstilosComponentes {
         tabla.setGridColor(
                 AdministradorTema.colorBorde());
 
+        // ANTES: UIConstants.ALTURA_FILA_TABLA (fijo). BUG QUE ESTO
+        // CORRIGE: la fuente de la tabla (fuenteNormal(), arriba) ya
+        // escala según la resolución del monitor; el alto de fila
+        // tenía que escalar junto para que el texto no quede apretado
+        // en pantallas grandes. AdministradorTema.alturaFilaTabla()
+        // ahora hace ese escalado (ver su comentario).
         tabla.setRowHeight(
-                UIConstants.ALTURA_FILA_TABLA);
+                AdministradorTema.alturaFilaTabla());
 
         tabla.setSelectionBackground(
                 AdministradorTema.colorPrincipal());
