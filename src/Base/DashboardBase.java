@@ -7,6 +7,10 @@ import Utils.FranjaHoraria;
 import Utils.Sesion;
 // Importa PanelContenido (zona de vistas)
 import View.Componentes.PanelContenido;
+// Importa Login (se vuelve a mostrar al cerrar sesión)
+import View.Login.Login;
+// Importa SplashScreen (se muestra antes de Login al cerrar sesión)
+import View.Splash.SplashScreen;
 // Importa UtilPantalla (tamaño de ventana)
 import View.Utils.UtilPantalla;
 
@@ -280,8 +284,22 @@ public abstract class DashboardBase extends JFrame implements BarraLateralListen
         // Cierra esta ventana
         dispose();
 
-        // TODO: cuando Integrante 2 termine Login/Bienvenida, aquí
-        // se abre esa ventana en vez de solo cerrar esta.
+        // BUG QUE ESTO CORRIGE: el TODO que había acá dejaba la app
+        // sin ninguna ventana abierta al cerrar sesión (dispose() y
+        // nada más). Ahora se repite el mismo flujo con el que
+        // arranca la app (ver Main.main()): primero el splash, y
+        // cuando termina, Login. Se le pasa null como tareaFondo
+        // porque la conexión a MySQL ya está establecida desde que
+        // arrancó la app (Conexion es un singleton, no hay nada que
+        // reconectar) — SplashScreen.iniciarCarga() acepta null ahí
+        // y simplemente no ejecuta ninguna tarea de fondo; el splash
+        // solo cumple su función visual antes de volver a Login.
+        SplashScreen splash = new SplashScreen();
+
+        splash.iniciarCarga(
+                null,
+                () -> new Login().setVisible(true)
+        );
     }
 
 }
