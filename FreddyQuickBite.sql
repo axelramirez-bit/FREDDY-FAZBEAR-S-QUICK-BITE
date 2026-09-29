@@ -489,268 +489,111 @@ VALUES
 ('Cumpleaños Fazbear', 'El cumpleañero recibe un pastel individual gratis al presentar su identificación.', NULL, '2026-01-01', '2026-12-31', TRUE);
 
 -- ------------------------------------------------------------
--- producto
--- Todos los productos se insertan directamente con su
--- categoría FINAL ya correcta (antes, tres de estos productos
--- ["Combo Golden Pizza-Burger", "Combo Bonnie-Nuggets" y
--- "Combo Freddy Fazbear"] se creaban en Cajita Feliz [7] y una
--- migración posterior los movía a Combos [8]. Aquí ya nacen
--- directamente en la categoría 8).
---
--- Los productos que antes se insertaban con
--- CALL sp_insertar_producto(...) quedaron integrados aquí mismo
--- como filas normales de INSERT, junto a los demás, para no
--- mezclar dos formas distintas de insertar productos.
+-- producto (con imagen incluida en la misma llamada)
 -- ------------------------------------------------------------
-INSERT INTO producto
-(id_categoria, id_promocion, nombre, descripcion, precio, stock, disponible, estado)
-VALUES
 -- Desayunos (1)
-(1, NULL, 'Desayuno Fazbear Clásico', 'Huevos revueltos, tocino crujiente, pan tostado y papas hash brown.', 48.00, 100, TRUE, TRUE),
-(1, NULL, 'Pancakes Freddy', 'Tres pancakes esponjosos con mantequilla y miel de maple.', 36.00, 100, TRUE, TRUE),
-(1, NULL, 'Omelette Rockstar', 'Omelette relleno de jamón, queso cheddar y vegetales frescos.', 42.00, 100, TRUE, TRUE),
-(1, NULL, 'Sándwich Morning Bite', 'Pan brioche con huevo, queso americano y salchicha artesanal.', 34.00, 100, TRUE, TRUE),
-(1, NULL, 'Waffle golden bear', 'Waffle belga acompañado de frutas y crema batida.', 39.00, 100, TRUE, TRUE),
-(1, NULL, 'Burrito Despertador', 'Tortilla rellena de huevo, queso, salchicha y papas.', 41.00, 100, TRUE, TRUE),
-(1, NULL, 'Croissant Supremo', 'Croissant relleno de jamón ahumado y queso mozzarella.', 32.00, 100, TRUE, TRUE),
-(1, NULL, 'Combo Buenos días', 'Café, jugo de naranja y muffin de vainilla', 38.00, 100, TRUE, TRUE),
-(1, NULL, 'Burrito de Desayuno Grande', 'Tortilla rellena de huevo, queso, salchicha y papas, tamaño grande.', 42.00, 100, TRUE, TRUE),
-(1, NULL, 'Pancakes Clásico', 'Tres pancakes esponjosos con mantequilla y miel.', 36.00, 100, TRUE, TRUE),
-(1, NULL, 'Pancakes con Miel de Maple', 'Pancakes bañados en miel de maple auténtica.', 38.00, 100, TRUE, TRUE),
--- Almuerzos y Cenas (2)
-(2, NULL, 'Freddy Burger Deluxe', 'Carne 100% res, doble queso cheddar, lechuga, tomate y salsa especial Quick Bite.', 58.00, 100, TRUE, TRUE),
-(2, NULL, 'Bonnie BBQ Burger', 'Hamburguesa con salsa BBQ, cebolla caramelizada y queso suizo.', 62.00, 100, TRUE, TRUE),
-(2, NULL, 'Chica Chicken Burger', 'Pechuga de pollo empanizada, queso y salsa miel-mostaza.', 54.00, 100, TRUE, TRUE),
-(2, NULL, 'Foxy Triple Burger', 'Triple carne, doble queso, tocino y pepinillos.', 72.00, 100, TRUE, TRUE),
-(2, NULL, 'Pizza Party Personal', 'Pizza individual de pepperoni con queso mozzarella.', 48.00, 100, TRUE, TRUE),
-(2, NULL, 'Wrap Fazbear', 'Tortilla de harina con pollo, vegetales y aderezo ranch.', 44.00, 100, TRUE, TRUE),
-(2, NULL, 'Combo Fazbear Supremo', 'Hamburguesa Deluxe, papas grandes y bebida mediana', 79.00, 100, TRUE, TRUE),
-(2, NULL, 'Chicken Tenders Basket', 'Seis tiras de pollo con papas fritas y salsa BBQ.', 59.00, 100, TRUE, TRUE),
-(2, NULL, 'Plato Fazbear Clásico', 'Plato principal insignia de la casa.', 55.00, 100, TRUE, TRUE),
+CALL sp_insertar_producto(1, 'Desayuno Fazbear Clásico', 'Huevos revueltos, tocino crujiente, pan tostado y papas hash brown.', 48.00, 100, 'Desayuno Fazbear Clasico');
+CALL sp_insertar_producto(1, 'Pancakes Freddy', 'Tres pancakes esponjosos con mantequilla y miel de maple.', 36.00, 100, 'Pancakes Freddy');
+CALL sp_insertar_producto(1, 'Omelette Rockstar', 'Omelette relleno de jamón, queso cheddar y vegetales frescos.', 42.00, 100, 'Omelette Rockstar');
+CALL sp_insertar_producto(1, 'Sándwich Morning Bite', 'Pan brioche con huevo, queso americano y salchicha artesanal.', 34.00, 100, 'Sandwich Morning Bite');
+CALL sp_insertar_producto(1, 'Waffle golden bear', 'Waffle belga acompañado de frutas y crema batida.', 39.00, 100, 'Waffle Golden Bear');
+CALL sp_insertar_producto(1, 'Burrito Despertador', 'Tortilla rellena de huevo, queso, salchicha y papas.', 41.00, 100, 'Burrito Despertador');
+CALL sp_insertar_producto(1, 'Croissant Supremo', 'Croissant relleno de jamón ahumado y queso mozzarella.', 32.00, 100, 'Croissant Supremo');
+CALL sp_insertar_producto(1, 'Combo Buenos días', 'Café, jugo de naranja y muffin de vainilla', 38.00, 100, 'Combo Buenos Dias');
+CALL sp_insertar_producto(1, 'Burrito de Desayuno Grande', 'Tortilla rellena de huevo, queso, salchicha y papas, tamaño grande.', 42.00, 100, 'Burrito de Desayuno Grande');
+CALL sp_insertar_producto(1, 'Pancakes Clásico', 'Tres pancakes esponjosos con mantequilla y miel.', 36.00, 100, 'Pancakes Clasico');
+CALL sp_insertar_producto(1, 'Pancakes con Miel de Maple', 'Pancakes bañados en miel de maple auténtica.', 38.00, 100, 'Pancakes con Miel de Maple');
+
+-- Hamburguesas y Pizzas (Almuerzos y Cenas) (2)
+CALL sp_insertar_producto(2, 'Freddy Burger Deluxe', 'Carne 100% res, doble queso cheddar, lechuga, tomate y salsa especial Quick Bite.', 58.00, 100, 'Freddy Burger Deluxe');
+CALL sp_insertar_producto(2, 'Bonnie BBQ Burger', 'Hamburguesa con salsa BBQ, cebolla caramelizada y queso suizo.', 62.00, 100, 'Bonnie BBQ Burger');
+CALL sp_insertar_producto(2, 'Chica Chicken Burger', 'Pechuga de pollo empanizada, queso y salsa miel-mostaza.', 54.00, 100, 'Chica Chicken Burger');
+CALL sp_insertar_producto(2, 'Foxy Triple Burger', 'Triple carne, doble queso, tocino y pepinillos.', 72.00, 100, 'Foxy Triple Burger');
+CALL sp_insertar_producto(2, 'Pizza Party Personal', 'Pizza individual de pepperoni con queso mozzarella.', 48.00, 100, 'Pizza Party Personal');
+CALL sp_insertar_producto(2, 'Wrap Fazbear', 'Tortilla de harina con pollo, vegetales y aderezo ranch.', 44.00, 100, 'Wrap Fazbear');
+CALL sp_insertar_producto(2, 'Combo Fazbear Supremo', 'Hamburguesa Deluxe, papas grandes y bebida mediana', 79.00, 100, 'Combo Fazbear Supremo');
+CALL sp_insertar_producto(2, 'Chicken Tenders Basket', 'Seis tiras de pollo con papas fritas y salsa BBQ.', 59.00, 100, 'Chicken Tenders Basket');
+CALL sp_insertar_producto(2, 'Plato Fazbear Clásico', 'Plato principal insignia de la casa.', 55.00, 100, 'Plato Fazbear Clasico');
+
 -- Postres (3)
-(3, NULL, 'Brownie Freddy', 'Brownie de chocolate con helado de vainilla.', 28.00, 100, TRUE, TRUE),
-(3, NULL, 'Sundae Fazbear', 'Helado de vainilla con chocolate, nueces y cereza.', 24.00, 100, TRUE, TRUE),
-(3, NULL, 'Pastel Golden', 'Rebanada de pastel de vainilla con crema.', 27.00, 100, TRUE, TRUE),
-(3, NULL, 'Cheesecake Puppet', 'Cheesecake con salsa de frutos rojos.', 30.00, 100, TRUE, TRUE),
-(3, NULL, 'Galletas Animatronic', 'Cuatro galletas con chispas de chocolate.', 22.00, 100, TRUE, TRUE),
-(3, NULL, 'Mini donuts', 'Seis mini donuts espolvoreadas con azúcar y canela.', 25.00, 100, TRUE, TRUE),
-(3, NULL, 'Banana Split Freddy', 'Helado, frutas, crema batida y chocolate.', 36.00, 100, TRUE, TRUE),
-(3, NULL, 'Volcán de chocolate', 'Pastel tibio con centro líquido de chocolate.', 34.00, 100, TRUE, TRUE),
-(3, NULL, 'Bol de Acaí del Pirata', 'Bowl de acaí con fruta fresca y granola, estilo pirata.', 34.00, 100, TRUE, TRUE),
-(3, NULL, 'Sundae de Helado', 'Copa de helado con toppings variados.', 26.00, 100, TRUE, TRUE),
-(3, NULL, 'Root Beer Float', 'Root beer con una bola de helado de vainilla.', 28.00, 100, TRUE, TRUE),
-(3, NULL, 'Waffles de Chocolate', 'Waffles bañados en chocolate.', 34.00, 100, TRUE, TRUE),
--- McCafé (4)
-(4, NULL, 'Espresso Fazbear', 'Café espresso de grano seleccionado.', 18.00, 100, TRUE, TRUE),
-(4, NULL, 'Cappuccino Freddy', 'Espresso con leche vaporizada y espuma cremosa.', 26.00, 100, TRUE, TRUE),
-(4, NULL, 'Latte Vainilla', 'Café latte con un toque de vainilla.', 28.00, 100, TRUE, TRUE),
-(4, NULL, 'Mocha Chica', 'Café con chocolate y crema batida.', 30.00, 100, TRUE, TRUE),
-(4, NULL, 'Chocolate Caliente', 'Chocolate caliente con malvaviscos.', 25.00, 100, TRUE, TRUE),
-(4, NULL, 'Frappé Cookies', 'Frappé de vainilla con galleta triturada.', 34.00, 100, TRUE, TRUE),
-(4, NULL, 'Té Helado Limón', 'Té negro con limón natural.', 20.00, 100, TRUE, TRUE),
-(4, NULL, 'Muffin Arándanos', 'Muffin recién horneado de arándanos.', 24.00, 100, TRUE, TRUE),
-(4, NULL, 'Expresso Machiato', 'Espresso con un toque de espuma de leche.', 22.00, 100, TRUE, TRUE),
-(4, NULL, 'Latte Clásico', 'Espresso con leche vaporizada.', 26.00, 100, TRUE, TRUE),
-(4, NULL, 'Mocha Chocolate Iced', 'Café frío con chocolate.', 30.00, 100, TRUE, TRUE),
-(4, NULL, 'Mocha Chocolate Iced (Frío)', 'Versión bien fría del mocha de chocolate.', 30.00, 100, TRUE, TRUE),
-(4, NULL, 'Frappé de Caramelo (Frío)', 'Frappé de caramelo bien frío.', 32.00, 100, TRUE, TRUE),
-(4, NULL, 'Frappé de Caramelo con Helado', 'Frappé de caramelo con una bola de helado encima.', 36.00, 100, TRUE, TRUE),
+CALL sp_insertar_producto(3, 'Brownie Freddy', 'Brownie de chocolate con helado de vainilla.', 28.00, 100, 'Brownie Freddy');
+CALL sp_insertar_producto(3, 'Sundae Fazbear', 'Helado de vainilla con chocolate, nueces y cereza.', 24.00, 100, 'Sundae Fazbear');
+CALL sp_insertar_producto(3, 'Pastel Golden', 'Rebanada de pastel de vainilla con crema.', 27.00, 100, 'Pastel Golden');
+CALL sp_insertar_producto(3, 'Cheesecake Puppet', 'Cheesecake con salsa de frutos rojos.', 30.00, 100, 'Cheesecake Puppet');
+CALL sp_insertar_producto(3, 'Galletas Animatronic', 'Cuatro galletas con chispas de chocolate.', 22.00, 100, 'Galletas Animatronic');
+CALL sp_insertar_producto(3, 'Mini donuts', 'Seis mini donuts espolvoreadas con azúcar y canela.', 25.00, 100, 'Mini Donuts');
+CALL sp_insertar_producto(3, 'Banana Split Freddy', 'Helado, frutas, crema batida y chocolate.', 36.00, 100, 'Banana Split Freddy');
+CALL sp_insertar_producto(3, 'Volcán de chocolate', 'Pastel tibio con centro líquido de chocolate.', 34.00, 100, 'Volcan de Chocolate');
+CALL sp_insertar_producto(3, 'Bol de Acaí del Pirata', 'Bowl de acaí con fruta fresca y granola, estilo pirata.', 34.00, 100, 'Bol de Acai del Pirata');
+CALL sp_insertar_producto(3, 'Sundae de Helado', 'Copa de helado con toppings variados.', 26.00, 100, 'Sundae de Helado');
+CALL sp_insertar_producto(3, 'Root Beer Float', 'Root beer con una bola de helado de vainilla.', 28.00, 100, 'Root Beer Float');
+CALL sp_insertar_producto(3, 'Waffles de Chocolate', 'Waffles bañados en chocolate.', 34.00, 100, 'Waffles de Chocolate');
+
+-- McCafe (4)
+CALL sp_insertar_producto(4, 'Espresso Fazbear', 'Café espresso de grano seleccionado.', 18.00, 100, 'Espresso Fazbear');
+CALL sp_insertar_producto(4, 'Cappuccino Freddy', 'Espresso con leche vaporizada y espuma cremosa.', 26.00, 100, 'Cappuccino Freddy');
+CALL sp_insertar_producto(4, 'Latte Vainilla', 'Café latte con un toque de vainilla.', 28.00, 100, 'Latte Vanilla');
+CALL sp_insertar_producto(4, 'Mocha Chica', 'Café con chocolate y crema batida.', 30.00, 100, 'Mocha Chica');
+CALL sp_insertar_producto(4, 'Chocolate Caliente', 'Chocolate caliente con malvaviscos.', 25.00, 100, 'Chocolate Caliente');
+CALL sp_insertar_producto(4, 'Frappé Cookies', 'Frappé de vainilla con galleta triturada.', 34.00, 100, 'Frappe Cookies');
+CALL sp_insertar_producto(4, 'Té Helado Limón', 'Té negro con limón natural.', 20.00, 100, 'Te Helado Limon');
+CALL sp_insertar_producto(4, 'Muffin Arándanos', 'Muffin recién horneado de arándanos.', 24.00, 100, 'Muffin Arandanos');
+CALL sp_insertar_producto(4, 'Expresso Machiato', 'Espresso con un toque de espuma de leche.', 22.00, 100, 'Expresso Machiato');
+CALL sp_insertar_producto(4, 'Latte Clásico', 'Espresso con leche vaporizada.', 26.00, 100, 'Latte Clasico');
+CALL sp_insertar_producto(4, 'Mocha Chocolate Iced', 'Café frío con chocolate.', 30.00, 100, 'Mocha Chocolate Iced');
+CALL sp_insertar_producto(4, 'Mocha Chocolate Iced (Frío)', 'Versión bien fría del mocha de chocolate.', 30.00, 100, 'Mocha Chocolate Iced Frio');
+CALL sp_insertar_producto(4, 'Frappé de Caramelo (Frío)', 'Frappé de caramelo bien frío.', 32.00, 100, 'Frappe de Caramelo Frio');
+CALL sp_insertar_producto(4, 'Frappé de Caramelo con Helado', 'Frappé de caramelo con una bola de helado encima.', 36.00, 100, 'Frappe de Caramelo con Helado');
+
 -- Bebidas (5)
-(5, NULL, 'Refresco Mediano', 'Bebida gaseosa de 16 oz.', 15.00, 100, TRUE, TRUE),
-(5, NULL, 'Refresco Grande', 'Bebida gaseosa de 22 oz.', 18.00, 100, TRUE, TRUE),
-(5, NULL, 'Limonada natural', 'Limonada preparada con limón fresco.', 18.00, 100, TRUE, TRUE),
-(5, NULL, 'Jugo de naranja', 'Jugo natural recién exprimido', 20.00, 100, TRUE, TRUE),
-(5, NULL, 'Malteada Chocolate', 'Malteada cremosa de chocolate.', 32.00, 100, TRUE, TRUE),
-(5, NULL, 'Malteada Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, TRUE, TRUE),
-(5, NULL, 'Agua Embotellada', 'Agua purificada de 600 ml.', 10.00, 100, TRUE, TRUE),
-(5, NULL, 'Smoothie Tropical', 'Mango, piña y naranja licuados con hielo.', 34.00, 100, TRUE, TRUE),
-(5, NULL, 'Bebida de Fresa', 'Bebida refrescante sabor fresa.', 20.00, 100, TRUE, TRUE),
-(5, NULL, 'Botín de Pirata de Foxy', 'Bebida servida en vaso temático estilo bota pirata.', 25.00, 100, TRUE, TRUE),
-(5, NULL, 'Ponche de Frutas', 'Mezcla de frutas tropicales rojas y naranjas en capas, con un toque cítrico y banderas pirata.', 22.00, 100, TRUE, TRUE),
-(5, NULL, 'Granizado de Arándano', 'Granizado frío sabor arándano.', 24.00, 100, TRUE, TRUE),
-(5, NULL, 'Malteada de Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, TRUE, TRUE),
-(5, NULL, 'Slushie de Lima', 'Bebida helada sabor lima.', 22.00, 100, TRUE, TRUE),
-(5, NULL, 'Smoothie de Durazno', 'Smoothie natural de durazno.', 30.00, 100, TRUE, TRUE),
-(5, NULL, 'Té Helado', 'Té negro servido helado.', 18.00, 100, TRUE, TRUE),
+CALL sp_insertar_producto(5, 'Refresco Mediano', 'Bebida gaseosa de 16 oz.', 15.00, 100, 'Refresco Mediano');
+CALL sp_insertar_producto(5, 'Refresco Grande', 'Bebida gaseosa de 22 oz.', 18.00, 100, 'Refresco Grande');
+CALL sp_insertar_producto(5, 'Limonada natural', 'Limonada preparada con limón fresco.', 18.00, 100, 'Limonada Natural');
+CALL sp_insertar_producto(5, 'Jugo de naranja', 'Jugo natural recién exprimido', 20.00, 100, 'Jugo de Naranja');
+CALL sp_insertar_producto(5, 'Malteada Chocolate', 'Malteada cremosa de chocolate.', 32.00, 100, 'Malteada Chocolate');
+CALL sp_insertar_producto(5, 'Malteada Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, 'Malteada Fresa');
+CALL sp_insertar_producto(5, 'Agua Embotellada', 'Agua purificada de 600 ml.', 10.00, 100, 'Agua Embotellada');
+CALL sp_insertar_producto(5, 'Smoothie Tropical', 'Mango, piña y naranja licuados con hielo.', 34.00, 100, 'Smoothie Tropical');
+CALL sp_insertar_producto(5, 'Bebida de Fresa', 'Bebida refrescante sabor fresa.', 20.00, 100, 'Bebida de Fresa');
+CALL sp_insertar_producto(5, 'Botín de Pirata de Foxy', 'Bebida servida en vaso temático estilo bota pirata.', 25.00, 100, 'Botin de Pirata de Foxy');
+CALL sp_insertar_producto(5, 'Ponche de Frutas', 'Mezcla de frutas tropicales rojas y naranjas en capas, con un toque cítrico y banderas pirata.', 22.00, 100, 'Ponche de Frutas');
+CALL sp_insertar_producto(5, 'Granizado de Arándano', 'Granizado frío sabor arándano.', 24.00, 100, 'Granizado de Arandano');
+CALL sp_insertar_producto(5, 'Malteada de Fresa', 'Malteada cremosa de fresa natural.', 32.00, 100, 'Malteada Fresa');
+CALL sp_insertar_producto(5, 'Slushie de Lima', 'Bebida helada sabor lima.', 22.00, 100, 'Slushie de Lima');
+CALL sp_insertar_producto(5, 'Smoothie de Durazno', 'Smoothie natural de durazno.', 30.00, 100, 'Smoothie de Durazno');
+CALL sp_insertar_producto(5, 'Té Helado', 'Té negro servido helado.', 18.00, 100, 'Te Helado');
+
 -- Antojos (6)
-(6, NULL, 'Papas Clásicas', 'Papas fritas doradas y crujientes.', 18.00, 100, TRUE, TRUE),
-(6, NULL, 'Papas con Queso', 'Papas bañadas en queso cheddar.', 28.00, 100, TRUE, TRUE),
-(6, NULL, 'Aros de Cebolla', 'Aros empanizados y crujientes.', 26.00, 100, TRUE, TRUE),
-(6, NULL, 'Nuggets (6 piezas)', 'Nuggets de pollo con salsa BBQ.', 32.00, 100, TRUE, TRUE),
-(6, NULL, 'Mozzarella Sticks', 'Palitos de queso mozzarella empanizados.', 34.00, 100, TRUE, TRUE),
-(6, NULL, 'Alitas BBQ', 'Seis alitas bañadas en salsa BBQ.', 42.00, 100, TRUE, TRUE),
-(6, NULL, 'Nachos Supreme', 'Nachos con queso, carne y jalapeños.', 39.00, 100, TRUE, TRUE),
-(6, NULL, 'Papas Fazbear', 'Papas con tocino, queso cheddar y cebollín.', 38.00, 100, TRUE, TRUE),
-(6, NULL, 'Alitas de Foxy', 'Alitas bañadas en salsa, tema Foxy.', 40.00, 100, TRUE, TRUE),
-(6, NULL, 'Bocados de Maíz', 'Bocados crujientes de maíz.', 22.00, 100, TRUE, TRUE),
-(6, NULL, 'Sartén de Queso', 'Queso fundido servido en sartén individual.', 30.00, 100, TRUE, TRUE),
--- Cajita Feliz (7) -- solo menú infantil, sin productos "Combo%"
-(7, NULL, 'Cajita Freddy Burger', 'Mini hamburguesa, papas pequeñas, jugo y juguete coleccionable.', 46.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Nuggets', 'Cuatro nuggets, papas, bebida y juguete sorpresa.', 45.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Mini Pizza', 'Mini pizza, jugo y juguete.', 48.00, 100, TRUE, TRUE),
-(7, NULL, 'Copa de Pastel de Chica', 'Un pastel helado con capas de pastel de vainilla, bebida pequeña y juguete de Chica.', 35.00, 100, TRUE, TRUE),
-(7, NULL, 'Festín de Tacos de Bonnie', 'Tres tacos de carne asada estilo Fazbear, bebida y juguete de colección.', 52.00, 100, TRUE, TRUE),
-(7, NULL, 'Paquete de Papas Shadow', 'Papas fritas rizadas con salsa Fazbear, café y juguete de Shadow Freddy.', 38.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Fazbear Deluxe', 'Hamburguesa infantil, postre pequeño y juguete exclusivo.', 52.00, 100, TRUE, TRUE),
-(7, NULL, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, TRUE, TRUE),
--- NUEVOS: tenían imagen en Resources/Productos pero nunca se habían
--- insertado como producto (ver sección de imágenes más abajo).
-(7, NULL, 'Cajita Chicken Wrap', 'Mini wrap de pollo, papas pequeñas, jugo y juguete sorpresa.', 45.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Hot Dog', 'Hot dog clásico, papas pequeñas, jugo y juguete sorpresa.', 42.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Pancake Kids', 'Mini pancakes con miel, jugo y juguete sorpresa.', 40.00, 100, TRUE, TRUE),
-(7, NULL, 'Cajita Quesadilla', 'Mini quesadilla de queso, papas pequeñas, jugo y juguete sorpresa.', 43.00, 100, TRUE, TRUE),
--- Combos (8) -- productos "Combo%" que antes vivían en Cajita Feliz
-(8, NULL, 'Combo Golden Pizza-Burger', 'Un combo dorado: burger premium con sabor a pizza, bebida grande y juguete.', 55.00, 100, TRUE, TRUE),
-(8, NULL, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, TRUE, TRUE),
-(8, NULL, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, TRUE, TRUE);
+CALL sp_insertar_producto(6, 'Papas Clásicas', 'Papas fritas doradas y crujientes.', 18.00, 100, 'Papas Clasicas');
+CALL sp_insertar_producto(6, 'Papas con Queso', 'Papas bañadas en queso cheddar.', 28.00, 100, 'Papas con Queso');
+CALL sp_insertar_producto(6, 'Aros de Cebolla', 'Aros empanizados y crujientes.', 26.00, 100, 'Aros de cebolla');
+CALL sp_insertar_producto(6, 'Nuggets (6 piezas)', 'Nuggets de pollo con salsa BBQ.', 32.00, 100, 'Nuggets (6 piezas)');
+CALL sp_insertar_producto(6, 'Mozzarella Sticks', 'Palitos de queso mozzarella empanizados.', 34.00, 100, 'Mozzarella Sticks');
+CALL sp_insertar_producto(6, 'Alitas BBQ', 'Seis alitas bañadas en salsa BBQ.', 42.00, 100, 'Alitas BBQ');
+CALL sp_insertar_producto(6, 'Nachos Supreme', 'Nachos con queso, carne y jalapeños.', 39.00, 100, 'Nachos Supreme');
+CALL sp_insertar_producto(6, 'Papas Fazbear', 'Papas con tocino, queso cheddar y cebollín.', 38.00, 100, 'Papas Fazbear');
+CALL sp_insertar_producto(6, 'Alitas de Foxy', 'Alitas bañadas en salsa, tema Foxy.', 40.00, 100, 'Alitas de Foxy');
+CALL sp_insertar_producto(6, 'Bocados de Maíz', 'Bocados crujientes de maíz.', 22.00, 100, 'Bocados de Maiz');
+CALL sp_insertar_producto(6, 'Sartén de Queso', 'Queso fundido servido en sartén individual.', 30.00, 100, 'Sarten de Queso');
 
--- ------------------------------------------------------------
--- IMÁGENES DE PRODUCTO (procedimiento almacenado)
--- ------------------------------------------------------------
--- BUG QUE ESTO CORRIGE: el INSERT INTO producto de arriba nunca
--- llenaba la columna 'imagen', así que TODOS los productos
--- quedaban con imagen = NULL. UtilImagenes.producto(null,...)
--- siempre cae en la imagen genérica de respaldo
--- (Comidarealista.png), sin importar qué archivos existan en
--- Resources/Productos. Por eso el catálogo del Cliente mostraba
--- la misma imagen genérica en TODAS las tarjetas: no era un bug
--- de la vista ni del DAO (ProductoDAOImpl.mapear ya asigna bien
--- rs.getString("imagen")), sino que la base de datos nunca pedía
--- ninguna imagen en particular.
---
--- Antes esto eran ~84 sentencias UPDATE sueltas, una por producto,
--- escritas a mano. Se reemplazan por una tabla de datos
--- (producto_imagen_disponible) que enumera los archivos que
--- REALMENTE existen en Resources/Productos, más un procedimiento
--- almacenado (sp_asignar_imagenes_productos) que hace la
--- asignación en una sola sentencia. MySQL no puede leer el disco
--- por sí mismo desde SQL estándar, así que esta tabla es la forma
--- de "mirar las imágenes del proyecto": se revisó el contenido real
--- de la carpeta y se cargó aquí. Ventaja sobre los UPDATE sueltos:
--- para agregar un producto nuevo con imagen solo hay que insertar
--- una fila en esta tabla y volver a llamar al procedimiento — no
--- hace falta escribir un UPDATE nuevo cada vez.
---
--- Se excluyen del mapeo los archivos que no son imagen de un
--- producto de comida: los duplicados con nombre mal codificado
--- (p. ej. "Bocados de Ma#U00edz.png", que es el mismo archivo que
--- "Bocados de Maiz.png" pero con un problema de codificación de
--- caracteres), el duplicado con espacio de sobra
--- ("Agua Embotellada .png"), las imágenes de promoción
--- (Combo Freddy 2x1, Hora Feliz, Martes de Hamburguesas, Combo
--- Familiar, Desayuno Express, Postre Gratis, Noche Fazbear,
--- Cumpleaños Fazbear — la tabla promocion no tiene columna imagen
--- todavía) y los íconos/recursos de interfaz (disenorecorte,
--- icon_hamburguesas, icon_pizzas).
--- ------------------------------------------------------------
-CREATE TABLE producto_imagen_disponible (
-    nombre_producto VARCHAR(100) PRIMARY KEY,
-    archivo          VARCHAR(255) NOT NULL
-);
+-- Cajita Feliz (7)
+CALL sp_insertar_producto(7, 'Cajita Freddy Burger', 'Mini hamburguesa, papas pequeñas, jugo y juguete coleccionable.', 46.00, 100, 'Cajita Freddy Burger');
+CALL sp_insertar_producto(7, 'Cajita Nuggets', 'Cuatro nuggets, papas, bebida y juguete sorpresa.', 45.00, 100, 'Cajita Nuggets');
+CALL sp_insertar_producto(7, 'Cajita Mini Pizza', 'Mini pizza, jugo y juguete.', 48.00, 100, 'Cajita Mini Pizza');
+CALL sp_insertar_producto(7, 'Copa de Pastel de Chica', 'Un pastel helado con capas de pastel de vainilla, bebida pequeña y juguete de Chica.', 35.00, 100, 'Copa de Pastel de Chica');
+CALL sp_insertar_producto(7, 'Festín de Tacos de Bonnie', 'Tres tacos de carne asada estilo Fazbear, bebida y juguete de colección.', 52.00, 100, 'Festin de Tacos de Bonnie');
+CALL sp_insertar_producto(7, 'Paquete de Papas Shadow', 'Papas fritas rizadas con salsa Fazbear, café y juguete de Shadow Freddy.', 38.00, 100, 'Paquete de Papas Shadow');
+CALL sp_insertar_producto(7, 'Cajita Fazbear Deluxe', 'Hamburguesa infantil, postre pequeño y juguete exclusivo.', 52.00, 100, 'Cajita Fazbear Deluxe');
+CALL sp_insertar_producto(7, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, 'Paquete de Pizza de Chica');
+CALL sp_insertar_producto(7, 'Cajita Chicken Wrap', 'Mini wrap de pollo, papas pequeñas, jugo y juguete sorpresa.', 45.00, 100, 'Cajita Chicken Wrap');
+CALL sp_insertar_producto(7, 'Cajita Hot Dog', 'Hot dog clásico, papas pequeñas, jugo y juguete sorpresa.', 42.00, 100, 'Cajita Hot Dog');
+CALL sp_insertar_producto(7, 'Cajita Pancake Kids', 'Mini pancakes con miel, jugo y juguete sorpresa.', 40.00, 100, 'Cajita Pancake Kids');
+CALL sp_insertar_producto(7, 'Cajita Quesadilla', 'Mini quesadilla de queso, papas pequeñas, jugo y juguete sorpresa.', 43.00, 100, 'Cajita Quesadilla');
 
-INSERT INTO producto_imagen_disponible (nombre_producto, archivo) VALUES
-('Desayuno Fazbear Clásico', 'Desayuno Fazbear Clasico'),
-('Pancakes Freddy', 'Pancakes Freddy'),
-('Omelette Rockstar', 'Omelette Rockstar'),
-('Sándwich Morning Bite', 'Sandwich Morning Bite'),
-('Waffle golden bear', 'Waffle Golden Bear'),
-('Burrito Despertador', 'Burrito Despertador'),
-('Croissant Supremo', 'Croissant Supremo'),
-('Combo Buenos días', 'Combo Buenos Dias'),
-('Freddy Burger Deluxe', 'Freddy Burger Deluxe'),
-('Bonnie BBQ Burger', 'Bonnie BBQ Burger'),
-('Chica Chicken Burger', 'Chica Chicken Burger'),
-('Foxy Triple Burger', 'Foxy Triple Burger'),
-('Pizza Party Personal', 'Pizza Party Personal'),
-('Wrap Fazbear', 'Wrap Fazbear'),
-('Combo Fazbear Supremo', 'Combo Fazbear Supremo'),
-('Chicken Tenders Basket', 'Chicken Tenders Basket'),
-('Brownie Freddy', 'Brownie Freddy'),
-('Sundae Fazbear', 'Sundae Fazbear'),
-('Pastel Golden', 'Pastel Golden'),
-('Cheesecake Puppet', 'Cheesecake Puppet'),
-('Galletas Animatronic', 'Galletas Animatronic'),
-('Mini donuts', 'Mini Donuts'),
-('Banana Split Freddy', 'Banana Split Freddy'),
-('Volcán de chocolate', 'Volcan de Chocolate'),
-('Espresso Fazbear', 'Espresso Fazbear'),
-('Cappuccino Freddy', 'Cappuccino Freddy'),
-('Latte Vainilla', 'Latte Vanilla'),
-('Mocha Chica', 'Mocha Chica'),
-('Chocolate Caliente', 'Chocolate Caliente'),
-('Frappé Cookies', 'Frappe Cookies'),
-('Té Helado Limón', 'Te Helado Limon'),
-('Muffin Arándanos', 'Muffin Arandanos'),
-('Refresco Mediano', 'Refresco Mediano'),
-('Refresco Grande', 'Refresco Grande'),
-('Limonada natural', 'Limonada Natural'),
-('Jugo de naranja', 'Jugo de Naranja'),
-('Malteada Chocolate', 'Malteada Chocolate'),
-('Malteada Fresa', 'Malteada Fresa'),
-('Agua Embotellada', 'Agua Embotellada'),
-('Smoothie Tropical', 'Smoothie Tropical'),
-('Malteada de Fresa', 'Malteada Fresa'),
-('Papas Clásicas', 'Papas Clasicas'),
-('Papas con Queso', 'Papas con Queso'),
-('Aros de Cebolla', 'Aros de cebolla'),
-('Nuggets (6 piezas)', 'Nuggets (6 piezas)'),
-('Mozzarella Sticks', 'Mozzarella Sticks'),
-('Alitas BBQ', 'Alitas BBQ'),
-('Nachos Supreme', 'Nachos Supreme'),
-('Papas Fazbear', 'Papas Fazbear'),
-('Cajita Freddy Burger', 'Cajita Freddy Burger'),
-('Cajita Nuggets', 'Cajita Nuggets'),
-('Cajita Mini Pizza', 'Cajita Mini Pizza'),
-('Cajita Fazbear Deluxe', 'Cajita Fazbear Deluxe'),
-('Burrito de Desayuno Grande', 'Burrito de Desayuno Grande'),
-('Pancakes Clásico', 'Pancakes Clasico'),
-('Pancakes con Miel de Maple', 'Pancakes con Miel de Maple'),
-('Plato Fazbear Clásico', 'Plato Fazbear Clasico'),
-('Bol de Acaí del Pirata', 'Bol de Acai del Pirata'),
-('Sundae de Helado', 'Sundae de Helado'),
-('Root Beer Float', 'Root Beer Float'),
-('Waffles de Chocolate', 'Waffles de Chocolate'),
-('Expresso Machiato', 'Expresso Machiato'),
-('Latte Clásico', 'Latte Clasico'),
-('Mocha Chocolate Iced', 'Mocha Chocolate Iced'),
-('Mocha Chocolate Iced (Frío)', 'Mocha Chocolate Iced Frio'),
-('Frappé de Caramelo (Frío)', 'Frappe de Caramelo Frio'),
-('Frappé de Caramelo con Helado', 'Frappe de Caramelo con Helado'),
-('Bebida de Fresa', 'Bebida de Fresa'),
-('Botín de Pirata de Foxy', 'Botin de Pirata de Foxy'),
-('Ponche de Frutas', 'Ponche de Frutas'),
-('Granizado de Arándano', 'Granizado de Arandano'),
-('Slushie de Lima', 'Slushie de Lima'),
-('Smoothie de Durazno', 'Smoothie de Durazno'),
-('Té Helado', 'Te Helado'),
-('Alitas de Foxy', 'Alitas de Foxy'),
-('Bocados de Maíz', 'Bocados de Maiz'),
-('Sartén de Queso', 'Sarten de Queso'),
-('Copa de Pastel de Chica', 'Copa de Pastel de Chica'),
-('Festín de Tacos de Bonnie', 'Festin de Tacos de Bonnie'),
-('Paquete de Papas Shadow', 'Paquete de Papas Shadow'),
-('Paquete de Pizza de Chica', 'Paquete de Pizza de Chica'),
-('Combo Golden Pizza-Burger', 'Combo Golden Pizza-Burger'),
-('Combo Bonnie-Nuggets', 'Combo Bonnie-Nuggets'),
-('Combo Freddy Fazbear', 'Combo Freddy Fazbear'),
-('Cajita Chicken Wrap', 'Cajita Chicken Wrap'),
-('Cajita Hot Dog', 'Cajita Hot Dog'),
-('Cajita Pancake Kids', 'Cajita Pancake Kids'),
-('Cajita Quesadilla', 'Cajita Quesadilla');
-
-DELIMITER //
-
-CREATE PROCEDURE sp_asignar_imagenes_productos()
-BEGIN
-    UPDATE producto p
-    JOIN producto_imagen_disponible pi ON pi.nombre_producto = p.nombre
-    SET p.imagen = pi.archivo
-    WHERE p.imagen IS NULL OR p.imagen <> pi.archivo;
-END //
-
-DELIMITER ;
-
-CALL sp_asignar_imagenes_productos();
+-- Combos (8)
+CALL sp_insertar_producto(8, 'Combo Golden Pizza-Burger', 'Un combo dorado: burger premium con sabor a pizza, bebida grande y juguete.', 55.00, 100, 'Combo Golden Pizza-Burger');
+CALL sp_insertar_producto(8, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, 'Combo Bonnie-Nuggets');
+CALL sp_insertar_producto(8, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, 'Combo Freddy Fazbear');
 
 -- ------------------------------------------------------------
 -- producto_categoria
