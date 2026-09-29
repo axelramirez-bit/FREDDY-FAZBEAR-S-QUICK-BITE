@@ -593,13 +593,20 @@ VALUES
 (7, NULL, 'Paquete de Papas Shadow', 'Papas fritas rizadas con salsa Fazbear, café y juguete de Shadow Freddy.', 38.00, 100, TRUE, TRUE),
 (7, NULL, 'Cajita Fazbear Deluxe', 'Hamburguesa infantil, postre pequeño y juguete exclusivo.', 52.00, 100, TRUE, TRUE),
 (7, NULL, 'Paquete de Pizza de Chica', 'Mini pizza, bebida y juguete de Chica.', 46.00, 100, TRUE, TRUE),
+-- NUEVOS: tenían imagen en Resources/Productos pero nunca se habían
+-- insertado como producto (ver sección de imágenes más abajo).
+(7, NULL, 'Cajita Chicken Wrap', 'Mini wrap de pollo, papas pequeñas, jugo y juguete sorpresa.', 45.00, 100, TRUE, TRUE),
+(7, NULL, 'Cajita Hot Dog', 'Hot dog clásico, papas pequeñas, jugo y juguete sorpresa.', 42.00, 100, TRUE, TRUE),
+(7, NULL, 'Cajita Pancake Kids', 'Mini pancakes con miel, jugo y juguete sorpresa.', 40.00, 100, TRUE, TRUE),
+(7, NULL, 'Cajita Quesadilla', 'Mini quesadilla de queso, papas pequeñas, jugo y juguete sorpresa.', 43.00, 100, TRUE, TRUE),
 -- Combos (8) -- productos "Combo%" que antes vivían en Cajita Feliz
 (8, NULL, 'Combo Golden Pizza-Burger', 'Un combo dorado: burger premium con sabor a pizza, bebida grande y juguete.', 55.00, 100, TRUE, TRUE),
 (8, NULL, 'Combo Bonnie-Nuggets', 'Nuggets, papas, bebida y juguete temático de Bonnie.', 48.00, 100, TRUE, TRUE),
 (8, NULL, 'Combo Freddy Fazbear', 'Combo insignia con juguete de colección de Freddy.', 55.00, 100, TRUE, TRUE);
 
 -- ------------------------------------------------------------
--- imagen de producto
+-- IMÁGENES DE PRODUCTO (procedimiento almacenado)
+-- ------------------------------------------------------------
 -- BUG QUE ESTO CORRIGE: el INSERT INTO producto de arriba nunca
 -- llenaba la columna 'imagen', así que TODOS los productos
 -- quedaban con imagen = NULL. UtilImagenes.producto(null,...)
@@ -609,105 +616,141 @@ VALUES
 -- la misma imagen genérica en TODAS las tarjetas: no era un bug
 -- de la vista ni del DAO (ProductoDAOImpl.mapear ya asigna bien
 -- rs.getString("imagen")), sino que la base de datos nunca pedía
--- ninguna imagen en particular. Se actualiza aquí el nombre exacto
--- de archivo (sin extensión, UtilImagenes agrega '.png') para cada
--- producto que sí tiene una imagen disponible en Resources/Productos.
--- Los productos sin archivo correspondiente quedan con imagen NULL
--- y usan el respaldo genérico a propósito (no falta un archivo real).
-UPDATE producto SET imagen = 'Desayuno Fazbear Clasico' WHERE nombre = 'Desayuno Fazbear Clásico';
-UPDATE producto SET imagen = 'Pancakes Freddy' WHERE nombre = 'Pancakes Freddy';
-UPDATE producto SET imagen = 'Omelette Rockstar' WHERE nombre = 'Omelette Rockstar';
-UPDATE producto SET imagen = 'Sandwich Morning Bite' WHERE nombre = 'Sándwich Morning Bite';
-UPDATE producto SET imagen = 'Waffle Golden Bear' WHERE nombre = 'Waffle golden bear';
-UPDATE producto SET imagen = 'Burrito Despertador' WHERE nombre = 'Burrito Despertador';
-UPDATE producto SET imagen = 'Croissant Supremo' WHERE nombre = 'Croissant Supremo';
-UPDATE producto SET imagen = 'Combo Buenos Dias' WHERE nombre = 'Combo Buenos días';
-UPDATE producto SET imagen = 'Freddy Burger Deluxe' WHERE nombre = 'Freddy Burger Deluxe';
-UPDATE producto SET imagen = 'Bonnie BBQ Burger' WHERE nombre = 'Bonnie BBQ Burger';
-UPDATE producto SET imagen = 'Chica Chicken Burger' WHERE nombre = 'Chica Chicken Burger';
-UPDATE producto SET imagen = 'Foxy Triple Burger' WHERE nombre = 'Foxy Triple Burger';
-UPDATE producto SET imagen = 'Pizza Party Personal' WHERE nombre = 'Pizza Party Personal';
-UPDATE producto SET imagen = 'Wrap Fazbear' WHERE nombre = 'Wrap Fazbear';
-UPDATE producto SET imagen = 'Combo Fazbear Supremo' WHERE nombre = 'Combo Fazbear Supremo';
-UPDATE producto SET imagen = 'Chicken Tenders Basket' WHERE nombre = 'Chicken Tenders Basket';
-UPDATE producto SET imagen = 'Brownie Freddy' WHERE nombre = 'Brownie Freddy';
-UPDATE producto SET imagen = 'Sundae Fazbear' WHERE nombre = 'Sundae Fazbear';
-UPDATE producto SET imagen = 'Pastel Golden' WHERE nombre = 'Pastel Golden';
-UPDATE producto SET imagen = 'Cheesecake Puppet' WHERE nombre = 'Cheesecake Puppet';
-UPDATE producto SET imagen = 'Galletas Animatronic' WHERE nombre = 'Galletas Animatronic';
-UPDATE producto SET imagen = 'Mini Donuts' WHERE nombre = 'Mini donuts';
-UPDATE producto SET imagen = 'Banana Split Freddy' WHERE nombre = 'Banana Split Freddy';
-UPDATE producto SET imagen = 'Volcan de Chocolate' WHERE nombre = 'Volcán de chocolate';
-UPDATE producto SET imagen = 'Espresso Fazbear' WHERE nombre = 'Espresso Fazbear';
-UPDATE producto SET imagen = 'Cappuccino Freddy' WHERE nombre = 'Cappuccino Freddy';
-UPDATE producto SET imagen = 'Latte Vanilla' WHERE nombre = 'Latte Vainilla';
-UPDATE producto SET imagen = 'Mocha Chica' WHERE nombre = 'Mocha Chica';
-UPDATE producto SET imagen = 'Chocolate Caliente' WHERE nombre = 'Chocolate Caliente';
-UPDATE producto SET imagen = 'Frappe Cookies' WHERE nombre = 'Frappé Cookies';
-UPDATE producto SET imagen = 'Te Helado Limon' WHERE nombre = 'Té Helado Limón';
-UPDATE producto SET imagen = 'Muffin Arandanos' WHERE nombre = 'Muffin Arándanos';
-UPDATE producto SET imagen = 'Refresco Mediano' WHERE nombre = 'Refresco Mediano';
-UPDATE producto SET imagen = 'Refresco Grande' WHERE nombre = 'Refresco Grande';
-UPDATE producto SET imagen = 'Limonada Natural' WHERE nombre = 'Limonada natural';
-UPDATE producto SET imagen = 'Jugo de Naranja' WHERE nombre = 'Jugo de naranja';
-UPDATE producto SET imagen = 'Malteada Chocolate' WHERE nombre = 'Malteada Chocolate';
-UPDATE producto SET imagen = 'Malteada Fresa' WHERE nombre = 'Malteada Fresa';
-UPDATE producto SET imagen = 'Agua Embotellada' WHERE nombre = 'Agua Embotellada';
-UPDATE producto SET imagen = 'Smoothie Tropical' WHERE nombre = 'Smoothie Tropical';
-UPDATE producto SET imagen = 'Malteada Fresa' WHERE nombre = 'Malteada de Fresa';
-UPDATE producto SET imagen = 'Papas Clasicas' WHERE nombre = 'Papas Clásicas';
-UPDATE producto SET imagen = 'Papas con Queso' WHERE nombre = 'Papas con Queso';
-UPDATE producto SET imagen = 'Aros de cebolla' WHERE nombre = 'Aros de Cebolla';
-UPDATE producto SET imagen = 'Nuggets (6 piezas)' WHERE nombre = 'Nuggets (6 piezas)';
-UPDATE producto SET imagen = 'Mozzarella Sticks' WHERE nombre = 'Mozzarella Sticks';
-UPDATE producto SET imagen = 'Alitas BBQ' WHERE nombre = 'Alitas BBQ';
-UPDATE producto SET imagen = 'Nachos Supreme' WHERE nombre = 'Nachos Supreme';
-UPDATE producto SET imagen = 'Papas Fazbear' WHERE nombre = 'Papas Fazbear';
-UPDATE producto SET imagen = 'Cajita Freddy Burger' WHERE nombre = 'Cajita Freddy Burger';
-UPDATE producto SET imagen = 'Cajita Nuggets' WHERE nombre = 'Cajita Nuggets';
-UPDATE producto SET imagen = 'Cajita Mini Pizza' WHERE nombre = 'Cajita Mini Pizza';
-UPDATE producto SET imagen = 'Cajita Fazbear Deluxe' WHERE nombre = 'Cajita Fazbear Deluxe';
+-- ninguna imagen en particular.
+--
+-- Antes esto eran ~84 sentencias UPDATE sueltas, una por producto,
+-- escritas a mano. Se reemplazan por una tabla de datos
+-- (producto_imagen_disponible) que enumera los archivos que
+-- REALMENTE existen en Resources/Productos, más un procedimiento
+-- almacenado (sp_asignar_imagenes_productos) que hace la
+-- asignación en una sola sentencia. MySQL no puede leer el disco
+-- por sí mismo desde SQL estándar, así que esta tabla es la forma
+-- de "mirar las imágenes del proyecto": se revisó el contenido real
+-- de la carpeta y se cargó aquí. Ventaja sobre los UPDATE sueltos:
+-- para agregar un producto nuevo con imagen solo hay que insertar
+-- una fila en esta tabla y volver a llamar al procedimiento — no
+-- hace falta escribir un UPDATE nuevo cada vez.
+--
+-- Se excluyen del mapeo los archivos que no son imagen de un
+-- producto de comida: los duplicados con nombre mal codificado
+-- (p. ej. "Bocados de Ma#U00edz.png", que es el mismo archivo que
+-- "Bocados de Maiz.png" pero con un problema de codificación de
+-- caracteres), el duplicado con espacio de sobra
+-- ("Agua Embotellada .png"), las imágenes de promoción
+-- (Combo Freddy 2x1, Hora Feliz, Martes de Hamburguesas, Combo
+-- Familiar, Desayuno Express, Postre Gratis, Noche Fazbear,
+-- Cumpleaños Fazbear — la tabla promocion no tiene columna imagen
+-- todavía) y los íconos/recursos de interfaz (disenorecorte,
+-- icon_hamburguesas, icon_pizzas).
+-- ------------------------------------------------------------
+CREATE TABLE producto_imagen_disponible (
+    nombre_producto VARCHAR(100) PRIMARY KEY,
+    archivo          VARCHAR(255) NOT NULL
+);
 
--- ------------------------------------------------------------
--- imagen de producto (parte 2): 31 productos que SÍ tienen su
--- archivo disponible en Resources/Productos pero nunca recibieron
--- su UPDATE de imagen, así que quedaban en NULL y mostraban el
--- respaldo genérico (Comidarealista.png) sin necesidad. Detectado
--- comparando cada nombre de producto contra los archivos reales de
--- Resources/Productos (ignorando tildes/paréntesis, que es la
--- misma normalización que ya usan los 53 UPDATE de arriba).
--- ------------------------------------------------------------
-UPDATE producto SET imagen = 'Burrito de Desayuno Grande' WHERE nombre = 'Burrito de Desayuno Grande';
-UPDATE producto SET imagen = 'Pancakes Clasico' WHERE nombre = 'Pancakes Clásico';
-UPDATE producto SET imagen = 'Pancakes con Miel de Maple' WHERE nombre = 'Pancakes con Miel de Maple';
-UPDATE producto SET imagen = 'Plato Fazbear Clasico' WHERE nombre = 'Plato Fazbear Clásico';
-UPDATE producto SET imagen = 'Bol de Acai del Pirata' WHERE nombre = 'Bol de Acaí del Pirata';
-UPDATE producto SET imagen = 'Sundae de Helado' WHERE nombre = 'Sundae de Helado';
-UPDATE producto SET imagen = 'Root Beer Float' WHERE nombre = 'Root Beer Float';
-UPDATE producto SET imagen = 'Waffles de Chocolate' WHERE nombre = 'Waffles de Chocolate';
-UPDATE producto SET imagen = 'Expresso Machiato' WHERE nombre = 'Expresso Machiato';
-UPDATE producto SET imagen = 'Latte Clasico' WHERE nombre = 'Latte Clásico';
-UPDATE producto SET imagen = 'Mocha Chocolate Iced' WHERE nombre = 'Mocha Chocolate Iced';
-UPDATE producto SET imagen = 'Mocha Chocolate Iced Frio' WHERE nombre = 'Mocha Chocolate Iced (Frío)';
-UPDATE producto SET imagen = 'Frappe de Caramelo Frio' WHERE nombre = 'Frappé de Caramelo (Frío)';
-UPDATE producto SET imagen = 'Frappe de Caramelo con Helado' WHERE nombre = 'Frappé de Caramelo con Helado';
-UPDATE producto SET imagen = 'Bebida de Fresa' WHERE nombre = 'Bebida de Fresa';
-UPDATE producto SET imagen = 'Botin de Pirata de Foxy' WHERE nombre = 'Botín de Pirata de Foxy';
-UPDATE producto SET imagen = 'Ponche de Frutas' WHERE nombre = 'Ponche de Frutas';
-UPDATE producto SET imagen = 'Granizado de Arandano' WHERE nombre = 'Granizado de Arándano';
-UPDATE producto SET imagen = 'Slushie de Lima' WHERE nombre = 'Slushie de Lima';
-UPDATE producto SET imagen = 'Smoothie de Durazno' WHERE nombre = 'Smoothie de Durazno';
-UPDATE producto SET imagen = 'Te Helado' WHERE nombre = 'Té Helado';
-UPDATE producto SET imagen = 'Alitas de Foxy' WHERE nombre = 'Alitas de Foxy';
-UPDATE producto SET imagen = 'Bocados de Maiz' WHERE nombre = 'Bocados de Maíz';
-UPDATE producto SET imagen = 'Sarten de Queso' WHERE nombre = 'Sartén de Queso';
-UPDATE producto SET imagen = 'Copa de Pastel de Chica' WHERE nombre = 'Copa de Pastel de Chica';
-UPDATE producto SET imagen = 'Festin de Tacos de Bonnie' WHERE nombre = 'Festín de Tacos de Bonnie';
-UPDATE producto SET imagen = 'Paquete de Papas Shadow' WHERE nombre = 'Paquete de Papas Shadow';
-UPDATE producto SET imagen = 'Paquete de Pizza de Chica' WHERE nombre = 'Paquete de Pizza de Chica';
-UPDATE producto SET imagen = 'Combo Golden Pizza-Burger' WHERE nombre = 'Combo Golden Pizza-Burger';
-UPDATE producto SET imagen = 'Combo Bonnie-Nuggets' WHERE nombre = 'Combo Bonnie-Nuggets';
-UPDATE producto SET imagen = 'Combo Freddy Fazbear' WHERE nombre = 'Combo Freddy Fazbear';
+INSERT INTO producto_imagen_disponible (nombre_producto, archivo) VALUES
+('Desayuno Fazbear Clásico', 'Desayuno Fazbear Clasico'),
+('Pancakes Freddy', 'Pancakes Freddy'),
+('Omelette Rockstar', 'Omelette Rockstar'),
+('Sándwich Morning Bite', 'Sandwich Morning Bite'),
+('Waffle golden bear', 'Waffle Golden Bear'),
+('Burrito Despertador', 'Burrito Despertador'),
+('Croissant Supremo', 'Croissant Supremo'),
+('Combo Buenos días', 'Combo Buenos Dias'),
+('Freddy Burger Deluxe', 'Freddy Burger Deluxe'),
+('Bonnie BBQ Burger', 'Bonnie BBQ Burger'),
+('Chica Chicken Burger', 'Chica Chicken Burger'),
+('Foxy Triple Burger', 'Foxy Triple Burger'),
+('Pizza Party Personal', 'Pizza Party Personal'),
+('Wrap Fazbear', 'Wrap Fazbear'),
+('Combo Fazbear Supremo', 'Combo Fazbear Supremo'),
+('Chicken Tenders Basket', 'Chicken Tenders Basket'),
+('Brownie Freddy', 'Brownie Freddy'),
+('Sundae Fazbear', 'Sundae Fazbear'),
+('Pastel Golden', 'Pastel Golden'),
+('Cheesecake Puppet', 'Cheesecake Puppet'),
+('Galletas Animatronic', 'Galletas Animatronic'),
+('Mini donuts', 'Mini Donuts'),
+('Banana Split Freddy', 'Banana Split Freddy'),
+('Volcán de chocolate', 'Volcan de Chocolate'),
+('Espresso Fazbear', 'Espresso Fazbear'),
+('Cappuccino Freddy', 'Cappuccino Freddy'),
+('Latte Vainilla', 'Latte Vanilla'),
+('Mocha Chica', 'Mocha Chica'),
+('Chocolate Caliente', 'Chocolate Caliente'),
+('Frappé Cookies', 'Frappe Cookies'),
+('Té Helado Limón', 'Te Helado Limon'),
+('Muffin Arándanos', 'Muffin Arandanos'),
+('Refresco Mediano', 'Refresco Mediano'),
+('Refresco Grande', 'Refresco Grande'),
+('Limonada natural', 'Limonada Natural'),
+('Jugo de naranja', 'Jugo de Naranja'),
+('Malteada Chocolate', 'Malteada Chocolate'),
+('Malteada Fresa', 'Malteada Fresa'),
+('Agua Embotellada', 'Agua Embotellada'),
+('Smoothie Tropical', 'Smoothie Tropical'),
+('Malteada de Fresa', 'Malteada Fresa'),
+('Papas Clásicas', 'Papas Clasicas'),
+('Papas con Queso', 'Papas con Queso'),
+('Aros de Cebolla', 'Aros de cebolla'),
+('Nuggets (6 piezas)', 'Nuggets (6 piezas)'),
+('Mozzarella Sticks', 'Mozzarella Sticks'),
+('Alitas BBQ', 'Alitas BBQ'),
+('Nachos Supreme', 'Nachos Supreme'),
+('Papas Fazbear', 'Papas Fazbear'),
+('Cajita Freddy Burger', 'Cajita Freddy Burger'),
+('Cajita Nuggets', 'Cajita Nuggets'),
+('Cajita Mini Pizza', 'Cajita Mini Pizza'),
+('Cajita Fazbear Deluxe', 'Cajita Fazbear Deluxe'),
+('Burrito de Desayuno Grande', 'Burrito de Desayuno Grande'),
+('Pancakes Clásico', 'Pancakes Clasico'),
+('Pancakes con Miel de Maple', 'Pancakes con Miel de Maple'),
+('Plato Fazbear Clásico', 'Plato Fazbear Clasico'),
+('Bol de Acaí del Pirata', 'Bol de Acai del Pirata'),
+('Sundae de Helado', 'Sundae de Helado'),
+('Root Beer Float', 'Root Beer Float'),
+('Waffles de Chocolate', 'Waffles de Chocolate'),
+('Expresso Machiato', 'Expresso Machiato'),
+('Latte Clásico', 'Latte Clasico'),
+('Mocha Chocolate Iced', 'Mocha Chocolate Iced'),
+('Mocha Chocolate Iced (Frío)', 'Mocha Chocolate Iced Frio'),
+('Frappé de Caramelo (Frío)', 'Frappe de Caramelo Frio'),
+('Frappé de Caramelo con Helado', 'Frappe de Caramelo con Helado'),
+('Bebida de Fresa', 'Bebida de Fresa'),
+('Botín de Pirata de Foxy', 'Botin de Pirata de Foxy'),
+('Ponche de Frutas', 'Ponche de Frutas'),
+('Granizado de Arándano', 'Granizado de Arandano'),
+('Slushie de Lima', 'Slushie de Lima'),
+('Smoothie de Durazno', 'Smoothie de Durazno'),
+('Té Helado', 'Te Helado'),
+('Alitas de Foxy', 'Alitas de Foxy'),
+('Bocados de Maíz', 'Bocados de Maiz'),
+('Sartén de Queso', 'Sarten de Queso'),
+('Copa de Pastel de Chica', 'Copa de Pastel de Chica'),
+('Festín de Tacos de Bonnie', 'Festin de Tacos de Bonnie'),
+('Paquete de Papas Shadow', 'Paquete de Papas Shadow'),
+('Paquete de Pizza de Chica', 'Paquete de Pizza de Chica'),
+('Combo Golden Pizza-Burger', 'Combo Golden Pizza-Burger'),
+('Combo Bonnie-Nuggets', 'Combo Bonnie-Nuggets'),
+('Combo Freddy Fazbear', 'Combo Freddy Fazbear'),
+('Cajita Chicken Wrap', 'Cajita Chicken Wrap'),
+('Cajita Hot Dog', 'Cajita Hot Dog'),
+('Cajita Pancake Kids', 'Cajita Pancake Kids'),
+('Cajita Quesadilla', 'Cajita Quesadilla');
+
+DELIMITER //
+
+CREATE PROCEDURE sp_asignar_imagenes_productos()
+BEGIN
+    UPDATE producto p
+    JOIN producto_imagen_disponible pi ON pi.nombre_producto = p.nombre
+    SET p.imagen = pi.archivo
+    WHERE p.imagen IS NULL OR p.imagen <> pi.archivo;
+END //
+
+DELIMITER ;
+
+CALL sp_asignar_imagenes_productos();
 
 -- ------------------------------------------------------------
 -- producto_categoria
@@ -751,11 +794,20 @@ CALL sp_migrar_categorias_hamburguesas_pizzas();
 -- histórico: cualquier carrito Activo que ya tenga un pedido
 -- registrado se marca Finalizado. Es seguro volver a correr
 -- esto las veces que haga falta.
+--
+-- BUG QUE ESTO CORRIGE (Error 1175, "safe update mode"): MySQL
+-- Workbench rechaza cualquier UPDATE/DELETE cuyo WHERE no
+-- incluya una columna con índice (clave). El WHERE original
+-- solo usaba c.estado (sin índice), así que Workbench lo
+-- bloqueaba aunque la sentencia era correcta. Se agrega
+-- "c.id_carrito > 0" (la clave primaria, siempre cierto) para
+-- cumplir la regla sin cambiar el resultado.
 -- ------------------------------------------------------------
 UPDATE carrito c
 JOIN pedido p ON p.id_carrito = c.id_carrito
 SET c.estado = 'Finalizado'
-WHERE c.estado = 'Activo';
+WHERE c.id_carrito > 0
+  AND c.estado = 'Activo';
 
 
 -- ============================================================
