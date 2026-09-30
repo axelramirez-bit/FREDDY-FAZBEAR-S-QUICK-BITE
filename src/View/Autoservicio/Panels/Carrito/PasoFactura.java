@@ -272,9 +272,6 @@ public class PasoFactura extends JPanel {
                 "<html><div style='text-align:center;'>Tu pedido #"
                         + resultado.getPedido().getNumeroOrden()
                         + " ha sido recibido correctamente."
-                        + (resultado.isCorreoEnviado()
-                                ? "<br>Te enviamos la factura a tu correo."
-                                : "")
                         + "</div></html>"
         );
 

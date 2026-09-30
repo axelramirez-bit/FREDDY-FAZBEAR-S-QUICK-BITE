@@ -172,21 +172,19 @@ public class PanelInicio extends PanelProductos {
     }
 
     /**
-     * Franjas horarias típicas de un restaurante de comida rápida,
-     * ya con el catálogo actualizado: "Hamburguesas" (antes
-     * "Almuerzos y Cenas") y "Pizzas" (categoría nueva, separada de
-     * "Almuerzos y Cenas") — ver sp_migrar_categorias_hamburguesas_
-     * pizzas en FreddyQuickBite.sql. Las hamburguesas se sugieren de
-     * mañana Y de mediodía (comida rápida a toda hora); la pizza se
-     * deja para la noche.
+     * Franjas horarias típicas de un restaurante de comida rápida:
+     * desayunos por la mañana, hamburguesas al mediodía, McCafé a
+     * media tarde, pizza por la noche y antojos de madrugada. La
+     * sugerencia de mañana lleva a la vista "DESAYUNOS_CENAS", que
+     * ya muestra la categoría correcta según FranjaHoraria.
      */
     private Sugerencia sugerirSegunHora(LocalTime hora) {
 
         if (esEntre(hora, 6, 11)) {
             return new Sugerencia(
                     "¡Buenos días! Arranca el día con energía",
-                    "Nuestras hamburguesas también son una gran opción para desayunar.",
-                    "Hamburguesas", "HAMBURGUESAS", FabricaIconos.hamburguesas()
+                    "Empieza con unos pancakes, un burrito o un buen café.",
+                    "Desayunos", "DESAYUNOS_CENAS", FabricaIconos.desayunos()
             );
         }
 

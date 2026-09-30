@@ -43,8 +43,7 @@ import java.time.LocalDateTime;
  * Orden de persistencia (igual al diagrama de secuencia): 1) INSERT pedido +
  * INSERT detalle_pedido (PedidoService) 2) INSERT pago (PagoService) 3) INSERT
  * factura (FacturaService) 4) Generar el PDF (GeneradorFacturaPdf) 5) Vaciar el
- * carrito (CarritoService) 6) Enviar la factura por correo, opcional
- * (GeneradorFacturaPdf)
+ * carrito (CarritoService)
  *
  * DEPENDENCIAS QUE NO CONTROLA ESTA CLASE (DAO): - PedidoDAOImpl.insertar()
  * debe devolver el id generado (Statement.RETURN_GENERATED_KEYS) y setearlo en
@@ -113,8 +112,7 @@ public class PedidoController {
             String direccionEntrega,
             String referenciaEntrega,
             String nit,
-            String nombreCliente,
-            String correoClienteEditado) {
+            String nombreCliente) {
 
         // ---------- 1. Validaciones de entrada ----------
         if (carrito == null || carrito.estaVacio()) {
@@ -218,7 +216,7 @@ public class PedidoController {
         // BUG QUE ESTO CORRIGE: id_carrito es UNIQUE en la tabla pedido, así
         // que apenas el INSERT de arriba tiene éxito, este carrito queda
         // ligado a un pedido para siempre — sin importar lo que pase después
-        // (pago, factura, PDF, correo). Antes, vaciarCarrito()/actualizarEstado
+        // (pago, factura, PDF). Antes, vaciarCarrito()/actualizarEstado
         // a FINALIZADO solo se ejecutaban al final del método (paso 7), así
         // que si el pago o la factura fallaban más abajo, el método retornaba
         // temprano y el carrito se quedaba "Activo" pero ya enlazado a un
@@ -306,42 +304,7 @@ public class PedidoController {
             return ResultadoConfirmacion.exitoSinPdf(pedido, factura);
         }
 
-        // ---------- 9. Enviar la factura por correo (opcional) ----------
-        // Corrección: este paso existía en Service.Implement.GeneradorFacturaPdf
-        // (enviarPorCorreo / generarYEnviar) pero ningún Controller ni
-        // View lo llamaba, así que la funcionalidad estaba implementada
-        // pero inalcanzable.
-        //
-        // Es "best-effort": si el cliente no tiene correo registrado,
-        // o si falla el envío (SMTP caído, credenciales no configuradas,
-        // etc.), NO se revierte ni se marca como error el pedido — el
-        // caso de uso lo define como opcional ("4.3 Enviar factura por
-        // correo (opcional)"), igual que ya se hacía con el PDF arriba.
-        ResultadoConfirmacion resultado = ResultadoConfirmacion.ok(pedido, factura, pdfFactura);
-
-        String correoCliente = (correoClienteEditado != null && !correoClienteEditado.isBlank())
-                ? correoClienteEditado.trim()
-                : cliente.getCorreo();
-
-        if (correoCliente != null && !correoCliente.isBlank()) {
-            try {
-                generadorFacturaPdf.enviarPorCorreo(pdfFactura, correoCliente);
-                resultado.setCorreoEnviado(true);
-
-            } catch (Exception e) {
-                AppLogger.error(getClass(),
-                        "No se pudo enviar la factura por correo a " + correoCliente, e);
-                resultado.setCorreoEnviado(false);
-                resultado.setMensajeCorreo(
-                        "No se pudo enviar la factura por correo. "
-                        + "El PDF sigue disponible para descarga manual.");
-            }
-        } else {
-            resultado.setCorreoEnviado(false);
-            resultado.setMensajeCorreo("El cliente no tiene un correo registrado.");
-        }
-
-        return resultado;
+        return ResultadoConfirmacion.ok(pedido, factura, pdfFactura);
     }
 
     /**
@@ -355,12 +318,6 @@ public class PedidoController {
         private final Pedido pedido;
         private final Factura factura;
         private final File pdfFactura;
-
-        // Estado del envío de correo (opcional, paso 9). No son "final"
-        // porque se conocen después de construir el resultado: primero
-        // se arma con ok(...) y luego se intenta el envío.
-        private boolean correoEnviado;
-        private String mensajeCorreo;
 
         private ResultadoConfirmacion(boolean exito, String mensajeError,
                 Pedido pedido, Factura factura, File pdfFactura) {
@@ -403,22 +360,6 @@ public class PedidoController {
 
         public File getPdfFactura() {
             return pdfFactura;
-        }
-
-        public boolean isCorreoEnviado() {
-            return correoEnviado;
-        }
-
-        void setCorreoEnviado(boolean correoEnviado) {
-            this.correoEnviado = correoEnviado;
-        }
-
-        public String getMensajeCorreo() {
-            return mensajeCorreo;
-        }
-
-        void setMensajeCorreo(String mensajeCorreo) {
-            this.mensajeCorreo = mensajeCorreo;
         }
     }
 }

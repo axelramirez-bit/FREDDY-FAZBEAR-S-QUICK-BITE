@@ -69,7 +69,6 @@ public class PanelCarrito extends PanelFondo {
     private String referenciaEntrega;
 
     private String nombreCliente;
-    private String correoCliente;
     private String nit;
     private boolean consumidorFinal = true;
 
@@ -102,6 +101,7 @@ public class PanelCarrito extends PanelFondo {
         super.setVisible(visible);
 
         if (visible) {
+            limpiarDatosCliente();
             irAPaso1();
         }
     }
@@ -128,7 +128,6 @@ public class PanelCarrito extends PanelFondo {
             return;
         }
 
-        precargarDatosFacturacion();
         paso2.refrescar();
         mostrar("PASO2", 2);
     }
@@ -247,21 +246,14 @@ public class PanelCarrito extends PanelFondo {
     // ==========================================================
     // ENTREGA Y PAGO (Paso 2)
     // ==========================================================
-    private void precargarDatosFacturacion() {
-
-        Usuario usuario = Sesion.getInstancia().getUsuario();
-
-        if (usuario == null) {
-            return;
-        }
-
-        if (nombreCliente == null || nombreCliente.isBlank()) {
-            nombreCliente = usuario.getNombreCompleto();
-        }
-
-        if (correoCliente == null || correoCliente.isBlank()) {
-            correoCliente = usuario.getCorreo();
-        }
+    /**
+     * Deja vacios los datos del cliente (nombre y NIT) para que cada compra
+     * empiece limpia: NO se precargan con los datos de la sesion.
+     */
+    private void limpiarDatosCliente() {
+        nombreCliente = null;
+        nit = null;
+        consumidorFinal = true;
     }
 
     public TipoEntrega getTipoEntrega() {
@@ -316,14 +308,6 @@ public class PanelCarrito extends PanelFondo {
         this.nombreCliente = nombreCliente;
     }
 
-    public String getCorreoCliente() {
-        return correoCliente;
-    }
-
-    public void setCorreoCliente(String correoCliente) {
-        this.correoCliente = correoCliente;
-    }
-
     public String getNit() {
         return nit;
     }
@@ -349,10 +333,6 @@ public class PanelCarrito extends PanelFondo {
 
         if (nombreCliente == null || nombreCliente.isBlank()) {
             return "El nombre del cliente es obligatorio para la factura.";
-        }
-
-        if (correoCliente == null || correoCliente.isBlank()) {
-            return "El correo electronico es obligatorio para la factura.";
         }
 
         if (!consumidorFinal && (nit == null || nit.isBlank())) {
@@ -386,8 +366,7 @@ public class PanelCarrito extends PanelFondo {
         direccionEntrega,
         referenciaEntrega,
         consumidorFinal ? null : nit,
-        nombreCliente,
-        correoCliente
+        nombreCliente
 );
 
         if (!resultado.isExito()) {
@@ -406,6 +385,7 @@ public class PanelCarrito extends PanelFondo {
         // anterior.
         carrito = null;
         montoRecibido = null;
+        limpiarDatosCliente();
 
         irAPaso4(resultado);
     }

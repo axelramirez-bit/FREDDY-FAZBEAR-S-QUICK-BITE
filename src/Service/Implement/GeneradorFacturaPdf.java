@@ -11,16 +11,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import java.awt.Color;
 import java.io.File;
@@ -30,7 +20,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Servicio encargado de:
@@ -38,11 +27,9 @@ import java.util.Properties;
  * 1. Validar una factura.
  * 2. Calcular sus valores.
  * 3. Generar la factura PDF.
- * 4. Enviar la factura por correo electrónico.
  *
  * Tecnologías utilizadas:
  * - Apache PDFBox
- * - JavaMail
  *
  * @author Axel
  */
@@ -1303,258 +1290,5 @@ public class GeneradorFacturaPdf {
                 .replace("–", "-")
                 .replace("—", "-")
                 .replace("•", "-");
-    }
-
-
-    // ==========================================================
-    // ENVIAR POR CORREO
-    // ==========================================================
-
-    /**
-     * Envía una factura PDF mediante Gmail.
-     *
-     * IMPORTANTE:
-     * No usar la contraseña normal de Gmail.
-     * Utilizar una contraseña de aplicación.
-     *
-     * @param pdfFactura archivo PDF
-     * @param correoDestino correo del cliente
-     */
-    public void enviarPorCorreo(
-            File pdfFactura,
-            String correoDestino)
-            throws Exception {
-
-        if (pdfFactura == null ||
-                !pdfFactura.exists()) {
-
-            throw new IllegalArgumentException(
-                    "El archivo PDF no existe."
-            );
-        }
-
-        if (correoDestino == null ||
-                correoDestino.trim().isEmpty()) {
-
-            throw new IllegalArgumentException(
-                    "El correo destino es obligatorio."
-            );
-        }
-
-
-        // ======================================================
-        // CONFIGURACIÓN
-        // ======================================================
-        // Se busca primero en config.properties (mail.correo /
-        // mail.password) porque es más cómodo de configurar desde el
-        // IDE (NetBeans no aplica variables de entorno nuevas sin
-        // reiniciar el proceso). Si no está ahí, se cae a las
-        // variables de entorno FREDDY_EMAIL/FREDDY_EMAIL_PASSWORD
-        // por compatibilidad con configuraciones existentes.
-
-        String correoEmisor = Config.Configuracion.getMailCorreo();
-        if (correoEmisor == null) {
-            correoEmisor = System.getenv("FREDDY_EMAIL");
-        }
-
-        String contraseña = Config.Configuracion.getMailPassword();
-        if (contraseña == null) {
-            contraseña = System.getenv("FREDDY_EMAIL_PASSWORD");
-        }
-
-
-        if (correoEmisor == null ||
-                correoEmisor.trim().isEmpty()) {
-
-            throw new IllegalStateException(
-                    "No se configuró el correo emisor "
-                    + "(agrega mail.correo a config.properties, "
-                    + "o define FREDDY_EMAIL)."
-            );
-        }
-
-
-        if (contraseña == null ||
-                contraseña.trim().isEmpty()) {
-
-            throw new IllegalStateException(
-                    "No se configuró la contraseña del correo "
-                    + "(agrega mail.password a config.properties, "
-                    + "o define FREDDY_EMAIL_PASSWORD)."
-            );
-        }
-
-
-        Properties propiedades =
-                new Properties();
-
-        propiedades.put(
-                "mail.smtp.auth",
-                "true"
-        );
-
-        propiedades.put(
-                "mail.smtp.starttls.enable",
-                "true"
-        );
-
-        propiedades.put(
-                "mail.smtp.host",
-                "smtp.gmail.com"
-        );
-
-        propiedades.put(
-                "mail.smtp.port",
-                "587"
-        );
-
-
-        // ======================================================
-        // SESIÓN
-        // ======================================================
-        // correoEmisor y contraseña se reasignan arriba (if == null),
-        // así que no son "effectively final": no se pueden usar
-        // directamente dentro de la clase anónima Authenticator.
-        // Se copian a variables final para poder referenciarlas ahí.
-        final String correoEmisorFinal = correoEmisor;
-        final String contraseñaFinal = contraseña;
-
-        Session sesion =
-                Session.getInstance(
-                        propiedades,
-                        new Authenticator() {
-
-                            @Override
-                            protected PasswordAuthentication
-                            getPasswordAuthentication() {
-
-                                return new PasswordAuthentication(
-                                        correoEmisorFinal,
-                                        contraseñaFinal
-                                );
-                            }
-                        }
-                );
-
-
-        // ======================================================
-        // MENSAJE
-        // ======================================================
-
-        Message mensaje =
-                new MimeMessage(sesion);
-
-
-        mensaje.setFrom(
-                new InternetAddress(
-                        correoEmisor,
-                        "Freddy Fazbear's Quick Bite"
-                )
-        );
-
-
-        mensaje.setRecipients(
-                Message.RecipientType.TO,
-                InternetAddress.parse(
-                        correoDestino
-                )
-        );
-
-
-        mensaje.setSubject(
-                "Factura - Freddy Fazbear's Quick Bite"
-        );
-
-
-        // ======================================================
-        // CUERPO
-        // ======================================================
-
-        MimeBodyPart cuerpo =
-                new MimeBodyPart();
-
-
-        cuerpo.setText(
-                "Hola!\n\n"
-                + "Gracias por comprar en "
-                + "Freddy Fazbear's Quick Bite.\n\n"
-                + "Adjuntamos tu factura en formato PDF.\n\n"
-                + "Gracias por tu visita!\n"
-                + "Donde la magia cobra vida!",
-                "UTF-8"
-        );
-
-
-        // ======================================================
-        // ADJUNTO
-        // ======================================================
-
-        MimeBodyPart adjunto =
-                new MimeBodyPart();
-
-
-        adjunto.attachFile(
-                pdfFactura
-        );
-
-
-        // ======================================================
-        // MULTIPART
-        // ======================================================
-
-        Multipart contenido =
-                new MimeMultipart();
-
-
-        contenido.addBodyPart(
-                cuerpo
-        );
-
-        contenido.addBodyPart(
-                adjunto
-        );
-
-
-        mensaje.setContent(
-                contenido
-        );
-
-
-        // ======================================================
-        // ENVIAR
-        // ======================================================
-
-        Transport.send(
-                mensaje
-        );
-    }
-
-
-    // ==========================================================
-    // GENERAR Y ENVIAR
-    // ==========================================================
-
-    /**
-     * Genera la factura PDF y posteriormente
-     * la envía al correo del cliente.
-     *
-     * @param factura factura que se procesará
-     * @param correoDestino correo del cliente
-     * @return archivo PDF generado
-     */
-    public File generarYEnviar(
-            Factura factura,
-            String correoDestino)
-            throws Exception {
-
-        File pdf =
-                generarPdf(factura);
-
-        enviarPorCorreo(
-                pdf,
-                correoDestino
-        );
-
-        return pdf;
     }
 }

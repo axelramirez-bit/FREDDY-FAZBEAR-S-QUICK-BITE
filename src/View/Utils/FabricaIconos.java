@@ -159,6 +159,10 @@ public final class FabricaIconos {
         return icono("icon_inicio");
     }
 
+    public static ImageIcon desayunos() {
+        return icono("icon_desayunos");
+    }
+
     public static ImageIcon hamburguesas() {
         // BUG QUE ESTO CORRIGE: apuntaba a "icon_hamburguesas", un
         // archivo que nunca existió en Resources/Iconos (por eso

@@ -14,21 +14,16 @@ import java.time.LocalTime;
  * Base.OpcionesCliente.DESAYUNOS_CENAS y
  * View.Autoservicio.Panels.PanelDesayunosCenas).
  *
- * MAPEO DE CATEGORÍAS: la migración que corrigió las categorías
- * (ver sp_migrar_categorias_hamburguesas_pizzas en
- * FreddyQuickBite.sql) dejó la base de datos así:
+ * MAPEO DE CATEGORÍAS: cada franja usa una categoría real de la
+ * tabla categoria (ver FreddyQuickBite.sql):
  *
- *     "Almuerzos y Cenas" -> "Hamburguesas" (las 4 hamburguesas)
- *     "Pizza Party Personal" se separó en su propia categoría
- *     nueva, "Pizzas".
+ *     Antes de HORA_CORTE  -> "Desayunos"
+ *     Desde HORA_CORTE     -> "Almuerzos y Cenas"
  *
- * Hoy NO existen categorías llamadas literalmente "Desayunos" ni
- * "Cenas" conectadas a ningún panel activo del Autoservicio. Por
- * eso esta clase reutiliza las categorías ya migradas en vez de
- * inventar nombres que no traerían ningún producto: filtrar por
- * "Desayunos" a secas dejaría el panel vacío. Si el negocio llega a
- * crear categorías reales llamadas "Desayunos"/"Cenas", basta con
- * cambiar nombreCategoria() aquí abajo.
+ * Un producto puede estar en varias categorías a la vez (tabla
+ * producto_categoria), por eso, por ejemplo, una hamburguesa aparece
+ * en "Hamburguesas" y también en "Almuerzos y Cenas", y un café
+ * aparece en "McCafe" y también en "Desayunos".
  *
  * CORTE POR DEFECTO: antes de HORA_CORTE (12:00 mediodía, hora
  * local del equipo) se considera horario de Desayuno; desde esa
@@ -98,40 +93,31 @@ public final class FranjaHoraria {
 
     /**
      * Nombre real de la categoría (tal como está en la tabla
-     * categoria) que hay que usar para filtrar productos según la
-     * franja horaria actual. Ver el aviso de mapeo de categorías en
-     * el comentario de la clase.
+     * categoria) que corresponde a la franja horaria actual.
      *
-     * @deprecated usar {@link #nombresCategoria()}: el horario de
-     * Cena ya no es solo "Pizzas" (ver esa constante para el detalle
-     * de por qué se agregó "Platos Fuertes").
+     * @deprecated usar {@link #nombresCategoria()}.
      */
     // Devuelve la categoría a filtrar según la franja
     @Deprecated
     public static String nombreCategoria() {
 
-        // "Hamburguesas" en desayuno, "Pizzas" en cena
-        return actual() == Franja.DESAYUNO ? "Hamburguesas" : "Pizzas";
+        // "Desayunos" en la mañana, "Almuerzos y Cenas" desde el mediodía
+        return actual() == Franja.DESAYUNO ? "Desayunos" : "Almuerzos y Cenas";
     }
 
     /**
-     * Categorías reales a filtrar según la franja horaria actual.
-     *
-     * BUG QUE ESTO CORRIGE: "Wrap Fazbear" y "Chicken Tenders
-     * Basket" no son hamburguesas, pero vivían en la categoría
-     * "Hamburguesas" y por eso solo aparecían en el horario de
-     * Desayuno (ver PanelDesayunosCenas). La migración
-     * sp_migrar_categorias_hamburguesas_pizzas los movió a una
-     * categoría nueva, "Platos Fuertes", pensada justamente para
-     * ofrecerse en el horario de Cena junto con "Pizzas".
+     * Categorías reales a filtrar según la franja horaria actual
+     * (ver el mapeo en el comentario de la clase). Devuelve un
+     * arreglo para que PanelDesayunosCenas pueda filtrar contra
+     * varias categorías si el negocio agrega más en el futuro.
      */
     // Devuelve las categorías a filtrar según la franja
     public static String[] nombresCategoria() {
 
-        // "Hamburguesas" en desayuno; "Pizzas" + "Platos Fuertes" en cena
+        // "Desayunos" en la mañana; "Almuerzos y Cenas" desde el mediodía
         return actual() == Franja.DESAYUNO
-                ? new String[]{"Hamburguesas"}
-                : new String[]{"Pizzas", "Platos Fuertes"};
+                ? new String[]{"Desayunos"}
+                : new String[]{"Almuerzos y Cenas"};
     }
 
 }

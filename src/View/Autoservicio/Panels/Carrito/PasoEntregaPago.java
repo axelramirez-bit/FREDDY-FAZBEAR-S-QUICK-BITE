@@ -45,7 +45,6 @@ public class PasoEntregaPago extends JPanel {
 
     // ---- Datos de facturacion ----
     private JTextField campoNombre;
-    private JTextField campoCorreo;
     private JTextField campoNit;
     private JCheckBox chkConsumidorFinal;
 
@@ -161,7 +160,6 @@ public class PasoEntregaPago extends JPanel {
         tarjetaFacturacion.add(Box.createVerticalStrut(10));
 
         campoNombre = campoConEtiqueta(tarjetaFacturacion, "Nombre del cliente *");
-        campoCorreo = campoConEtiqueta(tarjetaFacturacion, "Correo electrónico *");
         campoNit = campoConEtiqueta(tarjetaFacturacion, "NIT (opcional)");
 
         chkConsumidorFinal = new JCheckBox("Consumidor final (sin NIT)");
@@ -279,7 +277,6 @@ public class PasoEntregaPago extends JPanel {
         }
 
         padre.setNombreCliente(textoDe(campoNombre));
-        padre.setCorreoCliente(textoDe(campoCorreo));
         padre.setNit(textoDe(campoNit));
         padre.setConsumidorFinal(chkConsumidorFinal.isSelected());
     }
@@ -295,7 +292,9 @@ public class PasoEntregaPago extends JPanel {
     public void refrescar() {
 
         campoNombre.setText(padre.getNombreCliente() != null ? padre.getNombreCliente() : "");
-        campoCorreo.setText(padre.getCorreoCliente() != null ? padre.getCorreoCliente() : "");
+        campoNit.setText(padre.getNit() != null ? padre.getNit() : "");
+        chkConsumidorFinal.setSelected(padre.isConsumidorFinal());
+        campoNit.setEnabled(!chkConsumidorFinal.isSelected());
 
         actualizarResumen();
     }
